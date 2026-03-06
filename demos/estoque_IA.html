@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema IA de Estoque</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .card {
+            border: none;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border-radius: 15px;
+        }
+        .btn-gradient {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+        }
+        .btn-gradient:hover {
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(76, 175, 80, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(76, 175, 80, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(76, 175, 80, 0); }
+        }
+        .ai-badge {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid p-4">
+        <!-- Header -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <h1 class="h3 mb-0">
+                    <i class="bi bi-cpu text-primary"></i>
+                    Sistema Inteligente de Estoque
+                </h1>
+                <small class="text-muted">Monitoramento em tempo real com IA</small>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Controles -->
+            <div class="col-lg-3 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title mb-3">
+                            <i class="bi bi-gear"></i> Configurações
+                        </h5>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Empresa</label>
+                            <select class="form-select" id="empresa">
+                                <option value="010">010 - Matriz</option>
+                                <option value="020">020 - Filial SP</option>
+                                <option value="030">030 - Filial RJ</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Filial</label>
+                            <select class="form-select" id="filial">
+                                <option value="01">01 - Principal</option>
+                                <option value="02">02 - Secundária</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Código Produto</label>
+                            <input type="text" class="form-control" id="produto" 
+                                   placeholder="Ex: 701-012D" value="701-012D">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Armazém</label>
+                            <select class="form-select" id="armazem">
+                                <option value="01">01 - Principal</option>
+                                <option value="02">02 - Secundário</option>
+                            </select>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-gradient" onclick="consultarEstoque()">
+                                <i class="bi bi-search"></i> Consultar
+                            </button>
+                            <button class="btn btn-outline-secondary" onclick="limparDados()">
+                                <i class="bi bi-arrow-clockwise"></i> Limpar
+                            </button>
+                        </div>
+
+                        <!-- Auto Refresh -->
+                        <div class="form-check form-switch mt-3">
+                            <input class="form-check-input" type="checkbox" id="autoRefresh">
+                            <label class="form-check-label" for="autoRefresh">
+                                Atualização automática (30s)
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Status -->
+                <div class="card mt-3">
+                    <div class="card-body">
+                        <h6 class="mb-2">Status Conexão</h6>
+                        <div id="status">
+                            <span class="status-dot bg-success"></span>
+                            <small class="ms-2">Conectado</small>
+                        </div>
+                        <small class="text-muted d-block mt-2" id="lastUpdate">
+                            Última atualização: --
+                        </small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Resultados -->
+            <div class="col-lg-9">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title mb-3">
+                            <i class="bi bi-table"></i> Dados do Estoque
+                        </h5>
+                        
+                        <!-- Tabela -->
+                        <div class="table-responsive">
+                            <table class="table table-hover" id="tabelaEstoque">
+                                <thead class="table-primary">
+                                    <tr>
+                                        <th>Filial</th>
+                                        <th>Código</th>
+                                        <th>Armazém</th>
+                                        <th>Saldo Atual</th>
+                                        <th>Pedido</th>
+                                        <th>Reservado</th>
+                                        <th>Empenhado</th>
+                                        <th>Saldo Final</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tbodyEstoque">
+                                    <tr>
+                                        <td colspan="8" class="text-center text-muted">
+                                            Nenhum dado carregado
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Insights IA -->
+                        <div class="alert alert-info mt-4" id="aiInsights" style="display:none;">
+                            <h6 class="alert-heading">
+                                <span class="badge ai-badge me-2">IA</span>
+                                Análise Inteligente
+                            </h6>
+                            <hr>
+                            <div id="insightsContent"></div>
+                        </div>
+
+                        <!-- Gráfico -->
+                        <div class="row mt-4" id="charts" style="display:none;">
+                            <div class="col-md-6">
+                                <canvas id="chartEstoque"></canvas>
+                            </div>
+                            <div class="col-md-6">
+                                <canvas id="chartTendencia"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading -->
+    <div class="modal" id="loadingModal" tabindex="-1">
+        <div class="modal-dialog modal-sm modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body text-center">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Carregando...</span>
+                    </div>
+                    <p class="mt-2 mb-0">Processando...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <script>
+        let intervalId = null;
+        let chartEstoque = null;
+        let chartTendencia = null;
+
+        // Configuração da conexão (simulada)
+        const config = {
+            server: '192.168.1.247',
+            database: 'PROTHEUS',
+            tables: ['SB2010', 'SB2020', 'SB2030']
+        };
+
+        // Auto refresh
+        document.getElementById('autoRefresh').addEventListener('change', function() {
+            if (this.checked) {
+                intervalId = setInterval(consultarEstoque, 30000);
+            } else {
+                clearInterval(intervalId);
+            }
+        });
+
+        async function consultarEstoque() {
+            const loading = new bootstrap.Modal(document.getElementById('loadingModal'));
+            loading.show();
+
+            const empresa = document.getElementById('empresa').value;
+            const filial = document.getElementById('filial').value;
+            const produto = document.getElementById('produto').value;
+            const armazem = document.getElementById('armazem').value;
+
+            // Simular consulta SQL
+            const query = `
+                SELECT
+                    B2_FILIAL,
+                    B2_COD AS [CÓDIGO],
+                    B2_LOCAL AS [ARMAZÉM],
+                    B2_QATU AS [SALDO],
+                    B2_QPEDVEN AS [PEDIDO],
+                    B2_RESERVA AS [RESERVADO],
+                    B2_QEMP AS [EMPENHADO],
+                    (B2_QATU - B2_QPEDVEN - B2_RESERVA - B2_QEMP) AS [SALDO FINAL]
+                FROM SB2${empresa}
+                WHERE D_E_L_E_T_ = ' '
+                  AND B2_FILIAL = '${filial}'
+                  AND B2_LOCAL = '${armazem}'
+                  AND B2_COD = '${produto}'
+            `;
+
+            // Simular resposta
+            setTimeout(() => {
+                const dados = {
+                    filial: filial,
+                    codigo: produto,
+                    armazem: armazem,
+                    saldo: Math.floor(Math.random() * 1000),
+                    pedido: Math.floor(Math.random() * 100),
+                    reservado: Math.floor(Math.random() * 50),
+                    empenhado: Math.floor(Math.random() * 30)
+                };
+                
+                dados.saldoFinal = dados.saldo - dados.pedido - dados.reservado - dados.empenhado;
+                
+                atualizarTabela(dados);
+                analisarIA(dados);
+                atualizarGraficos(dados);
+                
+                // Atualizar timestamp
+                const agora = new Date().toLocaleString('pt-BR');
+                document.getElementById('lastUpdate').textContent = `Última atualização: ${agora}`;
+                
+                loading.hide();
+            }, 1000);
+        }
+
+        function atualizarTabela(dados) {
+            const tbody = document.getElementById('tbodyEstoque');
+            const corSaldo = dados.saldoFinal > 100 ? 'text-success' : 
+                            dados.saldoFinal > 0 ? 'text-warning' : 'text-danger';
+            
+            tbody.innerHTML = `
+                <tr>
+                    <td>${dados.filial}</td>
+                    <td><strong>${dados.codigo}</strong></td>
+                    <td>${dados.armazem}</td>
+                    <td>${dados.saldo}</td>
+                    <td>${dados.pedido}</td>
+                    <td>${dados.reservado}</td>
+                    <td>${dados.empenhado}</td>
+                    <td class="${corSaldo} fw-bold">${dados.saldoFinal}</td>
+                </tr>
+            `;
+        }
+
+        function analisarIA(dados) {
+            const insights = document.getElementById('aiInsights');
+            const content = document.getElementById('insightsContent');
+            
+            let analise = [];
+            
+            if (dados.saldoFinal < 50) {
+                analise.push(`⚠️ <strong>Estoque Crítico:</strong> Saldo final abaixo do mínimo recomendado.`);
+            }
+            
+            if (dados.pedido > dados.saldo * 0.3) {
+                analise.push(`📊 <strong>Alta Demanda:</strong> Pedidos representam ${Math.round(dados.pedido/dados.saldo*100)}% do estoque.`);
+            }
+            
+            if (dados.reservado > 0) {
+                analise.push(`📦 <strong>Reservas Ativas:</strong> ${dados.reservado} unidades reservadas.`);
+            }
+            
+            const previsao = Math.round(dados.saldoFinal / (dados.pedido || 1));
+            analise.push(`🔮 <strong>Previsão:</strong> Estoque suficiente para ~${previsao} dias.`);
+            
+            content.innerHTML = analise.join('<br>');
+            insights.style.display = 'block';
+        }
+
+        function atualizarGraficos(dados) {
+            document.getElementById('charts').style.display = 'flex';
+            
+            // Gráfico de Estoque
+            const ctxEstoque = document.getElementById('chartEstoque').getContext('2d');
+            if (chartEstoque) chartEstoque.destroy();
+            
+            chartEstoque = new Chart(ctxEstoque, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Disponível', 'Pedido', 'Reservado', 'Empenhado'],
+                    datasets: [{
+                        data: [dados.saldoFinal, dados.pedido, dados.reservado, dados.empenhado],
+                        backgroundColor: ['#28a745', '#ffc107', '#17a2b8', '#dc3545']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Distribuição do Estoque'
+                        }
+                    }
+                }
+            });
+        }
+
+        function limparDados() {
+            document.getElementById('tbodyEstoque').innerHTML = `
+                <tr>
+                    <td colspan="8" class="text-center text-muted">
+                        Nenhum dado carregado
+                    </td>
+                </tr>
+            `;
+            document.getElementById('aiInsights').style.display = 'none';
+            document.getElementById('charts').style.display = 'none';
+        }
+    </script>
+</body>
+</html>  

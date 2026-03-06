@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MIT044 – Código Engenharia Reversa</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Syne:wght@700;800;900&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #080810;
+  --surface: #0f0f1a;
+  --card: #14141f;
+  --border: #1f1f30;
+  --border2: #2a2a40;
+  --text: #e2e2f0;
+  --muted: #5a5a78;
+  --orange: #ff8c42;
+  --pink: #e840a0;
+  --cyan: #00e5ff;
+  --green: #4dffa0;
+  --yellow: #ffe566;
+  --red: #ff4d6d;
+  --purple: #b06bff;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:var(--bg); color:var(--text); font-family:'DM Sans', sans-serif; }
+
+/* PROGRESS */
+#prog { position:fixed; top:0; left:0; height:3px; background:linear-gradient(90deg,var(--orange),var(--pink),var(--cyan)); z-index:999; transition:width .1s; }
+
+/* NAV PILLS */
+.nav { position:fixed; top:16px; right:16px; display:flex; flex-direction:column; gap:6px; z-index:998; }
+.nav-pill { font-family:'JetBrains Mono',monospace; font-size:10px; padding:5px 10px; border-radius:20px; border:1px solid var(--border2); background:var(--surface); color:var(--muted); cursor:pointer; text-decoration:none; transition:all .2s; white-space:nowrap; }
+.nav-pill:hover { border-color:var(--orange); color:var(--orange); }
+
+.wrap { max-width:1160px; margin:0 auto; padding:48px 20px 100px; }
+
+/* HERO */
+.hero { text-align:center; margin-bottom:72px; }
+.hero-label { font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:3px; color:var(--muted); margin-bottom:16px; }
+.hero h1 { font-family:'Syne',sans-serif; font-size:clamp(48px,8vw,96px); font-weight:900; line-height:.95; letter-spacing:-3px; margin-bottom:16px; }
+.hero h1 em { font-style:normal; -webkit-text-stroke:1px var(--orange); color:transparent; }
+.hero-sub { font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--muted); letter-spacing:1px; }
+.files-row { display:flex; flex-wrap:wrap; justify-content:center; gap:8px; margin-top:24px; }
+.file-chip { font-family:'JetBrains Mono',monospace; font-size:10px; padding:4px 12px; border-radius:4px; border:1px solid var(--border2); color:var(--muted); }
+.file-chip.active { border-color:var(--cyan); color:var(--cyan); background:#00e5ff0a; }
+
+/* SECTION HEAD */
+.sec-head { display:flex; align-items:center; gap:12px; margin-bottom:24px; }
+.sec-num { font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--muted); }
+.sec-title { font-family:'Syne',sans-serif; font-weight:800; font-size:22px; }
+.sec-line { flex:1; height:1px; background:var(--border); }
+
+section { margin-bottom:64px; }
+
+/* ARCH MAP */
+.arch { display:grid; grid-template-columns:repeat(auto-fit, minmax(200px,1fr)); gap:1px; background:var(--border); border:1px solid var(--border); border-radius:12px; overflow:hidden; margin-bottom:32px; }
+.arch-cell { background:var(--card); padding:20px; transition:background .2s; }
+.arch-cell:hover { background:#1a1a2e; }
+.arch-icon { font-size:28px; margin-bottom:10px; }
+.arch-name { font-family:'JetBrains Mono',monospace; font-weight:700; font-size:12px; margin-bottom:6px; }
+.arch-file { font-size:11px; color:var(--muted); margin-bottom:8px; }
+.arch-role { font-size:12px; line-height:1.5; color:#a0a0c0; }
+.arch-tag { display:inline-block; font-family:'JetBrains Mono',monospace; font-size:9px; padding:2px 7px; border-radius:3px; margin-top:8px; }
+
+/* CALL FLOW */
+.flow-container { display:flex; flex-direction:column; gap:4px; }
+.flow-row { display:flex; align-items:stretch; gap:0; }
+.flow-caller { min-width:160px; background:var(--card); border:1px solid var(--border2); border-radius:8px 0 0 8px; padding:12px 16px; display:flex; align-items:center; gap:10px; }
+.flow-caller-name { font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:700; }
+.flow-arrow { width:40px; background:var(--surface); border-top:1px solid var(--border2); border-bottom:1px solid var(--border2); display:flex; align-items:center; justify-content:center; color:var(--muted); font-size:18px; }
+.flow-calls { flex:1; background:var(--card); border:1px solid var(--border2); border-radius:0 8px 8px 0; padding:10px 16px; display:flex; flex-wrap:wrap; gap:6px; align-items:center; }
+.call-badge { font-family:'JetBrains Mono',monospace; font-size:10px; padding:3px 10px; border-radius:4px; cursor:default; }
+
+/* FUNCTION CARDS */
+.fn-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(320px,1fr)); gap:16px; }
+.fn-card { background:var(--card); border:1px solid var(--border2); border-radius:10px; overflow:hidden; }
+.fn-head { padding:14px 18px; border-bottom:1px solid var(--border); display:flex; align-items:center; gap:10px; }
+.fn-name { font-family:'JetBrains Mono',monospace; font-weight:700; font-size:13px; flex:1; }
+.fn-type { font-family:'JetBrains Mono',monospace; font-size:9px; padding:2px 8px; border-radius:3px; }
+.fn-body { padding:14px 18px; }
+.fn-desc { font-size:13px; color:#a0a0c0; margin-bottom:10px; line-height:1.6; }
+.fn-params { display:flex; flex-direction:column; gap:4px; }
+.fn-param { display:flex; gap:8px; align-items:flex-start; }
+.fn-param-name { font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--cyan); min-width:80px; padding-top:2px; }
+.fn-param-desc { font-size:11px; color:var(--muted); }
+.fn-logic { margin-top:12px; background:var(--surface); border-radius:6px; padding:12px; }
+.fn-logic-title { font-family:'JetBrains Mono',monospace; font-size:9px; color:var(--muted); letter-spacing:2px; margin-bottom:8px; }
+.logic-step { display:flex; gap:8px; margin-bottom:6px; font-size:12px; align-items:flex-start; }
+.logic-dot { width:6px; height:6px; border-radius:50%; flex-shrink:0; margin-top:5px; }
+.fn-warning { margin-top:10px; background:#ff4d6d0a; border:1px solid #ff4d6d33; border-radius:6px; padding:10px 12px; font-size:11px; color:#ff9090; }
+
+/* BUG CARDS */
+.bug-grid { display:grid; gap:12px; }
+.bug-card { border-radius:8px; border:1px solid; padding:16px 20px; }
+.bug-card.crit { border-color:#ff4d6d44; background:#ff4d6d08; }
+.bug-card.warn { border-color:#ffe56644; background:#ffe56608; }
+.bug-card.info { border-color:#00e5ff33; background:#00e5ff08; }
+.bug-head { display:flex; align-items:center; gap:10px; margin-bottom:8px; }
+.bug-sev { font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:700; padding:2px 8px; border-radius:3px; }
+.bug-file { font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--muted); margin-left:auto; }
+.bug-title { font-weight:600; font-size:14px; margin-bottom:4px; }
+.bug-desc { font-size:12px; line-height:1.7; color:#a0a0b8; }
+.bug-code { font-family:'JetBrains Mono',monospace; font-size:11px; background:var(--surface); padding:8px 12px; border-radius:4px; margin-top:8px; color:#ffb0b0; border-left:3px solid var(--red); }
+.fix-code { font-family:'JetBrains Mono',monospace; font-size:11px; background:var(--surface); padding:8px 12px; border-radius:4px; margin-top:6px; color:#90ffb0; border-left:3px solid var(--green); }
+
+/* TABLE MAP */
+.tbl-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(260px,1fr)); gap:14px; }
+.tbl-card { background:var(--card); border-radius:10px; overflow:hidden; border:1px solid var(--border2); }
+.tbl-head { padding:14px 18px; display:flex; align-items:center; gap:10px; border-bottom:1px solid var(--border); }
+.tbl-name { font-family:'JetBrains Mono',monospace; font-weight:700; font-size:14px; flex:1; }
+.tbl-badge { font-family:'JetBrains Mono',monospace; font-size:9px; padding:3px 8px; border-radius:3px; font-weight:700; }
+.field-row { display:flex; gap:10px; padding:9px 18px; border-top:1px solid var(--border); font-size:12px; align-items:center; }
+.field-row:hover { background:#1a1a2a; }
+.f-name { font-family:'JetBrains Mono',monospace; font-size:11px; min-width:100px; }
+.f-type { font-size:10px; color:var(--muted); font-family:'JetBrains Mono',monospace; }
+.f-desc { flex:1; color:#9090b0; font-size:11px; }
+.f-key { font-size:10px; }
+
+/* CONF CEGAS */
+.bonus-card { background:var(--card); border:1px solid var(--purple); border-radius:10px; padding:24px; }
+.bonus-head { display:flex; align-items:center; gap:12px; margin-bottom:16px; }
+.bonus-title { font-family:'Syne',sans-serif; font-weight:800; font-size:18px; }
+.bonus-steps { display:flex; flex-direction:column; gap:8px; }
+.bonus-step { display:flex; gap:12px; align-items:flex-start; padding:10px 14px; background:var(--surface); border-radius:6px; }
+.b-num { font-family:'JetBrains Mono',monospace; font-size:12px; font-weight:700; color:var(--purple); min-width:24px; }
+.b-txt { font-size:13px; line-height:1.5; }
+.b-tag { font-family:'JetBrains Mono',monospace; font-size:9px; padding:1px 6px; border-radius:3px; }
+
+/* ANIMS */
+@keyframes fadeUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+.fade { animation:fadeUp .4s ease both; }
+
+/* SCROLL */
+::-webkit-scrollbar { width:6px; }
+::-webkit-scrollbar-track { background:var(--bg); }
+::-webkit-scrollbar-thumb { background:var(--border2); border-radius:3px; }
+
+@media(max-width:700px){ .nav{display:none} .arch{grid-template-columns:1fr 1fr} }
+</style>
+</head>
+<body>
+<div id="prog"></div>
+
+<nav class="nav">
+  <a class="nav-pill" href="#arch">🗺 Mapa</a>
+  <a class="nav-pill" href="#calls">📞 Chamadas</a>
+  <a class="nav-pill" href="#functions">⚙️ Funções</a>
+  <a class="nav-pill" href="#tables">🗃 Tabelas</a>
+  <a class="nav-pill" href="#bugs">⚠️ Bugs</a>
+  <a class="nav-pill" href="#bonus">🎁 Bônus</a>
+</nav>
+
+<div class="wrap">
+
+  <!-- HERO -->
+  <div class="hero fade">
+    <div class="hero-label">ENGENHARIA REVERSA · CÓDIGO · MIT044</div>
+    <h1>COMO O<br><em>CÓDIGO</em><br>FUNCIONA</h1>
+    <div class="hero-sub">7 ARQUIVOS · TLPP / AdvPL · PROTHEUS P12.1.2410</div>
+    <div class="files-row">
+      <span class="file-chip active">precoporkg_cadastro.tlpp</span>
+      <span class="file-chip active">precoporkg_executaview.tlpp</span>
+      <span class="file-chip active">precoporkg_liberacaosolicitacao.tlpp</span>
+      <span class="file-chip active">precoporkg_tela.tlpp</span>
+      <span class="file-chip active">M410STTS.PRW</span>
+      <span class="file-chip active">MA410MNU.tlpp</span>
+      <span class="file-chip">conferenciacegas_tela.tlpp</span>
+    </div>
+  </div>
+
+  <!-- MAPA ARQUITETURA -->
+  <section id="arch">
+    <div class="sec-head">
+      <span class="sec-num">01</span>
+      <span class="sec-title">Mapa de Arquitetura</span>
+      <div class="sec-line"></div>
+    </div>
+    <div class="arch">
+      <div class="arch-cell">
+        <div class="arch-icon">🪝</div>
+        <div class="arch-name">MA410MNU.tlpp</div>
+        <div class="arch-file">Ponto de Entrada</div>
+        <div class="arch-role">Injeta o botão "Solicitar Preço por KG" no menu Outras Ações do Pedido de Venda (MATA410).</div>
+        <span class="arch-tag" style="background:#00e5ff1a;color:var(--cyan)">PE: MA410MNU</span>
+      </div>
+      <div class="arch-cell">
+        <div class="arch-icon">🚀</div>
+        <div class="arch-name">executaview.tlpp</div>
+        <div class="arch-file">Dispatcher</div>
+        <div class="arch-role">Função chamada pelo botão. Abre a tela de solicitação via FWExecView apontando para UFAT044.</div>
+        <span class="arch-tag" style="background:#ff8c421a;color:var(--orange)">U_ExecutaPrecoPorKG</span>
+      </div>
+      <div class="arch-cell">
+        <div class="arch-icon">📋</div>
+        <div class="arch-name">precoporkg_tela.tlpp</div>
+        <div class="arch-file">Solicitação (MVC)</div>
+        <div class="arch-role">Tela MVC Model 2. Mostra pedido + grid de itens. Vendedor marca os que quer solicitar KG.</div>
+        <span class="arch-tag" style="background:#00e5ff1a;color:var(--cyan)">UFAT044</span>
+      </div>
+      <div class="arch-cell">
+        <div class="arch-icon">✅</div>
+        <div class="arch-name">liberacaosolicitacao.tlpp</div>
+        <div class="arch-file">Liberação (MVC)</div>
+        <div class="arch-role">Browse das ZPK pendentes. Aprovador informa preço, confirma. Chama ExecAuto MATA410 para atualizar o pedido.</div>
+        <span class="arch-tag" style="background:#4dffa01a;color:var(--green)">UFAT044L</span>
+      </div>
+      <div class="arch-cell">
+        <div class="arch-icon">⭐</div>
+        <div class="arch-name">precoporkg_cadastro.tlpp</div>
+        <div class="arch-file">Cadastro ZKC (MVC)</div>
+        <div class="arch-role">CRUD da tabela ZKC. Mantém preços KG pré-negociados por cliente/produto. Validação de B1_UPRCK e B1_UKILO.</div>
+        <span class="arch-tag" style="background:#ffe5661a;color:var(--yellow)">UFAT044C</span>
+      </div>
+      <div class="arch-cell">
+        <div class="arch-icon">🪝</div>
+        <div class="arch-name">M410STTS.PRW</div>
+        <div class="arch-file">Ponto de Entrada</div>
+        <div class="arch-role">PE M410STTS. Executa ao salvar pedido: verifica ZKC e aplica preço KG automático. Também contém lógica de crédito (FFAT002/003).</div>
+        <span class="arch-tag" style="background:#e840a01a;color:var(--pink)">PE: M410STTS</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- FLUXO DE CHAMADAS -->
+  <section id="calls">
+    <div class="sec-head">
+      <span class="sec-num">02</span>
+      <span class="sec-title">Fluxo de Chamadas</span>
+      <div class="sec-line"></div>
+    </div>
+    <div class="flow-container">
+
+      <div class="flow-row">
+        <div class="flow-caller">
+          <span style="font-size:18px">👤</span>
+          <span class="flow-caller-name" style="color:var(--cyan)">Vendedor</span>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-calls">
+          <span class="call-badge" style="background:#00e5ff1a;color:var(--cyan)">Outras Ações → Solicitar KG</span>
+        </div>
+      </div>
+
+      <div class="flow-row">
+        <div class="flow-caller">
+          <span style="font-size:16px">🪝</span>
+          <span class="flow-caller-name" style="color:var(--cyan)">MA410MNU</span>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-calls">
+          <span class="call-badge" style="background:#ff8c421a;color:var(--orange)">U_ExecutaPrecoPorKG</span>
+        </div>
+      </div>
+
+      <div class="flow-row">
+        <div class="flow-caller">
+          <span style="font-size:16px">🚀</span>
+          <span class="flow-caller-name" style="color:var(--orange)">ExecutaPrecoPorKG</span>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-calls">
+          <span class="call-badge" style="background:#00e5ff1a;color:var(--cyan)">FWExecView('UFAT044', op=4)</span>
+        </div>
+      </div>
+
+      <div class="flow-row">
+        <div class="flow-caller">
+          <span style="font-size:16px">📋</span>
+          <span class="flow-caller-name" style="color:var(--cyan)">UFAT044 (tela)</span>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-calls">
+          <span class="call-badge" style="background:#00e5ff1a;color:var(--cyan)">F44Pre()</span>
+          <span class="call-badge" style="background:#00e5ff1a;color:var(--cyan)">F44Load()</span>
+          <span class="call-badge" style="background:#00e5ff1a;color:var(--cyan)">F44Mark()</span>
+          <span class="call-badge" style="background:#4dffa01a;color:var(--green)">F44Commit()</span>
+        </div>
+      </div>
+
+      <div class="flow-row">
+        <div class="flow-caller">
+          <span style="font-size:16px">✉️</span>
+          <span class="flow-caller-name" style="color:var(--green)">F44Commit()</span>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-calls">
+          <span class="call-badge" style="background:#ffe5661a;color:var(--yellow)">Grava ZPK</span>
+          <span class="call-badge" style="background:#e840a01a;color:var(--pink)">U_FAT044M() → e-mail</span>
+        </div>
+      </div>
+
+      <div class="flow-row">
+        <div class="flow-caller">
+          <span style="font-size:16px">📧</span>
+          <span class="flow-caller-name" style="color:var(--pink)">FAT044M()</span>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-calls">
+          <span class="call-badge" style="background:#e840a01a;color:var(--pink)">PswOrder/PswSeek → busca e-mail</span>
+          <span class="call-badge" style="background:#e840a01a;color:var(--pink)">F44MEnv() → TMailManager</span>
+        </div>
+      </div>
+
+      <div style="height:24px; display:flex; align-items:center; padding-left:80px;">
+        <span style="font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--muted)">— — — aprovador acessa rotina separada — — —</span>
+      </div>
+
+      <div class="flow-row">
+        <div class="flow-caller">
+          <span style="font-size:16px">👔</span>
+          <span class="flow-caller-name" style="color:var(--green)">Aprovador</span>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-calls">
+          <span class="call-badge" style="background:#4dffa01a;color:var(--green)">LiberacaoPrecoPorKG() → UFAT044L</span>
+        </div>
+      </div>
+
+      <div class="flow-row">
+        <div class="flow-caller">
+          <span style="font-size:16px">✅</span>
+          <span class="flow-caller-name" style="color:var(--green)">UFAT044L (libera)</span>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-calls">
+          <span class="call-badge" style="background:#4dffa01a;color:var(--green)">F44LCommit()</span>
+          <span style="font-size:11px; color:var(--muted)">→</span>
+          <span class="call-badge" style="background:#4dffa01a;color:var(--green)">F44LPed() → MSExecAuto(MATA410)</span>
+        </div>
+      </div>
+
+      <div style="height:24px; display:flex; align-items:center; padding-left:80px;">
+        <span style="font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--muted)">— — — fluxo automático (cliente VIP) — — —</span>
+      </div>
+
+      <div class="flow-row">
+        <div class="flow-caller">
+          <span style="font-size:16px">💾</span>
+          <span class="flow-caller-name" style="color:var(--pink)">Salvar Pedido</span>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-calls">
+          <span class="call-badge" style="background:#e840a01a;color:var(--pink)">PE M410STTS → F44CZKC()</span>
+          <span class="call-badge" style="background:#e840a01a;color:var(--pink)">Consulta ZKC → aplica preço direto</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- FUNÇÕES DETALHADAS -->
+  <section id="functions">
+    <div class="sec-head">
+      <span class="sec-num">03</span>
+      <span class="sec-title">Funções Detalhadas</span>
+      <div class="sec-line"></div>
+    </div>
+    <div class="fn-grid">
+
+      <div class="fn-card">
+        <div class="fn-head" style="border-left:3px solid var(--cyan)">
+          <span class="fn-name" style="color:var(--cyan)">F44Pre()</span>
+          <span class="fn-type" style="background:#00e5ff1a;color:var(--cyan)">VALIDAÇÃO</span>
+        </div>
+        <div class="fn-body">
+          <div class="fn-desc">Porta de entrada da tela. Roda SQL JOIN entre SC6 e SB1 para saber se tem algum produto com <code style="color:var(--cyan)">B1_UPRCK &gt; 0</code>.</div>
+          <div class="fn-logic">
+            <div class="fn-logic-title">LÓGICA</div>
+            <div class="logic-step"><div class="logic-dot" style="background:var(--cyan)"></div><span>SQL: SC6 JOIN SB1 WHERE B1_UPRCK &gt; 0 AND C6_NUM = pedido</span></div>
+            <div class="logic-step"><div class="logic-dot" style="background:var(--red)"></div><span>COUNT = 0 → Help() + Return .F. (bloqueia abertura)</span></div>
+            <div class="logic-step"><div class="logic-dot" style="background:var(--green)"></div><span>COUNT &gt; 0 → .T. (abre tela)</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="fn-card">
+        <div class="fn-head" style="border-left:3px solid var(--orange)">
+          <span class="fn-name" style="color:var(--orange)">F44Load()</span>
+          <span class="fn-type" style="background:#ff8c421a;color:var(--orange)">CARGA GRID</span>
+        </div>
+        <div class="fn-body">
+          <div class="fn-desc">Popula o grid da tela de solicitação. Traz APENAS os produtos que podem ser vendidos por KG (B1_UPRCK &gt; 0).</div>
+          <div class="fn-logic">
+            <div class="fn-logic-title">LÓGICA</div>
+            <div class="logic-step"><div class="logic-dot" style="background:var(--orange)"></div><span>SQL idêntico ao F44Pre, mas traz C6_ITEM, C6_PRODUTO, valores...</span></div>
+            <div class="logic-step"><div class="logic-dot" style="background:var(--orange)"></div><span>Monta aLoad com XX_CHECK = .F. (desmarcado por padrão)</span></div>
+            <div class="logic-step"><div class="logic-dot" style="background:var(--orange)"></div><span>Retorna array para o MVC popular o grid</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="fn-card">
+        <div class="fn-head" style="border-left:3px solid var(--purple)">
+          <span class="fn-name" style="color:var(--purple)">F44Mark()</span>
+          <span class="fn-type" style="background:#b06bff1a;color:var(--purple)">UI</span>
+        </div>
+        <div class="fn-body">
+          <div class="fn-desc">Controla os botões "Marcar Todos", "Desmarcar Todos" e "Inverter Seleção" da tela.</div>
+          <div class="fn-logic">
+            <div class="fn-logic-title">LÓGICA</div>
+            <div class="logic-step"><div class="logic-dot" style="background:var(--purple)"></div><span>Itera oModelSC6:Length() linhas</span></div>
+            <div class="logic-step"><div class="logic-dot" style="background:var(--purple)"></div><span>lInverter = .T. → nega o valor atual de XX_CHECK</span></div>
+            <div class="logic-step"><div class="logic-dot" style="background:var(--purple)"></div><span>Caso contrário, aplica lMarcar (.T. ou .F.)</span></div>
+            <div class="logic-step"><div class="logic-dot" style="background:var(--purple)"></div><span>Chama oView:Refresh("VIEW_SC6") para atualizar visual</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="fn-card">
+        <div class="fn-head" style="border-left:3px solid var(--green)">
+          <span class="fn-name" style="color:var(--green)">F44Commit()</span>
+          <span class="fn-type" style="background:#4dffa01a;color:var(--green)">GRAVAÇÃO</span>
+        </div>
+        <div class="fn-body">
+          <div class="fn-desc">Coração da solicitação. Coleta marcados, grava ZPK e dispara e-mail.</div>
+          <div class="fn-logic">
+            <div class="fn-logic-title">LÓGICA</div>
+            <div class="logic-step"><div class="logic-dot" style="background:var(--green)"></div><span>Itera grid, coleta XX_CHECK = .T. → aMarcados</span></div>
+            <div class="logic-step"><div class="logic-dot" style="background:var(--red)"></div><span>Len(aMarcados) = 0 → Help + Return .F.</span></div>
+            <div class="logic-step"><div class="logic-dot" style="background:var(--green)"></div><span>Begin Transaction → RecLock ZPK → grava campos</span></div>
+            <div class="logic-step"><div class="logic-dot" style="background:var(--green)"></div><span>Monta corpo do e-mail texto e chama U_FAT044M()</span></div>
+          </div>
+          <div class="fn-warning">⚠️ Não verifica se já existe ZPK para o pedido+item. Pode criar duplicata se solicitado 2x.</div>
+        </div>
+      </div>
+
+      <div class="fn-card">
+        <div class="fn-head" style="border-left:3px solid var(--pink)">
+          <span class="fn-name" style="color:var(--pink)">FAT044M() + F44MEnv()</span>
+          <span class="fn-type" style="background:#e840a01a;color:var(--pink)">E-MAIL</span>
+        </div>
+        <div class="fn-body">
+          <div class="fn-desc">FAT044M busca e-mails dos usuários do MV_UUSRPKG via PswOrder/PswSeek. F44MEnv usa TMailManager para enviar SMTP.</div>
+          <div class="fn-logic">
+            <div class="fn-logic-title">PARÂMETROS SMTP USADOS</div>
+            <div class="logic-step"><div class="logic-dot" style="background:var(--pink)"></div><span>MV_RELSERV → servidor SMTP</span></div>
+            <div class="logic-step"><div class="logic-dot" style="background:var(--pink)"></div><span>MV_RELFROM → remetente</span></div>
+            <div class="logic-step"><div class="logic-dot" style="background:var(--pink)"></div><span>MV_RELAUSU + MV_RELAPSW → credenciais</span></div>
+            <div class="logic-step"><div class="logic-dot" style="background:var(--pink)"></div><span>MV_PORSMTP (padrão 25) + MV_RELAUTH + MV_RELTLS</span></div>
+          </div>
+          <div class="fn-warning">⚠️ MV_UUSRPKG separado por ";" mas LiberacaoPrecoPorKG usa "$" (substring). Formatos diferentes!</div>
+        </div>
+      </div>
+
+      <div class="fn-card">
+        <div class="fn-head" style="border-left:3px solid var(--green)">
+          <span class="fn-name" style="color:var(--green)">F44LCommit()</span>
+          <span class="fn-type" style="background:#4dffa01a;color:var(--green)">APROVAÇÃO</span>
+        </div>
+        <div class="fn-body">
+          <div class="fn-desc">Processa a liberação pelo aprovador. Pergunta confirmação, chama F44LPed, atualiza ZPK_APROV.</div>
+          <div class="fn-logic">
+            <div class="fn-logic-title">LÓGICA</div>
+            <div class="logic-step"><div class="logic-dot" style="background:var(--green)"></div><span>MsgYesNo → "Confirma esta operação?"</span></div>
+            <div class="logic-step"><div class="logic-dot" style="background:var(--green)"></div><span>nPrecoKg &gt; 0 → cAprov = "S" → chama F44LPed()</span></div>
+            <div class="logic-step"><div class="logic-dot" style="background:var(--red)"></div><span>nPrecoKg = 0 → cAprov = "N" (reprova sem tocar no pedido)</span></div>
+            <div class="logic-step"><div class="logic-dot" style="background:var(--green)"></div><span>RecLock ZPK → grava ZPK_PRCKG e ZPK_APROV</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="fn-card">
+        <div class="fn-head" style="border-left:3px solid var(--yellow)">
+          <span class="fn-name" style="color:var(--yellow)">F44LPed()</span>
+          <span class="fn-type" style="background:#ffe5661a;color:var(--yellow)">EXECAUTO</span>
+        </div>
+        <div class="fn-body">
+          <div class="fn-desc">Atualiza o pedido de venda via MSExecAuto(MATA410). Monta arrays de cabeçalho e todos os itens do pedido.</div>
+          <div class="fn-logic">
+            <div class="fn-logic-title">FÓRMULA APLICADA</div>
+            <div class="logic-step"><div class="logic-dot" style="background:var(--yellow)"></div><span>nPrecoVenda = nPrecoKg × nPesoKg × nQuant</span></div>
+            <div class="logic-step"><div class="logic-dot" style="background:var(--yellow)"></div><span>Item liberado → C6_PRCVEN = nPrecoVenda + C6_UPRCKG = "S"</span></div>
+            <div class="logic-step"><div class="logic-dot" style="background:var(--yellow)"></div><span>Demais itens → mantém C6_PRCVEN e C6_UPRCKG originais</span></div>
+          </div>
+          <div class="fn-warning">⚠️ C5_TIPO hardcoded como "N". Se o pedido original for outro tipo, pode gerar inconsistência.</div>
+        </div>
+      </div>
+
+      <div class="fn-card">
+        <div class="fn-head" style="border-left:3px solid var(--pink)">
+          <span class="fn-name" style="color:var(--pink)">F44CZKC() [M410STTS]</span>
+          <span class="fn-type" style="background:#e840a01a;color:var(--pink)">AUTO KG</span>
+        </div>
+        <div class="fn-body">
+          <div class="fn-desc">Roda no PE M410STTS ao salvar pedido. Percorre todos os itens e verifica na ZKC se há preço negociado.</div>
+          <div class="fn-logic">
+            <div class="fn-logic-title">LÓGICA</div>
+            <div class="logic-step"><div class="logic-dot" style="background:var(--pink)"></div><span>While SC6 → itera itens do pedido</span></div>
+            <div class="logic-step"><div class="logic-dot" style="background:var(--pink)"></div><span>ZKC seek por Filial+Cliente+Loja+Produto</span></div>
+            <div class="logic-step"><div class="logic-dot" style="background:var(--pink)"></div><span>SB1 seek → pega B1_UKILO (peso)</span></div>
+            <div class="logic-step"><div class="logic-dot" style="background:var(--pink)"></div><span>nNovoPreco = ZKC_PRPKG × B1_UKILO × C6_QTDVEN</span></div>
+            <div class="logic-step"><div class="logic-dot" style="background:var(--pink)"></div><span>RecLock SC6 → grava C6_PRCVEN, C6_VALOR, C6_UPRCKG="S"</span></div>
+          </div>
+          <div class="fn-warning">⚠️ C6_VALOR = nNovoPreco × nQuantidade — duplica a quantidade no cálculo!</div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- TABELAS -->
+  <section id="tables">
+    <div class="sec-head">
+      <span class="sec-num">04</span>
+      <span class="sec-title">Tabelas no Código</span>
+      <div class="sec-line"></div>
+    </div>
+    <div class="tbl-grid">
+
+      <div class="tbl-card">
+        <div class="tbl-head" style="border-left:4px solid var(--pink)">
+          <span style="font-size:20px">📦</span>
+          <span class="tbl-name">ZPK</span>
+          <span class="tbl-badge" style="background:var(--pink);color:#fff">NOVA</span>
+        </div>
+        <div class="field-row"><span class="f-name" style="color:var(--cyan)">ZPK_FILIAL</span><span class="f-desc">Filial</span><span class="f-key">🔑</span></div>
+        <div class="field-row"><span class="f-name" style="color:var(--cyan)">ZPK_NUMPED</span><span class="f-desc">Número do pedido</span><span class="f-key">🔑</span></div>
+        <div class="field-row"><span class="f-name" style="color:var(--cyan)">ZPK_ITPED</span><span class="f-desc">Item do pedido</span><span class="f-key">🔑</span></div>
+        <div class="field-row"><span class="f-name" style="color:var(--cyan)">ZPK_PROD</span><span class="f-desc">Código do produto</span></div>
+        <div class="field-row"><span class="f-name" style="color:var(--orange)">ZPK_PRCKG</span><span class="f-desc">Preço por KG aprovado</span></div>
+        <div class="field-row"><span class="f-name" style="color:var(--green)">ZPK_APROV</span><span class="f-desc">vazio=pendente / S=aprovado / N=negado</span></div>
+      </div>
+
+      <div class="tbl-card">
+        <div class="tbl-head" style="border-left:4px solid var(--yellow)">
+          <span style="font-size:20px">⭐</span>
+          <span class="tbl-name">ZKC</span>
+          <span class="tbl-badge" style="background:var(--yellow);color:#000">NOVA</span>
+        </div>
+        <div class="field-row"><span class="f-name" style="color:var(--cyan)">ZKC_FILIAL</span><span class="f-desc">Filial</span><span class="f-key">🔑</span></div>
+        <div class="field-row"><span class="f-name" style="color:var(--cyan)">ZKC_CLIENT</span><span class="f-desc">Código do cliente</span><span class="f-key">🔑</span></div>
+        <div class="field-row"><span class="f-name" style="color:var(--cyan)">ZKC_LOJA</span><span class="f-desc">Loja do cliente</span><span class="f-key">🔑</span></div>
+        <div class="field-row"><span class="f-name" style="color:var(--cyan)">ZKC_PRODUT</span><span class="f-desc">Código do produto</span><span class="f-key">🔑</span></div>
+        <div class="field-row"><span class="f-name" style="color:var(--orange)">ZKC_PRPKG</span><span class="f-desc">Preço por KG negociado</span></div>
+        <div style="padding:8px 18px; font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--muted)">📌 Campo ZKC_DESCRICAO da spec não foi implementado no código</div>
+      </div>
+
+      <div class="tbl-card">
+        <div class="tbl-head" style="border-left:4px solid var(--cyan)">
+          <span style="font-size:20px">🛒</span>
+          <span class="tbl-name">SC5 / SC6</span>
+          <span class="tbl-badge" style="background:var(--cyan);color:#000">EXISTENTE</span>
+        </div>
+        <div class="field-row"><span class="f-name" style="color:var(--cyan)">C5_NUM</span><span class="f-desc">Número do pedido (SC5)</span><span class="f-key">🔑</span></div>
+        <div class="field-row"><span class="f-name" style="color:var(--cyan)">C5_CLIENTE</span><span class="f-desc">Código do cliente (SC5)</span></div>
+        <div class="field-row"><span class="f-name" style="color:var(--cyan)">C6_ITEM</span><span class="f-desc">Item do pedido (SC6)</span><span class="f-key">🔑</span></div>
+        <div class="field-row"><span class="f-name" style="color:var(--orange)">C6_PRCVEN</span><span class="f-desc">Preço de venda → sobrescrito</span></div>
+        <div class="field-row"><span class="f-name" style="color:var(--green)">C6_UPRCKG</span><span class="f-desc">Flag venda por KG (S/N)</span></div>
+        <div class="field-row"><span class="f-name" style="color:var(--orange)">C6_VALOR</span><span class="f-desc">Valor total do item</span></div>
+      </div>
+
+      <div class="tbl-card">
+        <div class="tbl-head" style="border-left:4px solid var(--orange)">
+          <span style="font-size:20px">📦</span>
+          <span class="tbl-name">SB1</span>
+          <span class="tbl-badge" style="background:var(--orange);color:#000">EXISTENTE</span>
+        </div>
+        <div class="field-row"><span class="f-name" style="color:var(--cyan)">B1_COD</span><span class="f-desc">Código do produto</span><span class="f-key">🔑</span></div>
+        <div class="field-row"><span class="f-name" style="color:var(--orange)">B1_UPRCK</span><span class="f-desc">Preço de venda por KG</span></div>
+        <div class="field-row"><span class="f-name" style="color:var(--orange)">B1_UKILO</span><span class="f-desc">Peso do produto em KG</span></div>
+        <div class="field-row"><span class="f-name" style="color:var(--muted)">B1_UPRC</span><span class="f-desc">Preço padrão (usado na conf. cegas)</span></div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- BUGS / DIVERGÊNCIAS -->
+  <section id="bugs">
+    <div class="sec-head">
+      <span class="sec-num">05</span>
+      <span class="sec-title">Bugs & Divergências Código vs Spec</span>
+      <div class="sec-line"></div>
+    </div>
+    <div class="bug-grid">
+
+      <div class="bug-card crit">
+        <div class="bug-head">
+          <span class="bug-sev" style="background:#ff4d6d;color:#fff">🔴 CRÍTICO</span>
+          <span class="bug-file">M410STTS.PRW</span>
+        </div>
+        <div class="bug-title">C6_VALOR duplica a quantidade</div>
+        <div class="bug-desc">A função F44CZKC calcula nNovoPreco = ZKC_PRPKG × B1_UKILO × C6_QTDVEN e depois grava C6_VALOR = nNovoPreco × nQuantidade. Isso multiplica C6_QTDVEN duas vezes.</div>
+        <div class="bug-code">// ERRADO
+nNovoPreco := nPrecoKgZKC * nPesoKg * nQuantidade
+SC6->C6_VALOR := nNovoPreco * nQuantidade  // ← QTD já está em nNovoPreco!</div>
+        <div class="fix-code">// CORRETO
+nNovoPreco := nPrecoKgZKC * nPesoKg * nQuantidade
+SC6->C6_VALOR := nNovoPreco  // ← sem multiplicar de novo</div>
+      </div>
+
+      <div class="bug-card crit">
+        <div class="bug-head">
+          <span class="bug-sev" style="background:#ff4d6d;color:#fff">🔴 CRÍTICO</span>
+          <span class="bug-file">tela.tlpp + liberacao.tlpp</span>
+        </div>
+        <div class="bug-title">Formato do MV_UUSRPKG inconsistente</div>
+        <div class="bug-desc">O arquivo de e-mail separa usuários por ";" e usa StrTokArr(). Já o arquivo de liberação verifica com o operador "$" (substring). Se o parâmetro for "000044;000055", o $ vai fazer "000044" $ "000044;000055" = .T., mas "000044" $ "000055" = .F. — pode funcionar por sorte ou quebrar em cenários específicos.</div>
+        <div class="bug-code">// liberacao.tlpp
+If !(cUsuario $ cUsuarios)  // "000044" $ "000044;000055" → .T. OK
+                             // "0004" $ "000044;..." → .T. FALSO POSITIVO!
+</div>
+        <div class="fix-code">// CORRETO: padronizar verificação
+aUsuarios := StrTokArr(cUsuarios, ";")
+If AScan(aUsuarios, {|x| AllTrim(x) == cUsuario}) == 0</div>
+      </div>
+
+      <div class="bug-card warn">
+        <div class="bug-head">
+          <span class="bug-sev" style="background:var(--yellow);color:#000">🟡 AVISO</span>
+          <span class="bug-file">tela.tlpp / F44Commit</span>
+        </div>
+        <div class="bug-title">Sem verificação de duplicata na ZPK</div>
+        <div class="bug-desc">F44Commit verifica MsSeek antes de gravar, mas só se o pedido+item já existe. Porém, se o aprovador reprova (ZPK_APROV = "N") e o vendedor solicita de novo, o MsSeek encontrará o registro e não vai criar novo — correto. Mas se ZPK_APROV = "S" e o vendedor solicita novamente, o sistema também não grava — pode ser intencional, mas não está documentado.</div>
+      </div>
+
+      <div class="bug-card warn">
+        <div class="bug-head">
+          <span class="bug-sev" style="background:var(--yellow);color:#000">🟡 AVISO</span>
+          <span class="bug-file">liberacaosolicitacao.tlpp / F44LPed</span>
+        </div>
+        <div class="bug-title">C5_TIPO hardcoded como "N"</div>
+        <div class="bug-desc">Na montagem do ExecAuto, C5_TIPO está fixo como "N" (Normal). Se o pedido original tiver outro tipo (ex: "B" = bonificação, "L" = locação), o ExecAuto pode gerar erros ou alterar comportamento do pedido.</div>
+        <div class="bug-code">aAdd(aCabec, {"C5_TIPO", "N", Nil})  // ← sempre "N"!</div>
+        <div class="fix-code">aAdd(aCabec, {"C5_TIPO", SC5->C5_TIPO, Nil})  // ← pega do pedido</div>
+      </div>
+
+      <div class="bug-card warn">
+        <div class="bug-head">
+          <span class="bug-sev" style="background:var(--yellow);color:#000">🟡 AVISO</span>
+          <span class="bug-file">cadastro.tlpp</span>
+        </div>
+        <div class="bug-title">Nome do campo diverge da spec</div>
+        <div class="bug-desc">A especificação define ZKC_CLIENTE mas o código usa ZKC_CLIENT (sem o E final) na chave primária do ModelDef. Precisa verificar se o SX3 foi criado com o nome correto.</div>
+        <div class="bug-code">// spec: ZKC_CLIENTE
+// código: ZKC_CLIENT ← 10 chars vs 9 chars</div>
+      </div>
+
+      <div class="bug-card info">
+        <div class="bug-head">
+          <span class="bug-sev" style="background:var(--cyan);color:#000">🔵 INFO</span>
+          <span class="bug-file">M410STTS.PRW</span>
+        </div>
+        <div class="bug-title">Código de crédito misturado no PE</div>
+        <div class="bug-desc">O ponto de entrada M410STTS contém lógica de controle de crédito (FFAT002, FFAT003, ZZA, FIE) completamente separada da lógica KG. É uma customização anterior reutilizando o mesmo PE. Cuidado ao modificar o arquivo para não quebrar o controle de crédito.</div>
+      </div>
+
+      <div class="bug-card info">
+        <div class="bug-head">
+          <span class="bug-sev" style="background:var(--cyan);color:#000">🔵 INFO</span>
+          <span class="bug-file">tela.tlpp</span>
+        </div>
+        <div class="bug-title">Spec vs Código: campo ZKC_DESCRICAO</div>
+        <div class="bug-desc">A especificação lista ZKC_DESCRICAO na tabela ZKC, mas o código não referencia esse campo em nenhuma parte. Ou o campo existe no SX3 e não é usado, ou foi esquecido.</div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- BÔNUS: CONFERÊNCIA CEGAS -->
+  <section id="bonus">
+    <div class="sec-head">
+      <span class="sec-num">06</span>
+      <span class="sec-title">Bônus: Conferência Cegas</span>
+      <div class="sec-line"></div>
+    </div>
+    <div class="bonus-card">
+      <div class="bonus-head">
+        <span style="font-size:28px">📦</span>
+        <div>
+          <div class="bonus-title">custom_sigafat_conferenciacegas_tela.tlpp</div>
+          <div style="font-size:12px;color:var(--muted);margin-top:4px;font-family:'JetBrains Mono',monospace">Projeto separado · Tabela ZCC · MATA140</div>
+        </div>
+      </div>
+      <div style="font-size:13px;color:#9090b0;margin-bottom:16px;line-height:1.7">
+        Módulo independente para conferência cega de NFs de transferência entre filiais. 
+        Usa <strong style="color:var(--purple)">MVC Modelo 2</strong> com cabecalho (ZCC master) + grid de itens (ZCC detail).
+      </div>
+      <div class="bonus-steps">
+        <div class="bonus-step">
+          <span class="b-num">1</span>
+          <div class="b-txt"><strong>FSCCPerg()</strong> — Dialog simples para informar Nº NF e Série de origem</div>
+        </div>
+        <div class="bonus-step">
+          <span class="b-num">2</span>
+          <div class="b-txt"><strong>FSCCValid()</strong> — Valida se NF existe na SF2 e se ainda não foi conferida (ZCC_STATUS ≠ "2")</div>
+        </div>
+        <div class="bonus-step">
+          <span class="b-num">3</span>
+          <div class="b-txt"><strong>FWExecView()</strong> — Abre tela MVC com grid de itens para digitar quantidades conferidas</div>
+        </div>
+        <div class="bonus-step">
+          <span class="b-num">4</span>
+          <div class="b-txt"><strong>FSCCPos()</strong> — Valida divergências (1ª e 2ª contagem), decide fluxo</div>
+        </div>
+        <div class="bonus-step">
+          <span class="b-num">5a</span>
+          <div class="b-txt"><strong>Divergente →</strong> FSCCMail() envia e-mail HTML formatado com tabela de divergências para MV_CCMAIL
+            <span class="b-tag" style="background:#ff4d6d1a;color:var(--red)">TMailManager com TLS</span>
+          </div>
+        </div>
+        <div class="bonus-step">
+          <span class="b-num">5b</span>
+          <div class="b-txt"><strong>Aprovado →</strong> FSCCPreNF() gera Pré-Nota de Entrada via MSExecAuto(MATA140) → SF1/SD1
+            <span class="b-tag" style="background:#4dffa01a;color:var(--green)">ExecAuto MATA140</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<script>
+// Progress bar
+window.addEventListener('scroll', () => {
+  const h = document.documentElement;
+  const pct = (h.scrollTop / (h.scrollHeight - window.innerHeight)) * 100;
+  document.getElementById('prog').style.width = pct + '%';
+});
+
+// Smooth scroll
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', e => {
+    e.preventDefault();
+    document.querySelector(a.getAttribute('href'))?.scrollIntoView({behavior:'smooth'});
+  });
+});
+</script>
+</body>
+</html>

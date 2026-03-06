@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MIT044 – Engenharia Reversa</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@700;800&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --card: #13131a;
+    --border: #1e1e2e;
+    --accent: #f5a623;
+    --accent2: #e84393;
+    --accent3: #00d4ff;
+    --accent4: #7fff6e;
+    --text: #e8e8f0;
+    --muted: #6b6b80;
+    --danger: #ff4d6d;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* NOISE OVERLAY */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 1000;
+    opacity: 0.3;
+  }
+
+  .container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 40px 24px 80px;
+  }
+
+  /* HEADER */
+  .header {
+    text-align: center;
+    margin-bottom: 60px;
+    animation: fadeDown 0.6s ease both;
+  }
+
+  .badge {
+    display: inline-block;
+    background: var(--accent);
+    color: #000;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 12px;
+    border-radius: 2px;
+    letter-spacing: 2px;
+    margin-bottom: 16px;
+  }
+
+  h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(36px, 6vw, 72px);
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -2px;
+    margin-bottom: 12px;
+  }
+
+  h1 span { color: var(--accent); }
+
+  .subtitle {
+    font-family: 'Space Mono', monospace;
+    font-size: 13px;
+    color: var(--muted);
+    letter-spacing: 1px;
+  }
+
+  /* SECTION TITLES */
+  .section-title {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 20px;
+    padding-left: 16px;
+    border-left: 3px solid var(--accent);
+  }
+
+  /* ===== BIG QUESTION ===== */
+  .big-question {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--accent);
+    border-radius: 8px;
+    padding: 32px;
+    margin-bottom: 48px;
+    animation: fadeUp 0.5s ease 0.1s both;
+  }
+
+  .big-question .q {
+    font-family: 'Syne', sans-serif;
+    font-size: 28px;
+    font-weight: 800;
+    margin-bottom: 12px;
+  }
+
+  .big-question .a {
+    font-size: 16px;
+    line-height: 1.7;
+    color: #b0b0c8;
+  }
+
+  .big-question .a strong {
+    color: var(--accent);
+    font-weight: 600;
+  }
+
+  /* ===== ACTORS ===== */
+  .actors-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-bottom: 48px;
+  }
+
+  .actor-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px;
+    text-align: center;
+    transition: transform 0.2s, border-color 0.2s;
+    animation: fadeUp 0.5s ease both;
+  }
+
+  .actor-card:hover {
+    transform: translateY(-4px);
+    border-color: var(--accent);
+  }
+
+  .actor-emoji { font-size: 36px; margin-bottom: 10px; }
+  .actor-name {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    margin-bottom: 6px;
+  }
+  .actor-desc { font-size: 12px; color: var(--muted); line-height: 1.5; }
+
+  /* ===== FLOWS ===== */
+  .flows { margin-bottom: 48px; }
+
+  .flow-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin-bottom: 16px;
+    overflow: hidden;
+    animation: fadeUp 0.5s ease both;
+    cursor: pointer;
+  }
+
+  .flow-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 20px 24px;
+    user-select: none;
+  }
+
+  .flow-num {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Space Mono', monospace;
+    font-weight: 700;
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+
+  .flow-title {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 17px;
+    flex: 1;
+  }
+
+  .flow-toggle {
+    font-size: 20px;
+    transition: transform 0.3s;
+    color: var(--muted);
+  }
+
+  .flow-card.open .flow-toggle { transform: rotate(180deg); }
+
+  .flow-body {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease;
+  }
+
+  .flow-card.open .flow-body { max-height: 600px; }
+
+  .flow-inner { padding: 0 24px 24px; }
+
+  /* STEPS */
+  .steps { display: flex; flex-direction: column; gap: 0; }
+
+  .step {
+    display: flex;
+    gap: 16px;
+    position: relative;
+  }
+
+  .step-left {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 32px;
+    flex-shrink: 0;
+  }
+
+  .step-dot {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 700;
+    flex-shrink: 0;
+    font-family: 'Space Mono', monospace;
+  }
+
+  .step-line {
+    width: 2px;
+    flex: 1;
+    min-height: 20px;
+    margin: 4px 0;
+  }
+
+  .step-right {
+    padding: 4px 0 20px;
+    flex: 1;
+  }
+
+  .step-label {
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 4px;
+    color: var(--text);
+  }
+
+  .step-desc {
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  .step-tag {
+    display: inline-block;
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 3px;
+    margin-top: 6px;
+  }
+
+  /* FORMULA */
+  .formula-box {
+    background: #0d1117;
+    border: 1px solid var(--accent);
+    border-radius: 8px;
+    padding: 20px 24px;
+    margin-bottom: 48px;
+    text-align: center;
+    animation: fadeUp 0.5s ease 0.3s both;
+  }
+
+  .formula-box .label {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 2px;
+    margin-bottom: 12px;
+  }
+
+  .formula {
+    font-family: 'Space Mono', monospace;
+    font-size: clamp(16px, 3vw, 24px);
+    color: var(--accent4);
+    font-weight: 700;
+    letter-spacing: 1px;
+  }
+
+  .formula .op { color: var(--muted); margin: 0 8px; }
+  .formula .var { color: var(--accent3); }
+
+  /* ===== TABLES ===== */
+  .tables-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 16px;
+    margin-bottom: 48px;
+  }
+
+  .table-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    animation: fadeUp 0.5s ease both;
+  }
+
+  .table-head {
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .table-icon { font-size: 20px; }
+
+  .table-name {
+    font-family: 'Space Mono', monospace;
+    font-weight: 700;
+    font-size: 14px;
+  }
+
+  .table-desc {
+    font-size: 11px;
+    margin-left: auto;
+    color: #000;
+    padding: 2px 8px;
+    border-radius: 3px;
+    font-weight: 700;
+    font-family: 'Space Mono', monospace;
+  }
+
+  .field-list { list-style: none; }
+
+  .field-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 10px 20px;
+    border-top: 1px solid var(--border);
+    transition: background 0.15s;
+  }
+
+  .field-item:hover { background: #1a1a25; }
+
+  .field-name {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--accent3);
+    min-width: 110px;
+    padding-top: 2px;
+  }
+
+  .field-info { flex: 1; }
+  .field-desc { font-size: 12px; color: var(--text); }
+  .field-type { font-size: 10px; color: var(--muted); font-family: 'Space Mono', monospace; margin-top: 2px; }
+
+  /* PARAM */
+  .param-box {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px 24px;
+    margin-bottom: 48px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    animation: fadeUp 0.5s ease both;
+  }
+
+  .param-icon { font-size: 32px; }
+
+  .param-name {
+    font-family: 'Space Mono', monospace;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--accent);
+    margin-bottom: 4px;
+  }
+
+  .param-desc { font-size: 13px; color: var(--muted); }
+
+  /* RISKS */
+  .risks { margin-bottom: 48px; }
+
+  .risk-item {
+    display: flex;
+    gap: 16px;
+    padding: 16px;
+    border-radius: 8px;
+    border: 1px solid;
+    margin-bottom: 12px;
+    animation: fadeUp 0.5s ease both;
+  }
+
+  .risk-item.high { border-color: #ff4d6d33; background: #ff4d6d0a; }
+  .risk-item.med { border-color: #f5a62333; background: #f5a6230a; }
+
+  .risk-num {
+    font-family: 'Space Mono', monospace;
+    font-size: 20px;
+    font-weight: 700;
+    min-width: 32px;
+  }
+
+  .risk-item.high .risk-num { color: var(--danger); }
+  .risk-item.med .risk-num { color: var(--accent); }
+
+  .risk-title { font-weight: 600; font-size: 14px; margin-bottom: 4px; }
+  .risk-desc { font-size: 12px; color: var(--muted); line-height: 1.6; }
+
+  /* ANIMATIONS */
+  @keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* PROGRESS BAR */
+  .progress-bar {
+    position: fixed;
+    top: 0; left: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    z-index: 999;
+    transition: width 0.1s;
+  }
+
+  /* RESPONSIVE */
+  @media (max-width: 600px) {
+    .actors-grid { grid-template-columns: 1fr 1fr; }
+    .tables-grid { grid-template-columns: 1fr; }
+    .param-box { flex-direction: column; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progress"></div>
+
+<div class="container">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="badge">ENGENHARIA REVERSA · MIT044</div>
+    <h1>VENDA<br><span>POR KG</span></h1>
+    <div class="subtitle">MOLAS FAMA · PROTHEUS · CUSTOMIZAÇÃO</div>
+  </div>
+
+  <!-- BIG QUESTION -->
+  <div class="section-title">O QUE É ISSO?</div>
+  <div class="big-question">
+    <div class="q">🤔 Por que isso existe?</div>
+    <div class="a">
+      Hoje o vendedor precisa <strong>ligar pra direção, pedir aprovação, esperar</strong> e a direção
+      altera o preço na mão. É lento, sem rastreio e dá erro.<br><br>
+      Esse projeto <strong>automatiza tudo isso dentro do Protheus</strong>: solicitação, aprovação por e-mail,
+      cálculo automático e controle de quem pode vender por KG.
+    </div>
+  </div>
+
+  <!-- ATORES -->
+  <div class="section-title">QUEM FAZ O QUÊ?</div>
+  <div class="actors-grid">
+    <div class="actor-card" style="animation-delay:0.1s; border-top: 3px solid var(--accent3)">
+      <div class="actor-emoji">🧑‍💼</div>
+      <div class="actor-name">Vendedor</div>
+      <div class="actor-desc">Solicita o preço por KG no pedido. Não pode alterar preço diretamente.</div>
+    </div>
+    <div class="actor-card" style="animation-delay:0.15s; border-top: 3px solid var(--accent)">
+      <div class="actor-emoji">👔</div>
+      <div class="actor-name">Aprovador</div>
+      <div class="actor-desc">Recebe e-mail, acessa rotina especial e libera (ou nega) o preço por KG.</div>
+    </div>
+    <div class="actor-card" style="animation-delay:0.2s; border-top: 3px solid var(--accent4)">
+      <div class="actor-emoji">🤖</div>
+      <div class="actor-name">Sistema</div>
+      <div class="actor-desc">Calcula o preço, grava nas tabelas e bloqueia alteração manual.</div>
+    </div>
+    <div class="actor-card" style="animation-delay:0.25s; border-top: 3px solid var(--accent2)">
+      <div class="actor-emoji">🏷️</div>
+      <div class="actor-name">Cliente VIP</div>
+      <div class="actor-desc">Já tem preço KG negociado. O sistema aplica automaticamente, sem aprovação.</div>
+    </div>
+  </div>
+
+  <!-- FORMULA -->
+  <div class="section-title">A FÓRMULA (ÚNICA)</div>
+  <div class="formula-box">
+    <div class="label">PREÇO FINAL DO ITEM =</div>
+    <div class="formula">
+      <span class="var">SB1_UPRCK</span>
+      <span class="op">×</span>
+      <span class="var">SB1_UKILO</span>
+      <span class="op">×</span>
+      <span class="var">C6_QUANT</span>
+    </div>
+    <div style="font-size:12px; color: var(--muted); margin-top: 12px; font-family: 'Space Mono', monospace;">
+      Preço/KG &nbsp;×&nbsp; Peso do produto &nbsp;×&nbsp; Quantidade pedida
+    </div>
+  </div>
+
+  <!-- FLUXOS -->
+  <div class="section-title">OS 3 FLUXOS</div>
+  <div class="flows">
+
+    <!-- FLUXO 1 -->
+    <div class="flow-card" onclick="toggleFlow(this)" style="animation-delay:0.1s">
+      <div class="flow-header">
+        <div class="flow-num" style="background:#00d4ff22; color:var(--accent3)">01</div>
+        <div class="flow-title">Vendedor solicita aprovação</div>
+        <div class="flow-toggle">▼</div>
+      </div>
+      <div class="flow-body">
+        <div class="flow-inner">
+          <div class="steps">
+            <div class="step">
+              <div class="step-left">
+                <div class="step-dot" style="background:#00d4ff22; color:var(--accent3)">1</div>
+                <div class="step-line" style="background:#00d4ff33"></div>
+              </div>
+              <div class="step-right">
+                <div class="step-label">Vendedor clica em "Solicitar Preço por KG"</div>
+                <div class="step-desc">Menu: Outras Ações → Solicitar Preço por KG</div>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-left">
+                <div class="step-dot" style="background:#00d4ff22; color:var(--accent3)">2</div>
+                <div class="step-line" style="background:#00d4ff33"></div>
+              </div>
+              <div class="step-right">
+                <div class="step-label">Sistema verifica os produtos do pedido</div>
+                <div class="step-desc">Checa se <code style="color:var(--accent3)">SB1_UPRCK &gt; 0</code> em algum item</div>
+                <span class="step-tag" style="background:#ff4d6d22; color:var(--danger)">Se nenhum → bloqueia com mensagem</span>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-left">
+                <div class="step-dot" style="background:#00d4ff22; color:var(--accent3)">3</div>
+                <div class="step-line" style="background:#00d4ff33"></div>
+              </div>
+              <div class="step-right">
+                <div class="step-label">Tela de seleção de produtos</div>
+                <div class="step-desc">Vendedor marca quais produtos quer vender por KG</div>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-left">
+                <div class="step-dot" style="background:#00d4ff22; color:var(--accent3)">4</div>
+                <div class="step-line" style="background:#00d4ff33"></div>
+              </div>
+              <div class="step-right">
+                <div class="step-label">Grava solicitação + envia e-mail</div>
+                <div class="step-desc">Registro na tabela <strong>ZPK</strong> com status pendente. E-mail automático para <code style="color:var(--accent)">MV_UUSRPKG</code></div>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-left">
+                <div class="step-dot" style="background:#7fff6e22; color:var(--accent4)">5</div>
+              </div>
+              <div class="step-right">
+                <div class="step-label">Aprovador libera na rotina específica</div>
+                <div class="step-desc">Informa preço, confirma → sistema aplica a fórmula e marca <code style="color:var(--accent4)">SC6_UPRCKG = S</code></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FLUXO 2 -->
+    <div class="flow-card" onclick="toggleFlow(this)" style="animation-delay:0.15s">
+      <div class="flow-header">
+        <div class="flow-num" style="background:#7fff6e22; color:var(--accent4)">02</div>
+        <div class="flow-title">Cliente VIP (preço já negociado)</div>
+        <div class="flow-toggle">▼</div>
+      </div>
+      <div class="flow-body">
+        <div class="flow-inner">
+          <div class="steps">
+            <div class="step">
+              <div class="step-left">
+                <div class="step-dot" style="background:#7fff6e22; color:var(--accent4)">1</div>
+                <div class="step-line" style="background:#7fff6e33"></div>
+              </div>
+              <div class="step-right">
+                <div class="step-label">Vendedor salva o pedido normalmente</div>
+                <div class="step-desc">Nenhuma ação especial necessária</div>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-left">
+                <div class="step-dot" style="background:#7fff6e22; color:var(--accent4)">2</div>
+                <div class="step-line" style="background:#7fff6e33"></div>
+              </div>
+              <div class="step-right">
+                <div class="step-label">Sistema consulta tabela ZKC</div>
+                <div class="step-desc">Verifica se cliente + produto tem preço KG cadastrado</div>
+                <span class="step-tag" style="background:#7fff6e22; color:var(--accent4)">✅ SEM aprovação</span>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-left">
+                <div class="step-dot" style="background:#7fff6e22; color:var(--accent4)">3</div>
+              </div>
+              <div class="step-right">
+                <div class="step-label">Aplica automaticamente</div>
+                <div class="step-desc">Marca <code style="color:var(--accent4)">SC6_UPRCKG = S</code> e calcula com a fórmula</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FLUXO 3 -->
+    <div class="flow-card" onclick="toggleFlow(this)" style="animation-delay:0.2s">
+      <div class="flow-header">
+        <div class="flow-num" style="background:#ff4d6d22; color:var(--danger)">03</div>
+        <div class="flow-title">Produto bloqueado para KG</div>
+        <div class="flow-toggle">▼</div>
+      </div>
+      <div class="flow-body">
+        <div class="flow-inner">
+          <div class="steps">
+            <div class="step">
+              <div class="step-left">
+                <div class="step-dot" style="background:#ff4d6d22; color:var(--danger)">1</div>
+                <div class="step-line" style="background:#ff4d6d33"></div>
+              </div>
+              <div class="step-right">
+                <div class="step-label">Vendedor tenta solicitar KG</div>
+                <div class="step-desc">Aciona "Solicitar Preço por KG"</div>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-left">
+                <div class="step-dot" style="background:#ff4d6d22; color:var(--danger)">2</div>
+              </div>
+              <div class="step-right">
+                <div class="step-label">Sistema verifica e bloqueia</div>
+                <div class="step-desc"><code style="color:var(--danger)">SB1_UPRCK = 0</code> → exibe mensagem de bloqueio e encerra.</div>
+                <span class="step-tag" style="background:#ff4d6d22; color:var(--danger)">❌ "Produtos não podem ser vendidos por KG"</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- TABELAS -->
+  <div class="section-title">ESTRUTURA DE DADOS</div>
+  <div class="tables-grid">
+
+    <div class="table-card" style="animation-delay:0.1s">
+      <div class="table-head" style="background:#00d4ff12; border-bottom: 1px solid var(--border)">
+        <div class="table-icon">📦</div>
+        <div class="table-name">SB1 – Produtos</div>
+        <div class="table-desc" style="background:var(--accent3); color:#000">EXISTENTE</div>
+      </div>
+      <ul class="field-list">
+        <li class="field-item">
+          <div class="field-name">SB1_UPRCK</div>
+          <div class="field-info">
+            <div class="field-desc">Preço de venda por KG</div>
+            <div class="field-type">NUMÉRICO · novo campo</div>
+          </div>
+        </li>
+        <li class="field-item">
+          <div class="field-name">SB1_UKILO</div>
+          <div class="field-info">
+            <div class="field-desc">Peso do produto em KG</div>
+            <div class="field-type">NUMÉRICO · novo campo</div>
+          </div>
+        </li>
+      </ul>
+    </div>
+
+    <div class="table-card" style="animation-delay:0.15s">
+      <div class="table-head" style="background:#f5a62312; border-bottom: 1px solid var(--border)">
+        <div class="table-icon">🛒</div>
+        <div class="table-name">SC6 – Itens Pedido</div>
+        <div class="table-desc" style="background:var(--accent); color:#000">EXISTENTE</div>
+      </div>
+      <ul class="field-list">
+        <li class="field-item">
+          <div class="field-name">SC6_UPRCKG</div>
+          <div class="field-info">
+            <div class="field-desc">Este item é vendido por KG?</div>
+            <div class="field-type">S/N · padrão "N" · somente leitura</div>
+          </div>
+        </li>
+      </ul>
+    </div>
+
+    <div class="table-card" style="animation-delay:0.2s">
+      <div class="table-head" style="background:#e8439312; border-bottom: 1px solid var(--border)">
+        <div class="table-icon">📋</div>
+        <div class="table-name">ZPK – Solicitações</div>
+        <div class="table-desc" style="background:var(--accent2); color:#fff">NOVA</div>
+      </div>
+      <ul class="field-list">
+        <li class="field-item">
+          <div class="field-name">ZPK_NUMPED</div>
+          <div class="field-info"><div class="field-desc">Número do pedido</div></div>
+        </li>
+        <li class="field-item">
+          <div class="field-name">ZPK_ITPED</div>
+          <div class="field-info"><div class="field-desc">Item do pedido</div></div>
+        </li>
+        <li class="field-item">
+          <div class="field-name">ZPK_PROD</div>
+          <div class="field-info"><div class="field-desc">Código do produto</div></div>
+        </li>
+        <li class="field-item">
+          <div class="field-name">ZPK_PRCKG</div>
+          <div class="field-info"><div class="field-desc">Preço por KG aprovado</div></div>
+        </li>
+        <li class="field-item">
+          <div class="field-name">ZPK_APROV</div>
+          <div class="field-info">
+            <div class="field-desc">Status da aprovação</div>
+            <div class="field-type">vazio=pendente · S=aprovado · N=negado</div>
+          </div>
+        </li>
+      </ul>
+    </div>
+
+    <div class="table-card" style="animation-delay:0.25s">
+      <div class="table-head" style="background:#7fff6e12; border-bottom: 1px solid var(--border)">
+        <div class="table-icon">⭐</div>
+        <div class="table-name">ZKC – Clientes VIP</div>
+        <div class="table-desc" style="background:var(--accent4); color:#000">NOVA</div>
+      </div>
+      <ul class="field-list">
+        <li class="field-item">
+          <div class="field-name">ZKC_CLIENTE</div>
+          <div class="field-info"><div class="field-desc">Código do cliente</div></div>
+        </li>
+        <li class="field-item">
+          <div class="field-name">ZKC_LOJA</div>
+          <div class="field-info"><div class="field-desc">Loja do cliente</div></div>
+        </li>
+        <li class="field-item">
+          <div class="field-name">ZKC_PRODUTO</div>
+          <div class="field-info"><div class="field-desc">Produto com KG negociado</div></div>
+        </li>
+        <li class="field-item">
+          <div class="field-name">ZKC_PRPKG</div>
+          <div class="field-info"><div class="field-desc">Preço por KG negociado</div></div>
+        </li>
+      </ul>
+    </div>
+
+  </div>
+
+  <!-- PARAMETRO -->
+  <div class="section-title">PARÂMETRO</div>
+  <div class="param-box">
+    <div class="param-icon">⚙️</div>
+    <div>
+      <div class="param-name">MV_UUSRPKG</div>
+      <div class="param-desc">Lista de usuários autorizados a <strong style="color:var(--accent)">aprovar</strong> vendas por KG e acessar a rotina de liberação.</div>
+    </div>
+  </div>
+
+  <!-- RISCOS -->
+  <div class="section-title">⚠️ PONTOS DE ATENÇÃO</div>
+  <div class="risks">
+    <div class="risk-item high" style="animation-delay:0.1s">
+      <div class="risk-num">!</div>
+      <div>
+        <div class="risk-title">Fórmula inconsistente na aprovação</div>
+        <div class="risk-desc">O doc fala em "preço aprovado × KG × quantidade" mas o campo ZPK_PRCKG não fica claro se sobrescreve SB1_UPRCK. Precisa alinhar antes de codar.</div>
+      </div>
+    </div>
+    <div class="risk-item high" style="animation-delay:0.15s">
+      <div class="risk-num">!</div>
+      <div>
+        <div class="risk-title">ZKC sem datas de vigência</div>
+        <div class="risk-desc">Se o preço KG do cliente mudar, não tem histórico. Considerar adicionar ZKC_DTINI e ZKC_DTFIM.</div>
+      </div>
+    </div>
+    <div class="risk-item med" style="animation-delay:0.2s">
+      <div class="risk-num">?</div>
+      <div>
+        <div class="risk-title">Formato do MV_UUSRPKG não definido</div>
+        <div class="risk-desc">Vírgula? Ponto e vírgula? Código do usuário Protheus? Precisa padronizar para a implementação funcionar.</div>
+      </div>
+    </div>
+    <div class="risk-item med" style="animation-delay:0.25s">
+      <div class="risk-num">?</div>
+      <div>
+        <div class="risk-title">ZPK sem campo de data/hora</div>
+        <div class="risk-desc">Sem timestamp na solicitação, fica difícil ordenar pendências e fazer auditoria.</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  function toggleFlow(el) {
+    el.classList.toggle('open');
+  }
+
+  // Progress bar
+  window.addEventListener('scroll', () => {
+    const scrollTop = document.documentElement.scrollTop;
+    const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
+    const progress = (scrollTop / scrollHeight) * 100;
+    document.getElementById('progress').style.width = progress + '%';
+  });
+
+  // Stagger animation on scroll
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) e.target.style.opacity = '1';
+    });
+  }, { threshold: 0.1 });
+</script>
+
+</body>
+</html>

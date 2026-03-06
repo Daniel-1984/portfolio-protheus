@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Controle Clientes Venda Direta</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            color: #333;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            color: #4a5568;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #718096;
+            font-size: 1.1rem;
+        }
+
+        .form-section {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+        }
+
+        .form-section h3 {
+            color: #2d3748;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #4299e1;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            color: #4a5568;
+            margin-bottom: 5px;
+        }
+
+        .form-group input,
+        .form-group select {
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #4299e1;
+            box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.1);
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 10px 0;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            accent-color: #4299e1;
+        }
+
+        .checkbox-group label {
+            font-weight: 600;
+            color: #2d3748;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #4299e1, #3182ce);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(66, 153, 225, 0.3);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #48bb78, #38a169);
+            color: white;
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(72, 187, 120, 0.3);
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #ed8936, #dd6b20);
+            color: white;
+        }
+
+        .btn-warning:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(237, 137, 54, 0.3);
+        }
+
+        .cliente-list {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+        }
+
+        .cliente-item {
+            padding: 20px;
+            border-bottom: 1px solid #e2e8f0;
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr 180px;
+            gap: 15px;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .cliente-item:hover {
+            background: #f7fafc;
+            transform: translateX(5px);
+        }
+
+        .cliente-item.venda-direta {
+            border-left: 5px solid #48bb78;
+            background: linear-gradient(90deg, #f0fff4, #ffffff);
+        }
+
+        .cliente-item.ativo-forcado {
+            border-left: 5px solid #3182ce;
+            background: linear-gradient(90deg, #ebf8ff, #ffffff);
+        }
+
+        .cliente-item.inativo {
+            border-left: 5px solid #f56565;
+            background: linear-gradient(90deg, #fff5f5, #ffffff);
+            opacity: 0.7;
+        }
+
+        .cliente-header {
+            background: linear-gradient(135deg, #4a5568, #2d3748);
+            color: white;
+            padding: 20px;
+            font-weight: 600;
+        }
+
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: 5px;
+        }
+
+        .badge-venda-direta {
+            background: #c6f6d5;
+            color: #22543d;
+        }
+
+        .badge-ativo-forcado {
+            background: #bee3f8;
+            color: #2a4365;
+        }
+
+        .badge-ativo {
+            background: #e6fffa;
+            color: #2d3748;
+        }
+
+        .badge-inativo {
+            background: #fed7d7;
+            color: #742a2a;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            border-left: 5px solid;
+        }
+
+        .stat-card.total { border-left-color: #4299e1; }
+        .stat-card.venda-direta { border-left-color: #48bb78; }
+        .stat-card.ativos { border-left-color: #ed8936; }
+        .stat-card.inativos { border-left-color: #f56565; }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #2d3748;
+        }
+
+        .stat-label {
+            color: #718096;
+            font-weight: 500;
+            margin-top: 5px;
+        }
+
+        .filters {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .alert {
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            font-weight: 500;
+        }
+
+        .alert-success {
+            background: #c6f6d5;
+            color: #22543d;
+            border: 1px solid #9ae6b4;
+        }
+
+        .alert-info {
+            background: #bee3f8;
+            color: #2a4365;
+            border: 1px solid #90cdf4;
+        }
+
+        .alert-danger {
+            background: #fed7d7;
+            color: #742a2a;
+            border: 1px solid #feb2b2;
+        }
+
+        .btn-controls {
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
+        }
+
+        .btn-small {
+            padding: 4px 8px;
+            font-size: 0.75rem;
+            flex: 1;
+            min-width: 50px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .cliente-item {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+            
+            .filters {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏢 Sistema de Controle - Clientes Venda Direta</h1>
+            <p>Gestão inteligente de clientes Toyama para evitar classificação como inativos</p>
+        </div>
+
+        <!-- Estatísticas -->
+        <div class="stats">
+            <div class="stat-card total">
+                <div class="stat-number" id="totalClientes">0</div>
+                <div class="stat-label">Total de Clientes</div>
+            </div>
+            <div class="stat-card venda-direta">
+                <div class="stat-number" id="vendaDiretaCount">0</div>
+                <div class="stat-label">Venda Direta</div>
+            </div>
+            <div class="stat-card ativos">
+                <div class="stat-number" id="ativosCount">0</div>
+                <div class="stat-label">Clientes Ativos</div>
+            </div>
+            <div class="stat-card inativos">
+                <div class="stat-number" id="inativosCount">0</div>
+                <div class="stat-label">Clientes Inativos</div>
+            </div>
+        </div>
+
+        <!-- Formulário de Cadastro -->
+        <div class="form-section">
+            <h3>📝 Cadastro de Cliente</h3>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="nomeCliente">Nome do Cliente</label>
+                    <input type="text" id="nomeCliente" placeholder="Digite o nome do cliente">
+                </div>
+                <div class="form-group">
+                    <label for="origemCliente">Origem do Cliente</label>
+                    <select id="origemCliente">
+                        <option value="">Selecione a origem</option>
+                        <option value="toyama">Cliente Toyama</option>
+                        <option value="direto">Direto</option>
+                        <option value="indicacao">Indicação</option>
+                        <option value="marketing">Marketing</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="numeroCompras">Número de Compras</label>
+                    <input type="number" id="numeroCompras" min="1" value="1">
+                </div>
+                <div class="form-group">
+                    <label for="ultimaCompra">Data da Última Compra</label>
+                    <input type="date" id="ultimaCompra">
+                </div>
+            </div>
+            
+            <div class="checkbox-group">
+                <input type="checkbox" id="vendaDiretaManual">
+                <label for="vendaDiretaManual">✅ Marcar como Venda Direta (Manual)</label>
+            </div>
+            
+            <div class="checkbox-group">
+                <input type="checkbox" id="ativoForcado">
+                <label for="ativoForcado">🛡️ Evitar Marcar como Inativo (Ativo Forçado)</label>
+            </div>
+
+            <div style="margin-top: 20px;">
+                <button class="btn btn-primary" onclick="adicionarCliente()">➕ Adicionar Cliente</button>
+                <button class="btn btn-warning" onclick="simularAnaliseAutomatica()">🔄 Análise Automática</button>
+                <button class="btn btn-success" onclick="exportarCSV()">📊 Exportar CSV</button>
+            </div>
+        </div>
+
+        <!-- Filtros -->
+        <div class="form-section">
+            <h3>🔍 Filtros de Visualização</h3>
+            <div class="filters">
+                <button class="btn btn-primary" onclick="filtrarClientes('todos')">Todos</button>
+                <button class="btn btn-success" onclick="filtrarClientes('venda-direta')">Venda Direta</button>
+                <button class="btn btn-primary" onclick="filtrarClientes('ativos')">Ativos</button>
+                <button class="btn btn-warning" onclick="filtrarClientes('inativos')">Inativos</button>
+            </div>
+        </div>
+
+        <!-- Lista de Clientes -->
+        <div class="form-section">
+            <h3>👥 Lista de Clientes</h3>
+            <div class="cliente-list">
+                <div class="cliente-header">
+                    <div style="display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 180px; gap: 15px;">
+                        <div>Cliente</div>
+                        <div>Origem</div>
+                        <div>Compras</div>
+                        <div>Última Compra</div>
+                        <div>Status / Ações</div>
+                    </div>
+                </div>
+                <div id="listaClientes">
+                    <!-- Clientes serão inseridos aqui dinamicamente -->
+                </div>
+            </div>
+        </div>
+
+        <div id="alertContainer"></div>
+    </div>
+
+    <script>
+        let clientes = [];
+        let filtroAtual = 'todos';
+
+        // Inicializar com dados salvos ou exemplos
+        window.onload = function() {
+            // Definir data de hoje
+            document.getElementById('ultimaCompra').value = new Date().toISOString().split('T')[0];
+            
+            // Carregar dados salvos
+            carregarDados();
+            
+            // Se não há dados salvos, adicionar exemplos
+            if (clientes.length === 0) {
+                adicionarClienteExemplo();
+            }
+            
+            atualizarEstatisticas();
+        };
+
+        function carregarDados() {
+            try {
+                const dadosSalvos = localStorage.getItem('clientesVendaDireta');
+                if (dadosSalvos) {
+                    clientes = JSON.parse(dadosSalvos);
+                    renderizarClientes();
+                    mostrarAlerta('📁 Dados carregados automaticamente!', 'success');
+                }
+            } catch (error) {
+                console.error('Erro ao carregar dados:', error);
+                mostrarAlerta('Erro ao carregar dados salvos', 'error');
+            }
+        }
+
+        function salvarDados() {
+            try {
+                localStorage.setItem('clientesVendaDireta', JSON.stringify(clientes));
+            } catch (error) {
+                console.error('Erro ao salvar dados:', error);
+                mostrarAlerta('Erro ao salvar dados', 'error');
+            }
+        }
+
+        function exportarCSV() {
+            if (clientes.length === 0) {
+                mostrarAlerta('Não há dados para exportar', 'error');
+                return;
+            }
+
+            const headers = ['Nome', 'Origem', 'Compras', 'Ultima_Compra', 'Venda_Direta', 'Ativo_Forcado', 'Status', 'Data_Cadastro'];
+            const csvContent = [
+                headers.join(','),
+                ...clientes.map(cliente => {
+                    const isInativo = isClienteInativo(cliente);
+                    let status = 'Ativo';
+                    if (cliente.vendaDireta) status = 'Venda Direta';
+                    else if (cliente.ativoForcado) status = 'Ativo Forçado';
+                    else if (isInativo) status = 'Inativo';
+                    
+                    return [
+                        `"${cliente.nome}"`,
+                        `"${getOrigemLabel(cliente.origem)}"`,
+                        cliente.compras,
+                        cliente.ultimaCompra,
+                        cliente.vendaDireta ? 'Sim' : 'Não',
+                        cliente.ativoForcado ? 'Sim' : 'Não',
+                        `"${status}"`,
+                        new Date(cliente.dataCadastro).toLocaleDateString('pt-BR')
+                    ].join(',');
+                })
+            ].join('\n');
+
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `clientes_venda_direta_${new Date().toISOString().split('T')[0]}.csv`;
+            link.click();
+            
+            mostrarAlerta('📊 Arquivo CSV exportado com sucesso!', 'success');
+        }
+
+        function adicionarClienteExemplo() {
+            const exemplos = [
+                {
+                    nome: "João Silva Santos",
+                    origem: "toyama",
+                    compras: 1,
+                    ultimaCompra: "2024-08-15",
+                    vendaDireta: false,
+                    ativoForcado: false
+                },
+                {
+                    nome: "Maria Oliveira Costa",
+                    origem: "toyama", 
+                    compras: 1,
+                    ultimaCompra: "2024-09-01",
+                    vendaDireta: false,
+                    ativoForcado: false
+                },
+                {
+                    nome: "Pedro Souza Lima",
+                    origem: "direto",
+                    compras: 3,
+                    ultimaCompra: "2024-07-20",
+                    vendaDireta: false,
+                    ativoForcado: true
+                }
+            ];
+
+            exemplos.forEach(cliente => {
+                clientes.push({
+                    ...cliente,
+                    id: Date.now() + Math.random(),
+                    dataCadastro: new Date()
+                });
+            });
+            
+            renderizarClientes();
+        }
+
+        function adicionarCliente() {
+            const nome = document.getElementById('nomeCliente').value.trim();
+            const origem = document.getElementById('origemCliente').value;
+            const compras = parseInt(document.getElementById('numeroCompras').value);
+            const ultimaCompra = document.getElementById('ultimaCompra').value;
+            const vendaDiretaManual = document.getElementById('vendaDiretaManual').checked;
+            const ativoForcado = document.getElementById('ativoForcado').checked;
+
+            if (!nome || !origem || !ultimaCompra) {
+                mostrarAlerta('Por favor, preencha todos os campos obrigatórios!', 'error');
+                return;
+            }
+
+            const cliente = {
+                id: Date.now(),
+                nome: nome,
+                origem: origem,
+                compras: compras,
+                ultimaCompra: ultimaCompra,
+                vendaDireta: vendaDiretaManual || (origem === 'toyama' && compras === 1),
+                ativoForcado: ativoForcado,
+                dataCadastro: new Date()
+            };
+
+            clientes.push(cliente);
+            
+            // Salvar dados automaticamente
+            salvarDados();
+            
+            // Limpar formulário
+            document.getElementById('nomeCliente').value = '';
+            document.getElementById('origemCliente').value = '';
+            document.getElementById('numeroCompras').value = '1';
+            document.getElementById('vendaDiretaManual').checked = false;
+            document.getElementById('ativoForcado').checked = false;
+            
+            renderizarClientes();
+            atualizarEstatisticas();
+            
+            if (cliente.vendaDireta) {
+                mostrarAlerta(`✅ Cliente "${nome}" marcado como VENDA DIRETA!`, 'success');
+            } else if (cliente.ativoForcado) {
+                mostrarAlerta(`🛡️ Cliente "${nome}" marcado como ATIVO FORÇADO!`, 'success');
+            } else {
+                mostrarAlerta(`➕ Cliente "${nome}" adicionado com sucesso!`, 'info');
+            }
+        }
+
+        function simularAnaliseAutomatica() {
+            let alteracoes = 0;
+            
+            clientes.forEach(cliente => {
+                if (cliente.origem === 'toyama' && cliente.compras === 1 && !cliente.vendaDireta) {
+                    cliente.vendaDireta = true;
+                    alteracoes++;
+                }
+            });
+            
+            salvarDados();
+            renderizarClientes();
+            atualizarEstatisticas();
+            
+            if (alteracoes > 0) {
+                mostrarAlerta(`🔄 Análise concluída! ${alteracoes} cliente(s) marcado(s) como VENDA DIRETA.`, 'success');
+            } else {
+                mostrarAlerta('Nenhuma alteração necessária na análise automática.', 'info');
+            }
+        }
+
+        function toggleVendaDireta(clienteId) {
+            const cliente = clientes.find(c => c.id === clienteId);
+            if (cliente) {
+                cliente.vendaDireta = !cliente.vendaDireta;
+                salvarDados();
+                renderizarClientes();
+                atualizarEstatisticas();
+                
+                const status = cliente.vendaDireta ? 'VENDA DIRETA' : 'REGULAR';
+                mostrarAlerta(`Status alterado para: ${status}`, 'info');
+            }
+        }
+
+        function toggleAtivoForcado(clienteId) {
+            const cliente = clientes.find(c => c.id === clienteId);
+            if (cliente) {
+                cliente.ativoForcado = !cliente.ativoForcado;
+                salvarDados();
+                renderizarClientes();
+                atualizarEstatisticas();
+                
+                const status = cliente.ativoForcado ? 'ATIVO FORÇADO' : 'NORMAL';
+                mostrarAlerta(`Status alterado para: ${status}`, 'info');
+            }
+        }
+
+        function renderizarClientes() {
+            const container = document.getElementById('listaClientes');
+            const clientesFiltrados = filtrarClientesPorTipo(filtroAtual);
+            
+            if (clientesFiltrados.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 40px; color: #718096;">
+                        <p>🔍 Nenhum cliente encontrado para o filtro selecionado</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = clientesFiltrados.map(cliente => {
+                const isInativo = isClienteInativo(cliente);
+                let statusClass = '';
+                let statusBadge = '';
+                
+                if (cliente.vendaDireta) {
+                    statusClass = 'venda-direta';
+                    statusBadge = '<div class="status-badge badge-venda-direta">✅ Venda Direta</div>';
+                } else if (cliente.ativoForcado) {
+                    statusClass = 'ativo-forcado';
+                    statusBadge = '<div class="status-badge badge-ativo-forcado">🛡️ Ativo Forçado</div>';
+                } else if (isInativo) {
+                    statusClass = 'inativo';
+                    statusBadge = '<div class="status-badge badge-inativo">❌ Inativo</div>';
+                } else {
+                    statusBadge = '<div class="status-badge badge-ativo">✅ Ativo</div>';
+                }
+                
+                return `
+                    <div class="cliente-item ${statusClass}">
+                        <div>
+                            <strong>${cliente.nome}</strong>
+                            <br><small>ID: ${cliente.id}</small>
+                        </div>
+                        <div>${getOrigemLabel(cliente.origem)}</div>
+                        <div>${cliente.compras} compra(s)</div>
+                        <div>${formatarData(cliente.ultimaCompra)}</div>
+                        <div>
+                            ${statusBadge}
+                            <div class="btn-controls">
+                                <button class="btn btn-success btn-small" onclick="toggleVendaDireta(${cliente.id})">
+                                    ${cliente.vendaDireta ? 'VD✓' : 'VD'}
+                                </button>
+                                <button class="btn btn-primary btn-small" onclick="toggleAtivoForcado(${cliente.id})">
+                                    ${cliente.ativoForcado ? 'AF✓' : 'AF'}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function filtrarClientes(tipo) {
+            filtroAtual = tipo;
+            renderizarClientes();
+            atualizarEstatisticas();
+        }
+
+        function filtrarClientesPorTipo(tipo) {
+            switch(tipo) {
+                case 'venda-direta':
+                    return clientes.filter(c => c.vendaDireta);
+                case 'ativos':
+                    return clientes.filter(c => !c.vendaDireta && (!isClienteInativo(c) || c.ativoForcado));
+                case 'inativos':
+                    return clientes.filter(c => !c.vendaDireta && !c.ativoForcado && isClienteInativo(c));
+                default:
+                    return clientes;
+            }
+        }
+
+        function isClienteInativo(cliente) {
+            // Se é venda direta ou ativo forçado, nunca é inativo
+            if (cliente.vendaDireta || cliente.ativoForcado) return false;
+            
+            const hoje = new Date();
+            const ultimaCompra = new Date(cliente.ultimaCompra);
+            const diasSemCompra = (hoje - ultimaCompra) / (1000 * 60 * 60 * 24);
+            
+            return diasSemCompra > 90; // Mais de 90 dias sem compra
+        }
+
+        function atualizarEstatisticas() {
+            const total = clientes.length;
+            const vendaDireta = clientes.filter(c => c.vendaDireta).length;
+            const ativosForcados = clientes.filter(c => c.ativoForcado && !c.vendaDireta).length;
+            const inativos = clientes.filter(c => !c.vendaDireta && !c.ativoForcado && isClienteInativo(c)).length;
+            const ativos = total - vendaDireta - ativosForcados - inativos;
+            
+            document.getElementById('totalClientes').textContent = total;
+            document.getElementById('vendaDiretaCount').textContent = vendaDireta;
+            document.getElementById('ativosCount').textContent = ativos + ativosForcados;
+            document.getElementById('inativosCount').textContent = inativos;
+        }
+
+        function getOrigemLabel(origem) {
+            const labels = {
+                'toyama': '🏢 Toyama',
+                'direto': '👤 Direto',
+                'indicacao': '🤝 Indicação',
+                'marketing': '📢 Marketing'
+            };
+            return labels[origem] || origem;
+        }
+
+        function formatarData(data) {
+            return new Date(data).toLocaleDateString('pt-BR');
+        }
+
+        function mostrarAlerta(mensagem, tipo) {
+            const container = document.getElementById('alertContainer');
+            const alertClass = tipo === 'error' ? 'alert-danger' : 
+                              tipo === 'success' ? 'alert-success' : 'alert-info';
+            
+            const alert = document.createElement('div');
+            alert.className = `alert ${alertClass}`;
+            alert.innerHTML = mensagem;
+            
+            container.appendChild(alert);
+            
+            setTimeout(() => {
+                if (alert.parentNode) {
+                    alert.remove();
+                }
+            }, 5000);
+        }
+    </script>
+</body>
+</html>
