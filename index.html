@@ -164,14 +164,9 @@
     margin-bottom: 28px;
   }
 
-  .arch-flow {
-    display: flex; flex-direction: column; gap: 0;
-  }
+  .arch-flow { display: flex; flex-direction: column; gap: 0; }
 
-  .arch-layer {
-    display: flex; gap: 8px;
-    margin-bottom: 4px;
-  }
+  .arch-layer { display: flex; gap: 8px; margin-bottom: 4px; }
 
   .arch-node {
     flex: 1;
@@ -183,87 +178,33 @@
     font-size: .8rem; font-weight: 500;
     color: rgba(255,255,255,.85);
     font-family: 'DM Sans', sans-serif;
-    position: relative;
     transition: background .2s;
   }
   .arch-node:hover { background: rgba(26,86,219,.25); border-color: var(--blue); }
+  .arch-node.highlight { background: rgba(26,86,219,.25); border-color: var(--blue); color: var(--white); }
+  .arch-node .tag { display: block; font-size: .65rem; font-weight: 400; color: var(--cyan); margin-top: 2px; opacity: .8; }
 
-  .arch-node.highlight {
-    background: rgba(26,86,219,.25);
-    border-color: var(--blue);
-    color: var(--white);
-  }
-
-  .arch-node .tag {
-    display: block;
-    font-size: .65rem; font-weight: 400;
-    color: var(--cyan); margin-top: 2px;
-    opacity: .8;
-  }
-
-  .arch-arrow {
-    text-align: center;
-    color: rgba(6,182,212,.5);
-    font-size: 1.1rem;
-    margin: 4px 0;
-    line-height: 1;
-  }
+  .arch-arrow { text-align: center; color: rgba(6,182,212,.5); font-size: 1.1rem; margin: 4px 0; line-height: 1; }
 
   /* ── STATS ────────────────────────────────────────────────────────────── */
-  .stats-bar {
-    background: var(--light);
-    border-top: 1px solid var(--line);
-    border-bottom: 1px solid var(--line);
-    padding: 48px;
-  }
-  .stats-inner {
-    max-width: 1140px; margin: 0 auto;
-    display: grid; grid-template-columns: repeat(4, 1fr); gap: 32px;
-  }
+  .stats-bar { background: var(--light); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); padding: 48px; }
+  .stats-inner { max-width: 1140px; margin: 0 auto; display: grid; grid-template-columns: repeat(4, 1fr); gap: 32px; }
   .stat { text-align: center; }
-  .stat-num {
-    font-family: 'Syne', sans-serif;
-    font-size: 2.8rem; font-weight: 800;
-    color: var(--navy); line-height: 1;
-    margin-bottom: 6px;
-  }
+  .stat-num { font-family: 'Syne', sans-serif; font-size: 2.8rem; font-weight: 800; color: var(--navy); line-height: 1; margin-bottom: 6px; }
   .stat-num span { color: var(--blue); }
   .stat-label { font-size: .85rem; color: var(--muted); font-weight: 400; }
 
   /* ── SECTIONS ─────────────────────────────────────────────────────────── */
-  .section {
-    max-width: 1140px; margin: 0 auto;
-    padding: 96px 48px;
-  }
+  .section { max-width: 1140px; margin: 0 auto; padding: 96px 48px; }
 
-  .section-tag {
-    font-family: 'Syne', sans-serif;
-    font-size: .72rem; font-weight: 700;
-    color: var(--blue); letter-spacing: .12em;
-    text-transform: uppercase;
-    margin-bottom: 12px;
-  }
+  .section-tag { font-family: 'Syne', sans-serif; font-size: .72rem; font-weight: 700; color: var(--blue); letter-spacing: .12em; text-transform: uppercase; margin-bottom: 12px; }
 
-  .section-title {
-    font-family: 'Syne', sans-serif;
-    font-size: clamp(1.8rem, 3.5vw, 2.6rem);
-    font-weight: 800; color: var(--navy);
-    line-height: 1.15; margin-bottom: 16px;
-    letter-spacing: -.02em;
-  }
+  .section-title { font-family: 'Syne', sans-serif; font-size: clamp(1.8rem, 3.5vw, 2.6rem); font-weight: 800; color: var(--navy); line-height: 1.15; margin-bottom: 16px; letter-spacing: -.02em; }
 
-  .section-sub {
-    font-size: 1rem; color: var(--muted);
-    max-width: 560px; line-height: 1.7;
-    margin-bottom: 56px;
-  }
+  .section-sub { font-size: 1rem; color: var(--muted); max-width: 560px; line-height: 1.7; margin-bottom: 56px; }
 
   /* ── PROJECTS ─────────────────────────────────────────────────────────── */
-  .projects-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-    gap: 24px;
-  }
+  .projects-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px; }
 
   .project-card {
     background: var(--card);
@@ -273,189 +214,185 @@
     transition: transform .25s, box-shadow .25s, border-color .25s;
     position: relative; overflow: hidden;
   }
+  .project-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--blue), var(--cyan)); opacity: 0; transition: opacity .25s; }
+  .project-card:hover { transform: translateY(-6px); box-shadow: 0 20px 48px rgba(15,43,91,.1); border-color: rgba(26,86,219,.25); }
+  .project-card:hover::before { opacity: 1; }
 
-  .project-card::before {
+  .proj-icon { width: 48px; height: 48px; background: var(--light); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; margin-bottom: 20px; }
+  .proj-name { font-family: 'Syne', sans-serif; font-size: 1.15rem; font-weight: 700; color: var(--navy); margin-bottom: 8px; }
+  .proj-desc { font-size: .9rem; color: var(--muted); line-height: 1.65; margin-bottom: 20px; }
+  .proj-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+  .tag { background: var(--light); color: var(--blue); font-size: .72rem; font-weight: 500; padding: 4px 10px; border-radius: 20px; letter-spacing: .03em; font-family: 'DM Sans', monospace; }
+
+  /* ── DEMOS ────────────────────────────────────────────────────────────── */
+  .demos-section { background: #0a0d14; }
+
+  .demos-inner { max-width: 1140px; margin: 0 auto; padding: 96px 48px; }
+
+  .demos-inner .section-tag  { color: var(--cyan); }
+  .demos-inner .section-title { color: var(--white); }
+  .demos-inner .section-sub   { color: rgba(255,255,255,.5); }
+
+  .demos-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+  }
+
+  .demo-card {
+    position: relative;
+    background: rgba(255,255,255,.04);
+    border: 1px solid rgba(255,255,255,.1);
+    border-radius: 16px;
+    overflow: hidden;
+    transition: transform .3s, border-color .3s, box-shadow .3s;
+    cursor: pointer;
+    text-decoration: none;
+    display: block;
+  }
+
+  .demo-card:hover {
+    transform: translateY(-8px);
+    border-color: var(--cyan);
+    box-shadow: 0 24px 60px rgba(6,182,212,.15);
+  }
+
+  .demo-card::before {
     content: '';
     position: absolute; top: 0; left: 0; right: 0;
     height: 3px;
     background: linear-gradient(90deg, var(--blue), var(--cyan));
     opacity: 0;
-    transition: opacity .25s;
+    transition: opacity .3s;
+  }
+  .demo-card:hover::before { opacity: 1; }
+
+  .demo-preview {
+    width: 100%;
+    height: 180px;
+    background: #111827;
+    border-bottom: 1px solid rgba(255,255,255,.07);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+    position: relative;
+    overflow: hidden;
   }
 
-  .project-card:hover {
-    transform: translateY(-6px);
-    box-shadow: 0 20px 48px rgba(15,43,91,.1);
-    border-color: rgba(26,86,219,.25);
+  .demo-preview-bg {
+    position: absolute; inset: 0;
+    opacity: .12;
+    background-size: 20px 20px;
   }
-  .project-card:hover::before { opacity: 1; }
 
-  .proj-icon {
-    width: 48px; height: 48px;
-    background: var(--light);
-    border-radius: 12px;
+  .demo-preview-icon {
+    position: relative; z-index: 1;
+    width: 64px; height: 64px;
+    background: rgba(255,255,255,.06);
+    border: 1px solid rgba(255,255,255,.12);
+    border-radius: 16px;
     display: flex; align-items: center; justify-content: center;
-    font-size: 1.4rem;
-    margin-bottom: 20px;
+    font-size: 1.8rem;
+    backdrop-filter: blur(4px);
   }
 
-  .proj-name {
+  .demo-badge {
+    position: absolute;
+    top: 12px; right: 12px;
+    background: rgba(6,182,212,.15);
+    border: 1px solid rgba(6,182,212,.3);
+    color: var(--cyan);
+    font-size: .65rem; font-weight: 600;
+    padding: 3px 10px; border-radius: 20px;
+    text-transform: uppercase; letter-spacing: .08em;
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  .demo-body { padding: 22px 24px 24px; }
+
+  .demo-name {
     font-family: 'Syne', sans-serif;
-    font-size: 1.15rem; font-weight: 700;
-    color: var(--navy); margin-bottom: 8px;
+    font-size: 1rem; font-weight: 700;
+    color: var(--white);
+    margin-bottom: 6px;
   }
 
-  .proj-desc {
-    font-size: .9rem; color: var(--muted);
-    line-height: 1.65; margin-bottom: 20px;
+  .demo-desc {
+    font-size: .82rem;
+    color: rgba(255,255,255,.45);
+    line-height: 1.6;
+    margin-bottom: 16px;
   }
 
-  .proj-tags {
-    display: flex; gap: 6px; flex-wrap: wrap;
-  }
+  .demo-tags { display: flex; gap: 6px; flex-wrap: wrap; }
 
-  .tag {
-    background: var(--light);
-    color: var(--blue);
-    font-size: .72rem; font-weight: 500;
-    padding: 4px 10px; border-radius: 20px;
-    letter-spacing: .03em;
+  .demo-tag {
+    background: rgba(26,86,219,.2);
+    border: 1px solid rgba(26,86,219,.3);
+    color: #93c5fd;
+    font-size: .68rem; font-weight: 500;
+    padding: 3px 9px; border-radius: 20px;
     font-family: 'DM Sans', monospace;
   }
+
+  .demo-link-hint {
+    display: flex; align-items: center; gap: 6px;
+    margin-top: 16px;
+    font-size: .78rem;
+    color: var(--cyan);
+    opacity: 0;
+    transform: translateX(-6px);
+    transition: opacity .25s, transform .25s;
+  }
+  .demo-card:hover .demo-link-hint { opacity: 1; transform: translateX(0); }
 
   /* ── ARCHITECTURE ─────────────────────────────────────────────────────── */
   .arch-section { background: var(--navy); }
 
-  .arch-full {
-    max-width: 1140px; margin: 0 auto;
-    padding: 96px 48px;
-  }
-
+  .arch-full { max-width: 1140px; margin: 0 auto; padding: 96px 48px; }
   .arch-full .section-title { color: var(--white); }
   .arch-full .section-sub   { color: rgba(255,255,255,.55); }
   .arch-full .section-tag   { color: var(--cyan); }
 
-  .arch-visual {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 16px;
-    align-items: center;
-    margin-top: 48px;
-  }
+  .arch-visual { display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; align-items: center; margin-top: 48px; }
+  .arch-col { display: flex; flex-direction: column; gap: 12px; }
 
-  .arch-col {
-    display: flex; flex-direction: column; gap: 12px;
-  }
-
-  .arch-block {
-    background: rgba(255,255,255,.05);
-    border: 1px solid rgba(255,255,255,.12);
-    border-radius: 12px; padding: 20px 16px;
-    text-align: center; transition: all .25s;
-    cursor: default;
-  }
-  .arch-block:hover {
-    background: rgba(26,86,219,.3);
-    border-color: var(--blue);
-    transform: scale(1.03);
-  }
-
+  .arch-block { background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.12); border-radius: 12px; padding: 20px 16px; text-align: center; transition: all .25s; cursor: default; }
+  .arch-block:hover { background: rgba(26,86,219,.3); border-color: var(--blue); transform: scale(1.03); }
   .arch-block-icon { font-size: 1.8rem; margin-bottom: 8px; }
   .arch-block-name { font-size: .82rem; font-weight: 600; color: var(--white); margin-bottom: 4px; font-family: 'Syne', sans-serif; }
   .arch-block-desc { font-size: .7rem; color: rgba(255,255,255,.45); line-height: 1.5; }
 
-  .arch-connector {
-    display: flex; flex-direction: column;
-    align-items: center; gap: 8px;
-  }
-  .conn-line {
-    width: 2px; height: 60px;
-    background: linear-gradient(180deg, transparent, var(--cyan), transparent);
-    position: relative;
-  }
-  .conn-label {
-    font-size: .65rem; color: var(--cyan); font-weight: 500;
-    letter-spacing: .05em; text-transform: uppercase;
-    writing-mode: horizontal-tb;
-    background: rgba(6,182,212,.1); padding: 3px 8px; border-radius: 4px;
-  }
+  .arch-connector { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+  .conn-line { width: 2px; height: 60px; background: linear-gradient(180deg, transparent, var(--cyan), transparent); }
+  .conn-label { font-size: .65rem; color: var(--cyan); font-weight: 500; letter-spacing: .05em; text-transform: uppercase; background: rgba(6,182,212,.1); padding: 3px 8px; border-radius: 4px; }
 
   /* ── SKILLS ───────────────────────────────────────────────────────────── */
-  .skills-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: 20px;
-  }
-
-  .skill-card {
-    background: var(--card);
-    border: 1px solid var(--line);
-    border-radius: 12px;
-    padding: 24px;
-  }
-
-  .skill-category {
-    font-family: 'Syne', sans-serif;
-    font-size: .8rem; font-weight: 700;
-    color: var(--blue); text-transform: uppercase;
-    letter-spacing: .08em; margin-bottom: 14px;
-  }
-
+  .skills-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; }
+  .skill-card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 24px; }
+  .skill-category { font-family: 'Syne', sans-serif; font-size: .8rem; font-weight: 700; color: var(--blue); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 14px; }
   .skill-list { list-style: none; display: flex; flex-direction: column; gap: 8px; }
-  .skill-list li {
-    font-size: .88rem; color: var(--ink);
-    display: flex; align-items: center; gap: 8px;
-  }
-  .skill-list li::before {
-    content: '';
-    width: 5px; height: 5px;
-    background: var(--cyan);
-    border-radius: 50%; flex-shrink: 0;
-  }
+  .skill-list li { font-size: .88rem; color: var(--ink); display: flex; align-items: center; gap: 8px; }
+  .skill-list li::before { content: ''; width: 5px; height: 5px; background: var(--cyan); border-radius: 50%; flex-shrink: 0; }
 
   /* ── CONTACT ──────────────────────────────────────────────────────────── */
-  .contact-section {
-    background: linear-gradient(135deg, var(--navy) 0%, #162d5e 100%);
-    text-align: center; padding: 96px 48px;
-  }
+  .contact-section { background: linear-gradient(135deg, var(--navy) 0%, #162d5e 100%); text-align: center; padding: 96px 48px; }
   .contact-section .section-title { color: var(--white); max-width: 600px; margin: 0 auto 16px; }
   .contact-section .section-sub   { color: rgba(255,255,255,.55); margin: 0 auto 48px; max-width: 500px; }
-
-  .contact-links {
-    display: flex; justify-content: center; gap: 16px; flex-wrap: wrap;
-  }
+  .contact-links { display: flex; justify-content: center; gap: 16px; flex-wrap: wrap; }
 
   /* ── FOOTER ───────────────────────────────────────────────────────────── */
-  footer {
-    background: #080E1A;
-    text-align: center; padding: 24px;
-    font-size: .8rem; color: rgba(255,255,255,.25);
-  }
+  footer { background: #080E1A; text-align: center; padding: 24px; font-size: .8rem; color: rgba(255,255,255,.25); }
 
   /* ── NAV ──────────────────────────────────────────────────────────────── */
-  nav {
-    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-    background: rgba(13,17,23,.85);
-    backdrop-filter: blur(12px);
-    border-bottom: 1px solid rgba(255,255,255,.08);
-    padding: 0 48px;
-    display: flex; align-items: center; justify-content: space-between;
-    height: 60px;
-  }
-  .nav-logo {
-    font-family: 'Syne', sans-serif;
-    font-size: 1rem; font-weight: 700;
-    color: var(--white); letter-spacing: -.01em;
-  }
+  nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: rgba(13,17,23,.85); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255,255,255,.08); padding: 0 48px; display: flex; align-items: center; justify-content: space-between; height: 60px; }
+  .nav-logo { font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 700; color: var(--white); letter-spacing: -.01em; }
   .nav-logo span { color: var(--cyan); }
   .nav-links { display: flex; gap: 32px; }
-  .nav-links a {
-    font-size: .85rem; color: rgba(255,255,255,.55);
-    text-decoration: none; transition: color .2s;
-  }
+  .nav-links a { font-size: .85rem; color: rgba(255,255,255,.55); text-decoration: none; transition: color .2s; }
   .nav-links a:hover { color: var(--white); }
 
-  /* ── DIVIDER ──────────────────────────────────────────────────────────── */
   .divider { height: 1px; background: var(--line); margin: 0; }
 
   /* ── RESPONSIVE ───────────────────────────────────────────────────────── */
@@ -463,6 +400,7 @@
     .hero-inner { grid-template-columns: 1fr; padding: 80px 24px 60px; gap: 40px; }
     .stats-inner { grid-template-columns: repeat(2, 1fr); padding: 32px; }
     .section { padding: 64px 24px; }
+    .demos-inner { padding: 64px 24px; }
     .arch-visual { grid-template-columns: 1fr; }
     .arch-connector { display: none; }
     nav { padding: 0 24px; }
@@ -470,17 +408,11 @@
     .contact-section { padding: 64px 24px; }
   }
 
-  /* Animate on load */
-  .fade-in {
-    opacity: 0; transform: translateY(20px);
-    animation: fadeUp .6s ease forwards;
-  }
+  .fade-in { opacity: 0; transform: translateY(20px); animation: fadeUp .6s ease forwards; }
   .fade-in:nth-child(2) { animation-delay: .1s; }
   .fade-in:nth-child(3) { animation-delay: .2s; }
   .fade-in:nth-child(4) { animation-delay: .3s; }
-  @keyframes fadeUp {
-    to { opacity: 1; transform: translateY(0); }
-  }
+  @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
 </style>
 </head>
 <body>
@@ -490,6 +422,7 @@
   <div class="nav-logo">Daniel<span>.</span>dev</div>
   <div class="nav-links">
     <a href="#projetos">Projetos</a>
+    <a href="#demos">Demos</a>
     <a href="#arquitetura">Arquitetura</a>
     <a href="#skills">Skills</a>
     <a href="#contato">Contato</a>
@@ -517,7 +450,6 @@
       </div>
     </div>
 
-    <!-- Architecture mini-diagram -->
     <div class="arch-diagram fade-in">
       <div class="arch-title">◈ Arquitetura de Integração</div>
       <div class="arch-flow">
@@ -559,8 +491,8 @@
       <div class="stat-label">Módulos Protheus</div>
     </div>
     <div class="stat">
-      <div class="stat-num">3</div>
-      <div class="stat-label">Projetos proprietários</div>
+      <div class="stat-num">6</div>
+      <div class="stat-label">Ferramentas publicadas</div>
     </div>
   </div>
 </div>
@@ -623,17 +555,159 @@
 
 <div class="divider"></div>
 
+<!-- ── DEMOS AO VIVO ──────────────────────────────────────────────────────── -->
+<section class="demos-section" id="demos">
+  <div class="demos-inner">
+    <div class="section-tag">Ferramentas & Demos</div>
+    <h2 class="section-title">Veja ao Vivo</h2>
+    <p class="section-sub">Ferramentas interativas desenvolvidas para o ecossistema Protheus. Clique em qualquer card para abrir a demo diretamente no browser.</p>
+
+    <div class="demos-grid">
+
+      <!-- 1. ADVPL Analyzer -->
+      <a href="demos/advpl-analyzer-v2.html" target="_blank" class="demo-card">
+        <div class="demo-preview" style="background: linear-gradient(135deg,#0f1f3d,#0a1628);">
+          <div class="demo-preview-bg" style="background-image: linear-gradient(rgba(26,86,219,.15) 1px, transparent 1px), linear-gradient(90deg,rgba(26,86,219,.15) 1px,transparent 1px);"></div>
+          <div class="demo-preview-icon">🔍</div>
+          <div class="demo-badge">Ferramenta</div>
+        </div>
+        <div class="demo-body">
+          <div class="demo-name">CodeLens v2.0 — Analisador ADVPL</div>
+          <div class="demo-desc">Analisa fontes ADVPL/TLPP: mapeia funções, campos, tabelas, complexidade ciclomática e fluxo de execução. Arraste seu .PRW e explore.</div>
+          <div class="demo-tags">
+            <span class="demo-tag">ADVPL</span>
+            <span class="demo-tag">Análise de Código</span>
+            <span class="demo-tag">JavaScript</span>
+          </div>
+          <div class="demo-link-hint">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+            Abrir demo →
+          </div>
+        </div>
+      </a>
+
+      <!-- 2. MIT044 Engenharia Reversa -->
+      <a href="demos/MIT044_engenharia_reversa.html" target="_blank" class="demo-card">
+        <div class="demo-preview" style="background: linear-gradient(135deg,#080810,#0f0f1e);">
+          <div class="demo-preview-bg" style="background-image: radial-gradient(rgba(139,92,246,.1) 1px, transparent 1px); background-size: 20px 20px;"></div>
+          <div class="demo-preview-icon">⚖️</div>
+          <div class="demo-badge">Análise</div>
+        </div>
+        <div class="demo-body">
+          <div class="demo-name">MIT044 — Engenharia Reversa</div>
+          <div class="demo-desc">Documentação técnica completa do sistema de Venda por KG: arquitetura, tabelas customizadas, fluxo de aprovação e pontos de entrada.</div>
+          <div class="demo-tags">
+            <span class="demo-tag">SIGAFAT</span>
+            <span class="demo-tag">MVC</span>
+            <span class="demo-tag">TLPP</span>
+          </div>
+          <div class="demo-link-hint">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+            Abrir demo →
+          </div>
+        </div>
+      </a>
+
+      <!-- 3. MIT044 Código -->
+      <a href="demos/MIT044_codigo_engenharia_reversa.html" target="_blank" class="demo-card">
+        <div class="demo-preview" style="background: linear-gradient(135deg,#080810,#101020);">
+          <div class="demo-preview-bg" style="background-image: linear-gradient(rgba(99,102,241,.08) 1px, transparent 1px), linear-gradient(90deg,rgba(99,102,241,.08) 1px,transparent 1px); background-size: 16px 16px;"></div>
+          <div class="demo-preview-icon">💻</div>
+          <div class="demo-badge">Código</div>
+        </div>
+        <div class="demo-body">
+          <div class="demo-name">MIT044 — Código Anotado</div>
+          <div class="demo-desc">Visualização interativa do código-fonte do MIT044 com anotações de engenharia reversa, highlights por seção e navegação por funções.</div>
+          <div class="demo-tags">
+            <span class="demo-tag">ADVPL</span>
+            <span class="demo-tag">Code Review</span>
+            <span class="demo-tag">Documentação</span>
+          </div>
+          <div class="demo-link-hint">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+            Abrir demo →
+          </div>
+        </div>
+      </a>
+
+      <!-- 4. Estoque IA -->
+      <a href="demos/estoque_IA.html" target="_blank" class="demo-card">
+        <div class="demo-preview" style="background: linear-gradient(135deg,#0a1628,#0f2040);">
+          <div class="demo-preview-bg" style="background-image: radial-gradient(rgba(6,182,212,.08) 2px, transparent 2px); background-size: 28px 28px;"></div>
+          <div class="demo-preview-icon">🤖</div>
+          <div class="demo-badge">IA</div>
+        </div>
+        <div class="demo-body">
+          <div class="demo-name">Sistema IA de Estoque</div>
+          <div class="demo-desc">Dashboard inteligente de gestão de estoque com sugestões automáticas por IA, classificação de criticidade e análise de consumo histórico integrada ao Protheus.</div>
+          <div class="demo-tags">
+            <span class="demo-tag">IA</span>
+            <span class="demo-tag">SIGAEST</span>
+            <span class="demo-tag">Dashboard</span>
+          </div>
+          <div class="demo-link-hint">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+            Abrir demo →
+          </div>
+        </div>
+      </a>
+
+      <!-- 5. Sistema Venda Inativo -->
+      <a href="demos/sistema_venda_inativo.html" target="_blank" class="demo-card">
+        <div class="demo-preview" style="background: linear-gradient(135deg,#1a0a2e,#2d1450);">
+          <div class="demo-preview-bg" style="background-image: linear-gradient(rgba(139,92,246,.1) 1px, transparent 1px), linear-gradient(90deg,rgba(139,92,246,.1) 1px,transparent 1px); background-size: 24px 24px;"></div>
+          <div class="demo-preview-icon">📊</div>
+          <div class="demo-badge">Relatório</div>
+        </div>
+        <div class="demo-body">
+          <div class="demo-name">Controle Clientes Venda Direta</div>
+          <div class="demo-desc">Sistema de controle e monitoramento de clientes com venda direta — identifica inativos, histórico de compras e alertas automáticos para a equipe comercial.</div>
+          <div class="demo-tags">
+            <span class="demo-tag">SIGAFAT</span>
+            <span class="demo-tag">SA1</span>
+            <span class="demo-tag">Dashboard</span>
+          </div>
+          <div class="demo-link-hint">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+            Abrir demo →
+          </div>
+        </div>
+      </a>
+
+      <!-- 6. MATA103 Diagnóstico -->
+      <a href="demos/mata103-executivo.html" target="_blank" class="demo-card">
+        <div class="demo-preview" style="background: linear-gradient(135deg,#0a0a0f,#18181f);">
+          <div class="demo-preview-bg" style="background-image: linear-gradient(rgba(0,229,255,.06) 1px, transparent 1px), linear-gradient(90deg,rgba(0,229,255,.06) 1px,transparent 1px); background-size: 20px 20px;"></div>
+          <div class="demo-preview-icon">📋</div>
+          <div class="demo-badge">Diagnóstico</div>
+        </div>
+        <div class="demo-body">
+          <div class="demo-name">MATA103 — Diagnóstico Executivo</div>
+          <div class="demo-desc">Relatório executivo gerado pelo CodeLens: 26.723 linhas, 160 funções, 779 campos mapeados. Análise de complexidade do maior fonte do Protheus Fiscal.</div>
+          <div class="demo-tags">
+            <span class="demo-tag">MATA103</span>
+            <span class="demo-tag">Análise</span>
+            <span class="demo-tag">Fiscal</span>
+          </div>
+          <div class="demo-link-hint">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+            Abrir demo →
+          </div>
+        </div>
+      </a>
+
+    </div>
+  </div>
+</section>
+
 <!-- ARCHITECTURE -->
 <section class="arch-section" id="arquitetura">
   <div class="arch-full">
     <div class="section-tag">Visão Técnica</div>
     <h2 class="section-title">Arquitetura de Soluções</h2>
-    <p class="section-sub">
-      Projeto soluções que conectam o núcleo do ERP a interfaces modernas — da base de dados ao usuário final, passando por APIs e dashboards.
-    </p>
+    <p class="section-sub">Projeto soluções que conectam o núcleo do ERP a interfaces modernas — da base de dados ao usuário final, passando por APIs e dashboards.</p>
 
     <div class="arch-visual">
-      <!-- Camada 1: Banco -->
       <div class="arch-col">
         <div class="arch-block">
           <div class="arch-block-icon">🗄️</div>
@@ -646,15 +720,11 @@
           <div class="arch-block-desc">SB1, SB2, SC5, SE1, SD3 e customizadas Z*</div>
         </div>
       </div>
-
-      <!-- Connector -->
       <div class="arch-connector">
         <div class="conn-line"></div>
         <div class="conn-label">TopConnect</div>
         <div class="conn-line"></div>
       </div>
-
-      <!-- Camada 2: ERP Core -->
       <div class="arch-col">
         <div class="arch-block" style="border-color: rgba(26,86,219,.5); background: rgba(26,86,219,.2);">
           <div class="arch-block-icon">⚙️</div>
@@ -667,15 +737,11 @@
           <div class="arch-block-desc">SIGACOM · SIGAEST · SIGAFAT · SIGAFIN · SIGACTB</div>
         </div>
       </div>
-
-      <!-- Connector -->
       <div class="arch-connector">
         <div class="conn-line"></div>
         <div class="conn-label">REST API</div>
         <div class="conn-line"></div>
       </div>
-
-      <!-- Camada 3: Output -->
       <div class="arch-col">
         <div class="arch-block">
           <div class="arch-block-icon">🌐</div>
@@ -775,12 +841,8 @@
     <a href="mailto:teceletrotecnica84@gmail.com" class="btn-primary">
       ✉ teceletrotecnica84@gmail.com
     </a>
-    <a href="https://www.linkedin.com/in/daniel-luiz-a300b415b" target="_blank" class="btn-ghost">
-      LinkedIn →
-    </a>
-    <a href="https://github.com/Daniel-1984/" target="_blank" class="btn-ghost">
-      GitHub →
-    </a>
+    <a href="https://www.linkedin.com/in/daniel-luiz-a300b415b" target="_blank" class="btn-ghost">LinkedIn →</a>
+    <a href="https://github.com/Daniel-1984/" target="_blank" class="btn-ghost">GitHub →</a>
   </div>
   <div style="margin-top: 32px; color: rgba(255,255,255,.35); font-size: .85rem;">
     (41) 98536-9251 &nbsp;•&nbsp; (65) 99674-5951 &nbsp;•&nbsp; Curitiba, PR
