@@ -1,0 +1,1064 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Arquitetura em Nuvem — Daniel Luiz Alves</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0a1628;
+    --paper: #f0f4ff;
+    --blue: #0d47a1;
+    --blue-mid: #1565c0;
+    --blue-light: #1e88e5;
+    --cyan: #00b8d4;
+    --amber: #ffab00;
+    --green: #00c853;
+    --red: #ff5252;
+    --line: rgba(30,136,229,0.25);
+    --line-strong: rgba(30,136,229,0.55);
+    --glow: 0 0 20px rgba(0,184,212,0.3);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--ink);
+    color: var(--paper);
+    font-family: 'DM Sans', sans-serif;
+    overflow-x: hidden;
+    cursor: default;
+  }
+
+  /* ─── GRID DE FUNDO BLUEPRINT ─── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(var(--line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--line) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(var(--line-strong) 1px, transparent 1px),
+      linear-gradient(90deg, var(--line-strong) 1px, transparent 1px);
+    background-size: 200px 200px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ─── NAV ─── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 2rem;
+    background: rgba(10,22,40,0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--line-strong);
+  }
+  .nav-logo {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--cyan);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    text-decoration: none;
+  }
+  .nav-links { display: flex; gap: 1.5rem; }
+  .nav-links a {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    color: rgba(240,244,255,0.5);
+    text-decoration: none;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--cyan); }
+
+  /* ─── HERO ─── */
+  .hero {
+    position: relative;
+    z-index: 1;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 8rem 2rem 4rem;
+    overflow: hidden;
+  }
+
+  .hero-badge {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--cyan);
+    border: 1px solid var(--cyan);
+    padding: 0.4rem 1rem;
+    border-radius: 2px;
+    margin-bottom: 2rem;
+    animation: fadeUp 0.6s ease both;
+    display: inline-block;
+  }
+
+  .hero h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(2.5rem, 6vw, 5rem);
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: -1px;
+    margin-bottom: 1.5rem;
+    animation: fadeUp 0.7s 0.1s ease both;
+  }
+  .hero h1 span { color: var(--cyan); }
+
+  .hero-sub {
+    font-size: 1.1rem;
+    color: rgba(240,244,255,0.65);
+    max-width: 560px;
+    line-height: 1.7;
+    margin-bottom: 3rem;
+    animation: fadeUp 0.7s 0.2s ease both;
+  }
+
+  .hero-analogy {
+    background: rgba(0,184,212,0.07);
+    border: 1px solid rgba(0,184,212,0.3);
+    border-radius: 6px;
+    padding: 1.2rem 2rem;
+    max-width: 520px;
+    font-size: 0.95rem;
+    color: rgba(240,244,255,0.8);
+    animation: fadeUp 0.7s 0.3s ease both;
+    position: relative;
+  }
+  .hero-analogy::before {
+    content: '💡';
+    position: absolute;
+    top: -12px; left: 1.5rem;
+    background: var(--ink);
+    padding: 0 6px;
+    font-size: 1rem;
+  }
+  .hero-analogy strong { color: var(--amber); }
+
+  /* ─── SCROLL CUE ─── */
+  .scroll-cue {
+    margin-top: 3rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.4rem;
+    opacity: 0.4;
+    animation: fadeUp 1s 0.5s ease both;
+  }
+  .scroll-cue span { font-family: 'Space Mono', monospace; font-size: 0.6rem; letter-spacing: 2px; text-transform: uppercase; }
+  .scroll-arrow { width: 1px; height: 40px; background: linear-gradient(to bottom, var(--cyan), transparent); animation: scrollPulse 1.5s infinite; }
+
+  /* ─── SECTION BASE ─── */
+  section {
+    position: relative;
+    z-index: 1;
+    padding: 6rem 2rem;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  .section-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--cyan);
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  .section-label::after {
+    content: '';
+    flex: 1;
+    max-width: 60px;
+    height: 1px;
+    background: var(--cyan);
+    opacity: 0.5;
+  }
+  section h2 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+    font-weight: 700;
+    margin-bottom: 1rem;
+    letter-spacing: -0.5px;
+  }
+  .section-intro {
+    color: rgba(240,244,255,0.6);
+    font-size: 1rem;
+    max-width: 620px;
+    line-height: 1.7;
+    margin-bottom: 3rem;
+  }
+
+  /* ─── O QUE É NUVEM — ANALOGIA ─── */
+  .analogy-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+  }
+  .analogy-card {
+    background: rgba(13,71,161,0.12);
+    border: 1px solid rgba(30,136,229,0.2);
+    border-radius: 8px;
+    padding: 1.8rem;
+    transition: border-color 0.3s, transform 0.3s;
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  .analogy-card.visible {
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 0.5s ease, transform 0.5s ease, border-color 0.3s, box-shadow 0.3s;
+  }
+  .analogy-card:hover {
+    border-color: var(--cyan);
+    box-shadow: var(--glow);
+    transform: translateY(-4px);
+  }
+  .analogy-icon {
+    font-size: 2.2rem;
+    margin-bottom: 1rem;
+    display: block;
+  }
+  .analogy-card h3 {
+    font-family: 'Syne', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 0.4rem;
+    color: var(--paper);
+  }
+  .analogy-card .label-antes {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 2px;
+    color: rgba(240,244,255,0.35);
+    text-transform: uppercase;
+    margin-bottom: 0.3rem;
+  }
+  .analogy-real {
+    font-size: 0.85rem;
+    color: rgba(240,244,255,0.5);
+    margin-bottom: 0.75rem;
+    font-style: italic;
+  }
+  .label-depois {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 2px;
+    color: var(--cyan);
+    text-transform: uppercase;
+    margin-bottom: 0.3rem;
+  }
+  .analogy-cloud {
+    font-size: 0.9rem;
+    color: rgba(240,244,255,0.85);
+    line-height: 1.5;
+  }
+
+  /* ─── OS 3 MODELOS ─── */
+  .modelos-wrap {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0;
+    border: 1px solid rgba(30,136,229,0.25);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  @media (max-width: 700px) { .modelos-wrap { grid-template-columns: 1fr; } }
+  .modelo-col {
+    padding: 2.5rem 1.8rem;
+    border-right: 1px solid rgba(30,136,229,0.2);
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+  }
+  .modelo-col:last-child { border-right: none; }
+  .modelo-col.visible { opacity: 1; transform: translateY(0); }
+  .modelo-col:nth-child(1) { background: rgba(0,200,83,0.05); }
+  .modelo-col:nth-child(2) { background: rgba(0,184,212,0.05); }
+  .modelo-col:nth-child(3) { background: rgba(255,171,0,0.05); }
+  .modelo-sigla {
+    font-family: 'Space Mono', monospace;
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin-bottom: 0.3rem;
+  }
+  .modelo-col:nth-child(1) .modelo-sigla { color: var(--green); }
+  .modelo-col:nth-child(2) .modelo-sigla { color: var(--cyan); }
+  .modelo-col:nth-child(3) .modelo-sigla { color: var(--amber); }
+  .modelo-nome {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.85rem;
+    color: rgba(240,244,255,0.6);
+    margin-bottom: 1.2rem;
+  }
+  .modelo-analogia {
+    font-size: 0.9rem;
+    color: rgba(240,244,255,0.8);
+    line-height: 1.65;
+    margin-bottom: 1.2rem;
+  }
+  .modelo-analogia strong { color: var(--amber); }
+  .modelo-exemplos {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+  .modelo-exemplos li {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    color: rgba(240,244,255,0.45);
+    letter-spacing: 0.5px;
+  }
+  .modelo-exemplos li::before { content: '→ '; color: var(--cyan); }
+
+  /* ─── DIAGRAMA ARQUITETURA ─── */
+  .diagram-section { max-width: 900px; }
+  .arch-diagram {
+    position: relative;
+    background: rgba(13,71,161,0.08);
+    border: 1px solid rgba(30,136,229,0.2);
+    border-radius: 10px;
+    padding: 3rem 2rem;
+    overflow: hidden;
+  }
+  .arch-diagram::before {
+    content: '';
+    position: absolute;
+    top: -1px; left: 40px; right: 40px; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+  }
+
+  .arch-layers {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    position: relative;
+  }
+
+  .arch-layer {
+    display: grid;
+    grid-template-columns: 120px 1fr;
+    gap: 1.5rem;
+    align-items: center;
+    padding: 1.4rem 1.5rem;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    margin-bottom: 0.5rem;
+    cursor: pointer;
+    transition: all 0.3s;
+    opacity: 0;
+    transform: translateX(-30px);
+    transition: opacity 0.5s ease, transform 0.5s ease, border-color 0.3s, background 0.3s;
+  }
+  .arch-layer.visible { opacity: 1; transform: translateX(0); }
+  .arch-layer:hover {
+    border-color: var(--cyan) !important;
+    background: rgba(0,184,212,0.08) !important;
+  }
+  .arch-layer.l1 { background: rgba(255,82,82,0.05); border-color: rgba(255,82,82,0.15); }
+  .arch-layer.l2 { background: rgba(255,171,0,0.05); border-color: rgba(255,171,0,0.15); }
+  .arch-layer.l3 { background: rgba(0,184,212,0.05); border-color: rgba(0,184,212,0.15); }
+  .arch-layer.l4 { background: rgba(0,200,83,0.05); border-color: rgba(0,200,83,0.15); }
+  .arch-layer.l5 { background: rgba(13,71,161,0.12); border-color: rgba(30,136,229,0.2); }
+
+  .layer-tag {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 0.3rem 0.6rem;
+    border-radius: 3px;
+    text-align: center;
+    white-space: nowrap;
+  }
+  .l1 .layer-tag { background: rgba(255,82,82,0.15); color: var(--red); border: 1px solid rgba(255,82,82,0.3); }
+  .l2 .layer-tag { background: rgba(255,171,0,0.15); color: var(--amber); border: 1px solid rgba(255,171,0,0.3); }
+  .l3 .layer-tag { background: rgba(0,184,212,0.15); color: var(--cyan); border: 1px solid rgba(0,184,212,0.3); }
+  .l4 .layer-tag { background: rgba(0,200,83,0.15); color: var(--green); border: 1px solid rgba(0,200,83,0.3); }
+  .l5 .layer-tag { background: rgba(30,136,229,0.15); color: var(--blue-light); border: 1px solid rgba(30,136,229,0.3); }
+
+  .layer-content h4 {
+    font-family: 'Syne', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+    color: var(--paper);
+  }
+  .layer-content p {
+    font-size: 0.85rem;
+    color: rgba(240,244,255,0.55);
+    line-height: 1.5;
+  }
+  .layer-content p strong { color: rgba(240,244,255,0.85); }
+
+  .layer-connector {
+    display: flex;
+    justify-content: center;
+    margin: 0.1rem 0;
+  }
+  .connector-line {
+    width: 2px;
+    height: 20px;
+    background: linear-gradient(to bottom, var(--cyan), transparent);
+    opacity: 0.4;
+    position: relative;
+  }
+  .connector-line::after {
+    content: '▼';
+    position: absolute;
+    bottom: -6px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 8px;
+    color: var(--cyan);
+    opacity: 0.6;
+  }
+
+  /* ─── COMPARATIVO ON-PREMISE VS CLOUD ─── */
+  .compare-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    border: 1px solid rgba(30,136,229,0.2);
+    border-radius: 8px;
+    overflow: hidden;
+    margin-top: 1rem;
+  }
+  .compare-table thead {
+    background: rgba(13,71,161,0.3);
+  }
+  .compare-table th {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 1rem 1.5rem;
+    text-align: left;
+    color: var(--cyan);
+    border-bottom: 1px solid rgba(30,136,229,0.25);
+  }
+  .compare-table th:first-child { color: rgba(240,244,255,0.4); }
+  .compare-table td {
+    padding: 0.9rem 1.5rem;
+    font-size: 0.88rem;
+    border-bottom: 1px solid rgba(30,136,229,0.1);
+    color: rgba(240,244,255,0.7);
+    vertical-align: middle;
+  }
+  .compare-table tr:last-child td { border-bottom: none; }
+  .compare-table tr:hover td { background: rgba(30,136,229,0.05); }
+  .compare-table td:first-child {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.7rem;
+    color: rgba(240,244,255,0.4);
+    letter-spacing: 0.5px;
+  }
+  .bad { color: var(--red) !important; }
+  .good { color: var(--green) !important; }
+  .ok { color: var(--amber) !important; }
+
+  /* ─── CASE PROTHEUS ─── */
+  .case-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.5rem;
+  }
+  .case-card {
+    background: rgba(13,71,161,0.1);
+    border: 1px solid rgba(30,136,229,0.18);
+    border-radius: 8px;
+    padding: 1.8rem;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.5s ease, transform 0.5s ease, border-color 0.3s, box-shadow 0.3s;
+  }
+  .case-card.visible { opacity: 1; transform: translateY(0); }
+  .case-card:hover { border-color: var(--cyan); box-shadow: var(--glow); }
+  .case-card .card-num {
+    font-family: 'Space Mono', monospace;
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--cyan);
+    line-height: 1;
+    margin-bottom: 0.3rem;
+    opacity: 0.6;
+  }
+  .case-card h4 {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    color: var(--paper);
+  }
+  .case-card p {
+    font-size: 0.85rem;
+    color: rgba(240,244,255,0.55);
+    line-height: 1.6;
+  }
+
+  /* ─── RESUMO VISUAL ─── */
+  .summary-flow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0;
+    margin-top: 2rem;
+  }
+  .flow-node {
+    background: rgba(13,71,161,0.15);
+    border: 1px solid rgba(30,136,229,0.3);
+    border-radius: 6px;
+    padding: 1rem 1.5rem;
+    text-align: center;
+    min-width: 120px;
+    opacity: 0;
+    transform: scale(0.9);
+    transition: opacity 0.5s ease, transform 0.5s ease, border-color 0.3s;
+  }
+  .flow-node.visible { opacity: 1; transform: scale(1); }
+  .flow-node:hover { border-color: var(--cyan); }
+  .flow-node .fn-icon { font-size: 1.5rem; margin-bottom: 0.4rem; display: block; }
+  .flow-node .fn-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--cyan);
+    margin-bottom: 0.2rem;
+  }
+  .flow-node .fn-desc {
+    font-size: 0.75rem;
+    color: rgba(240,244,255,0.5);
+    line-height: 1.4;
+  }
+  .flow-arrow {
+    font-size: 1.2rem;
+    color: var(--cyan);
+    opacity: 0.5;
+    padding: 0 0.5rem;
+  }
+
+  /* ─── FOOTER ─── */
+  footer {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    padding: 3rem 2rem;
+    border-top: 1px solid rgba(30,136,229,0.15);
+  }
+  footer p {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 1.5px;
+    color: rgba(240,244,255,0.25);
+    text-transform: uppercase;
+  }
+  footer a {
+    color: var(--cyan);
+    text-decoration: none;
+  }
+  footer a:hover { opacity: 0.7; }
+
+  /* ─── TOOLTIP ─── */
+  [data-tip] {
+    position: relative;
+    cursor: help;
+    border-bottom: 1px dashed rgba(0,184,212,0.4);
+    color: rgba(240,244,255,0.9);
+  }
+  [data-tip]::after {
+    content: attr(data-tip);
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(10,22,40,0.97);
+    border: 1px solid var(--cyan);
+    border-radius: 4px;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.75rem;
+    line-height: 1.4;
+    white-space: nowrap;
+    color: var(--paper);
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.2s;
+    z-index: 99;
+    font-family: 'DM Sans', sans-serif;
+    font-style: normal;
+    border-bottom: 1px solid var(--cyan);
+    max-width: 220px;
+    white-space: normal;
+    text-align: center;
+  }
+  [data-tip]:hover::after { opacity: 1; }
+
+  /* ─── ANIMAÇÕES ─── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes scrollPulse {
+    0%, 100% { opacity: 0.4; }
+    50% { opacity: 0.9; }
+  }
+  @keyframes pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(0,184,212,0.4); }
+    50% { box-shadow: 0 0 0 8px rgba(0,184,212,0); }
+  }
+  @keyframes scanLine {
+    from { transform: translateY(-100%); }
+    to { transform: translateY(100vh); }
+  }
+
+  /* ─── LIVE INDICATOR ─── */
+  .live-dot {
+    display: inline-block;
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--green);
+    animation: pulse 1.5s infinite;
+    margin-right: 6px;
+  }
+
+  /* ─── HIGHLIGHT BOX ─── */
+  .highlight-box {
+    background: rgba(255,171,0,0.06);
+    border-left: 3px solid var(--amber);
+    border-radius: 0 6px 6px 0;
+    padding: 1.2rem 1.5rem;
+    margin: 2rem 0;
+    font-size: 0.92rem;
+    color: rgba(240,244,255,0.8);
+    line-height: 1.7;
+  }
+  .highlight-box strong { color: var(--amber); }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 600px) {
+    .arch-layer { grid-template-columns: 1fr; }
+    .layer-tag { text-align: left; width: fit-content; }
+    .summary-flow { flex-direction: column; }
+    .flow-arrow { transform: rotate(90deg); }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="https://daniel-1984.github.io/portfolio-protheus/">← Daniel.dev</a>
+  <div class="nav-links">
+    <a href="#oqueenuvem">O que é</a>
+    <a href="#modelos">Modelos</a>
+    <a href="#arquitetura">Arquitetura</a>
+    <a href="#comparativo">Comparativo</a>
+    <a href="#protheus">Protheus</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-badge"><span class="live-dot"></span>Projeto Técnico — Cloud Architecture</div>
+  <h1>Arquitetura<br>em <span>Nuvem</span></h1>
+  <p class="hero-sub">
+    Do servidor físico à infraestrutura global — entenda como funciona a computação em nuvem sem precisar ser especialista em TI.
+  </p>
+  <div class="hero-analogy">
+    Pense assim: antes, sua empresa tinha <strong>um gerador próprio</strong> de energia.<br>
+    Hoje, você simplesmente <strong>liga na tomada</strong> e paga o que usar.<br>
+    Cloud é exatamente isso — só que com computadores.
+  </div>
+  <div class="scroll-cue">
+    <span>Role para explorar</span>
+    <div class="scroll-arrow"></div>
+  </div>
+</div>
+
+<!-- O QUE É NUVEM -->
+<section id="oqueenuvem">
+  <div class="section-label">Fundamentos</div>
+  <h2>O que é a Nuvem, afinal?</h2>
+  <p class="section-intro">
+    Nuvem (ou <em>Cloud Computing</em>) significa usar computadores, servidores e programas que ficam em grandes data centers espalhados pelo mundo — acessados pela internet, sob demanda.
+  </p>
+
+  <div class="highlight-box">
+    <strong>Analogia do mundo real:</strong> Imagine que você vai alugar um escritório num prédio comercial. Você não precisa comprar o prédio, instalar ar-condicionado, contratar segurança ou pagar a conta de luz da estrutura — isso é responsabilidade do dono do prédio. Você só paga pelo espaço que usa, e pode expandir ou diminuir seu andar quando quiser. <strong>É assim que a nuvem funciona</strong> — o "prédio" pertence a empresas como AWS, Azure ou Google Cloud. Você usa e paga pelo que consumir.
+  </div>
+
+  <div class="analogy-grid">
+    <div class="analogy-card obs-card">
+      <span class="analogy-icon">🏢</span>
+      <div class="label-antes">Mundo real</div>
+      <p class="analogy-real">Servidor físico dentro da empresa</p>
+      <div class="label-depois">Na nuvem</div>
+      <p class="analogy-cloud">Máquina virtual num data center — você acessa pela internet como se estivesse aqui do lado</p>
+    </div>
+    <div class="analogy-card obs-card">
+      <span class="analogy-icon">💾</span>
+      <div class="label-antes">Mundo real</div>
+      <p class="analogy-real">HD externo ou pen drive</p>
+      <div class="label-depois">Na nuvem</div>
+      <p class="analogy-cloud">Armazenamento escalável — de 1 GB a petabytes. Nunca fica sem espaço, nunca perde os dados</p>
+    </div>
+    <div class="analogy-card obs-card">
+      <span class="analogy-icon">🔌</span>
+      <div class="label-antes">Mundo real</div>
+      <p class="analogy-real">Comprar e instalar programa</p>
+      <div class="label-depois">Na nuvem</div>
+      <p class="analogy-cloud">Software pronto, acessado pelo browser. Sem instalação, sem atualização manual, sem CD</p>
+    </div>
+    <div class="analogy-card obs-card">
+      <span class="analogy-icon">📈</span>
+      <div class="label-antes">Mundo real</div>
+      <p class="analogy-real">Comprar mais servidores quando cresce</p>
+      <div class="label-depois">Na nuvem</div>
+      <p class="analogy-cloud">Escalabilidade instantânea — mais recursos em minutos, sem comprar hardware novo</p>
+    </div>
+  </div>
+</section>
+
+<!-- OS 3 MODELOS -->
+<section id="modelos">
+  <div class="section-label">Modelos de Serviço</div>
+  <h2>As 3 camadas da Nuvem</h2>
+  <p class="section-intro">
+    Existem três formas de contratar serviços em nuvem. Cada uma define <em>quanto você controla</em> e <em>quanto o provedor cuida</em> pra você.
+  </p>
+
+  <div class="modelos-wrap">
+    <div class="modelo-col obs-card">
+      <div class="modelo-sigla">IaaS</div>
+      <div class="modelo-nome">Infrastructure as a Service</div>
+      <p class="modelo-analogia">
+        É como <strong>alugar um terreno vazio</strong>. Você recebe a estrutura bruta — servidores, rede, armazenamento — e constrói tudo por cima do jeito que quiser.
+      </p>
+      <ul class="modelo-exemplos">
+        <li>AWS EC2 (máquinas virtuais)</li>
+        <li>Azure Virtual Machines</li>
+        <li>Google Compute Engine</li>
+        <li>Você configura o sistema operacional</li>
+      </ul>
+    </div>
+    <div class="modelo-col obs-card">
+      <div class="modelo-sigla">PaaS</div>
+      <div class="modelo-nome">Platform as a Service</div>
+      <p class="modelo-analogia">
+        É como <strong>alugar um apartamento semi-mobiliado</strong>. Já tem cozinha, banheiro instalados — você só traz seus móveis (seu código/aplicação).
+      </p>
+      <ul class="modelo-exemplos">
+        <li>Azure App Service</li>
+        <li>Google App Engine</li>
+        <li>Heroku / Railway</li>
+        <li>Você só gerencia a aplicação</li>
+      </ul>
+    </div>
+    <div class="modelo-col obs-card">
+      <div class="modelo-sigla">SaaS</div>
+      <div class="modelo-nome">Software as a Service</div>
+      <p class="modelo-analogia">
+        É como <strong>ficar num hotel</strong>. Tudo pronto, tudo funcionando. Você só usa — sem se preocupar com nada por baixo.
+      </p>
+      <ul class="modelo-exemplos">
+        <li>Google Workspace (Gmail, Drive)</li>
+        <li>Microsoft 365</li>
+        <li>Salesforce</li>
+        <li>Você só usa o software</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- DIAGRAMA DE ARQUITETURA -->
+<section id="arquitetura" class="diagram-section">
+  <div class="section-label">Arquitetura</div>
+  <h2>Como as camadas se conectam</h2>
+  <p class="section-intro">
+    Uma arquitetura em nuvem típica funciona como um <data-tip="Cada camada se comunica com a de cima e de baixo">sistema de camadas</data-tip>. Passe o mouse em cada linha para entender o que ela faz.
+  </p>
+
+  <div class="arch-diagram">
+    <div class="arch-layers">
+
+      <div class="arch-layer l1 obs-card">
+        <div class="layer-tag">Usuário</div>
+        <div class="layer-content">
+          <h4>👤 Interface — Onde o usuário está</h4>
+          <p>Browser, app mobile ou desktop. O ponto de entrada. <strong>O usuário nunca vê o que está por baixo.</strong></p>
+        </div>
+      </div>
+
+      <div class="layer-connector"><div class="connector-line"></div></div>
+
+      <div class="arch-layer l2 obs-card">
+        <div class="layer-tag">CDN / DNS</div>
+        <div class="layer-content">
+          <h4>🌍 Roteamento Global</h4>
+          <p><strong>CDN</strong> = Rede de Distribuição de Conteúdo. Como um carteiro inteligente que entrega do servidor mais próximo de você, não do mais distante. Resultado: <em>velocidade</em>.</p>
+        </div>
+      </div>
+
+      <div class="layer-connector"><div class="connector-line"></div></div>
+
+      <div class="arch-layer l3 obs-card">
+        <div class="layer-tag">API Gateway</div>
+        <div class="layer-content">
+          <h4>🚪 Porteiro da Aplicação — API Gateway</h4>
+          <p>Recebe todas as requisições, verifica quem pode entrar (<strong>autenticação</strong>), distribui o tráfego e protege contra sobrecarga. É a recepção do prédio.</p>
+        </div>
+      </div>
+
+      <div class="layer-connector"><div class="connector-line"></div></div>
+
+      <div class="arch-layer l4 obs-card">
+        <div class="layer-tag">Aplicação</div>
+        <div class="layer-content">
+          <h4>⚙️ Serviços e Microsserviços</h4>
+          <p>O <strong>coração do sistema</strong>. Aqui ficam as regras de negócio — cálculos, lógica, integrações. Pode ser uma aplicação monolítica ou vários microsserviços menores conversando entre si.</p>
+        </div>
+      </div>
+
+      <div class="layer-connector"><div class="connector-line"></div></div>
+
+      <div class="arch-layer l5 obs-card">
+        <div class="layer-tag">Dados</div>
+        <div class="layer-content">
+          <h4>🗄️ Banco de Dados + Armazenamento</h4>
+          <p>Onde tudo é guardado. <strong>SQL</strong> para dados estruturados (tabelas, registros), <strong>NoSQL</strong> para dados flexíveis, <strong>Blob Storage</strong> para arquivos, NFes, PDFs — tudo replicado e com backup automático.</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- COMPARATIVO -->
+<section id="comparativo">
+  <div class="section-label">Análise</div>
+  <h2>On-Premise vs. Nuvem</h2>
+  <p class="section-intro">
+    On-premise significa que os servidores ficam fisicamente na sua empresa. Veja como os dois modelos se comparam no dia a dia.
+  </p>
+
+  <table class="compare-table">
+    <thead>
+      <tr>
+        <th>Critério</th>
+        <th>🏭 On-Premise (Servidor Local)</th>
+        <th>☁️ Cloud (Nuvem)</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Investimento inicial</td>
+        <td class="bad">Alto — compra de hardware, racks, nobreaks, ar-condicionado</td>
+        <td class="good">Baixo — você paga pelo uso, sem comprar nada físico</td>
+      </tr>
+      <tr>
+        <td>Escalabilidade</td>
+        <td class="bad">Lenta — precisa comprar e instalar novos servidores</td>
+        <td class="good">Instantânea — mais recursos em minutos via painel</td>
+      </tr>
+      <tr>
+        <td>Manutenção</td>
+        <td class="bad">Sua equipe cuida de hardware, SO, patches, backups</td>
+        <td class="good">Provedor cuida da infraestrutura; você cuida só da aplicação</td>
+      </tr>
+      <tr>
+        <td>Disponibilidade</td>
+        <td class="ok">Depende da sua estrutura — um problema de energia pode derrubar tudo</td>
+        <td class="good">SLA de 99,9% a 99,99% — data centers redundantes globalmente</td>
+      </tr>
+      <tr>
+        <td>Segurança</td>
+        <td class="ok">Você controla totalmente — mas também é responsável por tudo</td>
+        <td class="good">Provedores investem bilhões em segurança (certificações ISO, SOC)</td>
+      </tr>
+      <tr>
+        <td>Custo operacional</td>
+        <td class="bad">Fixo — paga mesmo sem usar (luz, cooling, equipe)</td>
+        <td class="good">Variável — paga só o que consumir (pay-as-you-go)</td>
+      </tr>
+      <tr>
+        <td>Controle total</td>
+        <td class="good">Total — você decide cada detalhe da infraestrutura</td>
+        <td class="ok">Parcial — você gerencia a aplicação, o provedor gerencia o resto</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="highlight-box" style="margin-top:2rem;">
+    <strong>Realidade do mercado:</strong> A maioria das empresas modernas usa uma arquitetura <em>híbrida</em> — mantendo sistemas legados ou dados sensíveis on-premise, e usando a nuvem para escalabilidade, novas aplicações e integrações. É o modelo mais comum em implantações ERP como o TOTVS Protheus.
+  </div>
+</section>
+
+<!-- CASE PROTHEUS EM NUVEM -->
+<section id="protheus">
+  <div class="section-label">Case Real</div>
+  <h2>Protheus ERP em Nuvem</h2>
+  <p class="section-intro">
+    O TOTVS Protheus pode rodar em infraestrutura de nuvem — com Application Server, DbAccess e banco de dados em VMs cloud — conectado via REST API a interfaces modernas.
+  </p>
+
+  <!-- FLUXO RESUMIDO -->
+  <div class="summary-flow">
+    <div class="flow-node obs-card">
+      <span class="fn-icon">👤</span>
+      <div class="fn-label">Usuário</div>
+      <div class="fn-desc">Browser / Mobile</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node obs-card">
+      <span class="fn-icon">🌐</span>
+      <div class="fn-label">Angular / PO-UI</div>
+      <div class="fn-desc">Frontend moderno</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node obs-card">
+      <span class="fn-icon">🔌</span>
+      <div class="fn-label">REST API TLPP</div>
+      <div class="fn-desc">Autenticação + JSON</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node obs-card">
+      <span class="fn-icon">⚙️</span>
+      <div class="fn-label">Protheus</div>
+      <div class="fn-desc">App Server / ADVPL</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node obs-card">
+      <span class="fn-icon">🗄️</span>
+      <div class="fn-label">SQL Server</div>
+      <div class="fn-desc">Cloud DB — Azure / AWS RDS</div>
+    </div>
+  </div>
+
+  <div style="margin-top: 3rem;">
+    <div class="case-grid">
+      <div class="case-card obs-card">
+        <div class="card-num">11</div>
+        <h4>Filiais integradas</h4>
+        <p>Arquitetura multi-empresa e multi-filial com um único Application Server em nuvem — sem replicar infraestrutura em cada unidade.</p>
+      </div>
+      <div class="case-card obs-card">
+        <div class="card-num">5+</div>
+        <h4>Módulos via REST</h4>
+        <p>SIGACOM, SIGAEST, SIGAFAT, SIGAFIN e SIGACTB expostos como APIs RESTful consumidas por frontends modernos e integrações externas.</p>
+      </div>
+      <div class="case-card obs-card">
+        <div class="card-num">0s</div>
+        <h4>Downtime planejado</h4>
+        <p>Com load balancer em nuvem e banco replicado, atualizações são feitas com zero interrupção para o usuário final.</p>
+      </div>
+      <div class="case-card obs-card">
+        <div class="card-num">PWA</div>
+        <h4>Acesso mobile offline</h4>
+        <p>Progressive Web App que consome a API REST do Protheus — funciona parcialmente sem internet e sincroniza ao reconectar.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <p>
+    <a href="https://daniel-1984.github.io/portfolio-protheus/">← Voltar ao Portfólio</a>
+    &nbsp;·&nbsp;
+    Daniel Luiz Alves — Arquitetura de Soluções ERP Protheus
+    &nbsp;·&nbsp;
+    Curitiba, PR
+  </p>
+</footer>
+
+<script>
+  // ─── INTERSECTION OBSERVER — anima elementos ao entrar na tela ───
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        const el = entry.target;
+        const siblings = el.parentElement.querySelectorAll('.obs-card');
+        const idx = Array.from(siblings).indexOf(el);
+        setTimeout(() => {
+          el.classList.add('visible');
+        }, idx * 80);
+        observer.unobserve(el);
+      }
+    });
+  }, { threshold: 0.12 });
+
+  document.querySelectorAll('.obs-card').forEach(el => observer.observe(el));
+
+  // ─── MODELOS — atraso encadeado ───
+  const modeloCols = document.querySelectorAll('.modelo-col');
+  const modelObs = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        modeloCols.forEach((col, i) => {
+          setTimeout(() => col.classList.add('visible'), i * 120);
+        });
+        modelObs.disconnect();
+      }
+    });
+  }, { threshold: 0.1 });
+  if (modeloCols[0]) modelObs.observe(modeloCols[0]);
+
+  // ─── ARCH LAYERS — atraso encadeado ───
+  const layers = document.querySelectorAll('.arch-layer');
+  const layerObs = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        layers.forEach((l, i) => {
+          setTimeout(() => l.classList.add('visible'), i * 100);
+        });
+        layerObs.disconnect();
+      }
+    });
+  }, { threshold: 0.1 });
+  if (layers[0]) layerObs.observe(layers[0]);
+
+  // ─── FLOW NODES ───
+  const nodes = document.querySelectorAll('.flow-node');
+  const nodeObs = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        nodes.forEach((n, i) => {
+          setTimeout(() => n.classList.add('visible'), i * 100);
+        });
+        nodeObs.disconnect();
+      }
+    });
+  }, { threshold: 0.1 });
+  if (nodes[0]) nodeObs.observe(nodes[0]);
+</script>
+
+</body>
+</html>
