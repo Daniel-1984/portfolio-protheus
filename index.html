@@ -21,12 +21,12 @@
   de forma ASSÍNCRONA — ou seja, não trava o carregamento da
   sua página enquanto o script do Google é baixado.
 
-  PARÂMETRO "G-XXXXXXXXXX":
+  PARÂMETRO "G-D0N8HN6LM3":
   ─────────────────────────────────────────────────────────────
   Esse é o seu MEASUREMENT ID — o código único que diz ao
   Google "esses dados pertencem à conta do Daniel".
   
-  ⚠️  TROQUE "G-XXXXXXXXXX" pelo seu ID real ANTES de subir
+  ⚠️  TROQUE "G-D0N8HN6LM3" pelo seu ID real ANTES de subir
       para o GitHub. Para criar gratuitamente:
       1. Acesse https://analytics.google.com
       2. Crie uma propriedade → Web
@@ -49,7 +49,7 @@
   gtag('js', new Date()): Marca o timestamp de quando o
   script foi iniciado — usado internamente pelo Google.
   
-  gtag('config', 'G-XXXXXXXXXX'): Diz ao GA4 qual propriedade
+  gtag('config', 'G-D0N8HN6LM3'): Diz ao GA4 qual propriedade
   usar. A partir daqui, toda pageview já é registrada.
   ─────────────────────────────────────────────────────────────
 -->
@@ -58,7 +58,7 @@
   function gtag(){ dataLayer.push(arguments); }
   gtag('js', new Date());
 
-  // Configuração principal — substitua G-XXXXXXXXXX pelo seu ID real
+  // Configuração principal — substitua G-D0N8HN6LM3 pelo seu ID real
   gtag('config', 'G-D0N8HN6LM3', {
     // send_page_view: true é o padrão — registra automaticamente
     // cada vez que alguém abre a página
