@@ -1,0 +1,1350 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AgriSense - Automação Agrícola</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Sora:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  :root {
+    --bg: #0a0f0a;
+    --bg2: #0f1a0f;
+    --bg3: #142014;
+    --card: #111a11;
+    --card2: #162216;
+    --border: #1e3a1e;
+    --border2: #2a4a2a;
+    --green-1: #00ff7f;
+    --green-2: #00cc5e;
+    --green-3: #2E7D32;
+    --green-4: #4CAF50;
+    --amber: #ffb300;
+    --red: #ff4444;
+    --blue: #00bcd4;
+    --text-1: #e8f5e9;
+    --text-2: #81c784;
+    --text-3: #4a7a4a;
+    --font-head: 'Sora', sans-serif;
+    --font-mono: 'Space Mono', monospace;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text-1);
+    font-family: var(--font-head);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Grid noise overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,255,127,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,255,127,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .layout {
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    grid-template-rows: auto 1fr;
+    min-height: 100vh;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ── SIDEBAR ── */
+  .sidebar {
+    grid-row: 1 / 3;
+    background: var(--bg2);
+    border-right: 1px solid var(--border);
+    padding: 24px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+  }
+
+  .logo-block {
+    text-align: center;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .logo-icon {
+    font-size: 3rem;
+    line-height: 1;
+    display: block;
+    filter: drop-shadow(0 0 20px rgba(0,255,127,0.6));
+    animation: pulse-glow 3s ease-in-out infinite;
+  }
+
+  @keyframes pulse-glow {
+    0%, 100% { filter: drop-shadow(0 0 20px rgba(0,255,127,0.6)); }
+    50% { filter: drop-shadow(0 0 35px rgba(0,255,127,0.9)); }
+  }
+
+  .logo-name {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--green-1);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-top: 8px;
+  }
+
+  .logo-tag {
+    font-size: 0.68rem;
+    color: var(--text-3);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    font-family: var(--font-mono);
+  }
+
+  .sidebar-section-title {
+    font-size: 0.7rem;
+    font-family: var(--font-mono);
+    color: var(--text-3);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 10px;
+  }
+
+  .area-select {
+    width: 100%;
+    background: var(--bg3);
+    border: 1px solid var(--border2);
+    color: var(--text-1);
+    padding: 10px 12px;
+    border-radius: 8px;
+    font-family: var(--font-head);
+    font-size: 0.85rem;
+    outline: none;
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2300ff7f' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    transition: border-color 0.2s;
+  }
+
+  .area-select:focus { border-color: var(--green-1); }
+  .area-select option { background: var(--bg3); }
+
+  .status-list { display: flex; flex-direction: column; gap: 8px; }
+
+  .status-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px;
+    background: var(--bg3);
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    font-size: 0.82rem;
+  }
+
+  .status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--green-1);
+    box-shadow: 0 0 8px var(--green-1);
+    animation: blink 2s ease-in-out infinite;
+    flex-shrink: 0;
+  }
+
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  .status-dot.amber { background: var(--amber); box-shadow: 0 0 8px var(--amber); }
+
+  .status-label { color: var(--text-2); flex: 1; }
+  .status-val { font-family: var(--font-mono); font-size: 0.7rem; color: var(--green-1); }
+
+  .info-box {
+    background: var(--bg3);
+    border: 1px solid var(--border2);
+    border-left: 3px solid var(--green-3);
+    border-radius: 8px;
+    padding: 14px;
+    font-size: 0.8rem;
+    color: var(--text-2);
+    line-height: 1.7;
+  }
+
+  .info-box strong { color: var(--green-1); display: block; margin-bottom: 8px; font-size: 0.85rem; }
+
+  .sidebar-footer {
+    margin-top: auto;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+    font-size: 0.75rem;
+    color: var(--text-3);
+    font-family: var(--font-mono);
+    line-height: 2;
+  }
+
+  .sidebar-footer span { color: var(--green-2); }
+
+  /* ── TOPBAR ── */
+  .topbar {
+    background: var(--bg2);
+    border-bottom: 1px solid var(--border);
+    padding: 20px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  .topbar-title {
+    font-size: 1.6rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--green-1), var(--blue));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: -0.5px;
+  }
+
+  .topbar-sub {
+    font-size: 0.78rem;
+    color: var(--text-3);
+    font-family: var(--font-mono);
+    letter-spacing: 1px;
+  }
+
+  .refresh-badge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--bg3);
+    border: 1px solid var(--border2);
+    border-radius: 100px;
+    padding: 6px 14px;
+    font-size: 0.75rem;
+    font-family: var(--font-mono);
+    color: var(--text-2);
+  }
+
+  .refresh-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--green-1);
+    box-shadow: 0 0 6px var(--green-1);
+    animation: blink 1.5s ease-in-out infinite;
+  }
+
+  /* ── MAIN ── */
+  .main {
+    padding: 28px 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  /* ── METRIC CARDS ── */
+  .metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+  }
+
+  .metric-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.3s, transform 0.2s;
+    cursor: default;
+  }
+
+  .metric-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--green-1), transparent);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .metric-card:hover { border-color: var(--border2); transform: translateY(-2px); }
+  .metric-card:hover::before { opacity: 1; }
+
+  .metric-icon {
+    font-size: 1.6rem;
+    margin-bottom: 10px;
+    display: block;
+  }
+
+  .metric-label {
+    font-size: 0.72rem;
+    color: var(--text-3);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    font-family: var(--font-mono);
+    margin-bottom: 8px;
+  }
+
+  .metric-value {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--green-1);
+    line-height: 1;
+    font-family: var(--font-mono);
+    letter-spacing: -1px;
+  }
+
+  .metric-delta {
+    font-size: 0.78rem;
+    margin-top: 6px;
+    font-family: var(--font-mono);
+  }
+
+  .metric-delta.pos { color: var(--green-4); }
+  .metric-delta.neg { color: var(--red); }
+
+  .metric-bg {
+    position: absolute;
+    right: 14px;
+    bottom: 10px;
+    font-size: 3.5rem;
+    opacity: 0.06;
+    pointer-events: none;
+    line-height: 1;
+  }
+
+  /* ── TABS ── */
+  .tabs-container { display: flex; flex-direction: column; gap: 0; }
+
+  .tabs-nav {
+    display: flex;
+    gap: 0;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px 12px 0 0;
+    padding: 6px;
+    overflow-x: auto;
+  }
+
+  .tab-btn {
+    flex: 1;
+    padding: 10px 16px;
+    background: transparent;
+    border: none;
+    color: var(--text-3);
+    font-family: var(--font-head);
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: all 0.2s;
+    white-space: nowrap;
+    letter-spacing: 0.3px;
+  }
+
+  .tab-btn.active {
+    background: var(--bg3);
+    color: var(--green-1);
+    box-shadow: 0 0 16px rgba(0,255,127,0.1);
+  }
+
+  .tab-btn:hover:not(.active) { color: var(--text-2); background: rgba(255,255,255,0.03); }
+
+  .tabs-content {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-top: none;
+    border-radius: 0 0 12px 12px;
+    padding: 24px;
+  }
+
+  .tab-panel { display: none; animation: fadeIn 0.3s ease; }
+  .tab-panel.active { display: block; }
+
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+  /* ── SECTION TITLE ── */
+  .section-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text-1);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .section-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* ── CHARTS GRID ── */
+  .charts-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+
+  .chart-box {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+  }
+
+  .chart-box-title {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-2);
+    margin-bottom: 16px;
+    font-family: var(--font-mono);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .chart-wrapper { position: relative; height: 220px; }
+
+  /* ── ATUADORES ── */
+  .atuadores-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+
+  .atuador-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .toggle-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .toggle-label { font-size: 0.88rem; font-weight: 600; color: var(--text-1); }
+
+  .toggle-switch {
+    position: relative;
+    width: 48px;
+    height: 26px;
+    flex-shrink: 0;
+  }
+
+  .toggle-switch input { opacity: 0; width: 0; height: 0; }
+
+  .toggle-track {
+    position: absolute;
+    inset: 0;
+    background: var(--bg3);
+    border: 1px solid var(--border2);
+    border-radius: 100px;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+
+  .toggle-track::after {
+    content: '';
+    position: absolute;
+    top: 3px; left: 3px;
+    width: 18px; height: 18px;
+    background: var(--text-3);
+    border-radius: 50%;
+    transition: all 0.3s;
+  }
+
+  .toggle-switch input:checked ~ .toggle-track {
+    background: rgba(0,255,127,0.15);
+    border-color: var(--green-2);
+  }
+
+  .toggle-switch input:checked ~ .toggle-track::after {
+    transform: translateX(22px);
+    background: var(--green-1);
+    box-shadow: 0 0 8px var(--green-1);
+  }
+
+  .status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 100px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    font-family: var(--font-mono);
+  }
+
+  .status-badge.active {
+    background: rgba(0,255,127,0.1);
+    color: var(--green-1);
+    border: 1px solid rgba(0,255,127,0.25);
+  }
+
+  .status-badge.inactive {
+    background: rgba(255,179,0,0.1);
+    color: var(--amber);
+    border: 1px solid rgba(255,179,0,0.25);
+  }
+
+  .slider-row { display: flex; flex-direction: column; gap: 8px; }
+  .slider-label { font-size: 0.78rem; color: var(--text-3); font-family: var(--font-mono); }
+
+  input[type=range] {
+    width: 100%;
+    height: 4px;
+    -webkit-appearance: none;
+    background: var(--border2);
+    border-radius: 100px;
+    outline: none;
+    cursor: pointer;
+  }
+
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 16px; height: 16px;
+    border-radius: 50%;
+    background: var(--green-1);
+    box-shadow: 0 0 8px var(--green-1);
+    cursor: pointer;
+  }
+
+  .slider-val {
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    color: var(--green-1);
+    font-weight: 700;
+  }
+
+  .stats-list { display: flex; flex-direction: column; gap: 6px; border-top: 1px solid var(--border); padding-top: 12px; }
+  .stat-row { display: flex; justify-content: space-between; font-size: 0.8rem; }
+  .stat-key { color: var(--text-3); }
+  .stat-val { color: var(--text-1); font-family: var(--font-mono); font-weight: 600; }
+
+  /* ── PROTOCOLOS ── */
+  .proto-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+
+  .proto-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .code-block {
+    background: #040804;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px;
+    font-family: var(--font-mono);
+    font-size: 0.76rem;
+    color: var(--green-2);
+    line-height: 1.8;
+    white-space: pre;
+    overflow-x: auto;
+  }
+
+  .progress-bar-wrap { display: flex; flex-direction: column; gap: 6px; }
+  .progress-label { font-size: 0.78rem; color: var(--text-3); font-family: var(--font-mono); }
+  .progress-track {
+    height: 6px;
+    background: var(--bg3);
+    border-radius: 100px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--green-3), var(--green-1));
+    border-radius: 100px;
+    transition: width 1s ease;
+  }
+
+  .can-messages { display: flex; flex-direction: column; gap: 4px; }
+  .can-msg {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: var(--text-3);
+    padding: 6px 10px;
+    background: #040804;
+    border-radius: 6px;
+    border-left: 2px solid var(--green-3);
+  }
+  .can-msg span { color: var(--green-1); }
+
+  .cmd-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
+  .cmd-table th {
+    text-align: left;
+    padding: 8px 10px;
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    color: var(--text-3);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-bottom: 1px solid var(--border);
+  }
+  .cmd-table td { padding: 10px 10px; border-bottom: 1px solid rgba(30,58,30,0.4); }
+  .cmd-table td:nth-child(2) { font-family: var(--font-mono); font-size: 0.75rem; }
+  .cmd-table td:nth-child(3) { font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-3); }
+
+  .ok-badge { color: var(--green-1); }
+  .pend-badge { color: var(--amber); }
+
+  /* ── HEATMAP TAB ── */
+  .heatmap-container { position: relative; }
+
+  .heatmap-grid {
+    display: grid;
+    grid-template-columns: repeat(20, 1fr);
+    gap: 2px;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 16px;
+  }
+
+  .hm-cell {
+    aspect-ratio: 1;
+    border-radius: 2px;
+    transition: transform 0.2s;
+    cursor: crosshair;
+    position: relative;
+  }
+
+  .hm-cell:hover { transform: scale(1.3); z-index: 10; }
+
+  .heatmap-metrics {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
+
+  .hm-metric {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+    text-align: center;
+  }
+
+  .hm-metric-val { font-size: 1.5rem; font-weight: 800; color: var(--green-1); font-family: var(--font-mono); }
+  .hm-metric-label { font-size: 0.75rem; color: var(--text-3); margin-top: 4px; font-family: var(--font-mono); text-transform: uppercase; letter-spacing: 1px; }
+
+  .colorbar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+    font-size: 0.75rem;
+    font-family: var(--font-mono);
+    color: var(--text-3);
+  }
+
+  .colorbar-strip {
+    flex: 1;
+    height: 12px;
+    border-radius: 100px;
+    background: linear-gradient(90deg, #c62828, #ef6c00, #f9a825, #66bb6a, #1b5e20);
+  }
+
+  .info-banner {
+    background: rgba(0,188,212,0.08);
+    border: 1px solid rgba(0,188,212,0.25);
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 0.8rem;
+    color: var(--blue);
+    margin-bottom: 16px;
+    font-family: var(--font-mono);
+  }
+
+  /* ── FOOTER ── */
+  .footer {
+    text-align: center;
+    padding: 20px 32px;
+    border-top: 1px solid var(--border);
+    font-size: 0.75rem;
+    color: var(--text-3);
+    font-family: var(--font-mono);
+    line-height: 2;
+    position: relative;
+    z-index: 1;
+  }
+
+  .footer a { color: var(--green-2); text-decoration: none; }
+  .footer a:hover { color: var(--green-1); }
+
+  /* ── SCROLLBAR ── */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 100px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--green-3); }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 1100px) {
+    .metrics-grid { grid-template-columns: repeat(2, 1fr); }
+    .charts-grid, .atuadores-grid, .proto-grid { grid-template-columns: 1fr; }
+  }
+
+  @media (max-width: 768px) {
+    .layout { grid-template-columns: 1fr; }
+    .sidebar { display: none; }
+    .topbar { padding: 16px 20px; }
+    .main { padding: 20px; }
+    .metrics-grid { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="layout">
+
+  <!-- ── SIDEBAR ── -->
+  <aside class="sidebar">
+    <div class="logo-block">
+      <span class="logo-icon">🌾</span>
+      <div class="logo-name">AgriSense</div>
+      <div class="logo-tag">Automação Agrícola v1.0</div>
+    </div>
+
+    <div>
+      <div class="sidebar-section-title">📍 Área de Monitoramento</div>
+      <select class="area-select" id="areaSelect" onchange="updateArea(this.value)">
+        <option>Área 1 — Soja</option>
+        <option>Área 2 — Milho</option>
+        <option>Área 3 — Trigo</option>
+        <option>Área 4 — Café</option>
+      </select>
+    </div>
+
+    <div>
+      <div class="sidebar-section-title">🔧 Status do Sistema</div>
+      <div class="status-list">
+        <div class="status-item">
+          <div class="status-dot"></div>
+          <span class="status-label">Sensores</span>
+          <span class="status-val">ONLINE</span>
+        </div>
+        <div class="status-item">
+          <div class="status-dot"></div>
+          <span class="status-label">Protocolo CAN</span>
+          <span class="status-val">ATIVO</span>
+        </div>
+        <div class="status-item">
+          <div class="status-dot"></div>
+          <span class="status-label">ISOBUS</span>
+          <span class="status-val">CONECTADO</span>
+        </div>
+        <div class="status-item">
+          <div class="status-dot"></div>
+          <span class="status-label">GPS</span>
+          <span class="status-val">FORTE</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="info-box">
+      <strong>ℹ️ AgriSense v1.0</strong>
+      Sistema de automação para agricultura de precisão com:<br>
+      · Monitoramento em tempo real<br>
+      · Protocolo CAN/ISOBUS<br>
+      · Controle de irrigação<br>
+      · Análise de solo NPK
+    </div>
+
+    <div class="sidebar-footer">
+      👨‍💻 Dev: <span>Daniel Luiz Alves</span><br>
+      📅 Data: <span id="sideDate"></span><br>
+      🔄 Auto-refresh: <span>5s</span>
+    </div>
+  </aside>
+
+  <!-- ── TOPBAR ── -->
+  <header class="topbar">
+    <div>
+      <div class="topbar-title">🌾 AgriSense — Sistema de Automação Agrícola</div>
+      <div class="topbar-sub">MONITORAMENTO EM TEMPO REAL · <span id="currentArea">ÁREA 1 — SOJA</span></div>
+    </div>
+    <div class="refresh-badge">
+      <div class="refresh-dot"></div>
+      LIVE · <span id="clockDisplay"></span>
+    </div>
+  </header>
+
+  <!-- ── MAIN ── -->
+  <main class="main">
+
+    <!-- Metric Cards -->
+    <div class="metrics-grid">
+      <div class="metric-card">
+        <span class="metric-icon">🌡️</span>
+        <div class="metric-label">Temperatura</div>
+        <div class="metric-value" id="m-temp">--</div>
+        <div class="metric-delta" id="d-temp">--</div>
+        <div class="metric-bg">🌡️</div>
+      </div>
+      <div class="metric-card">
+        <span class="metric-icon">💧</span>
+        <div class="metric-label">Umidade do Solo</div>
+        <div class="metric-value" id="m-solo">--</div>
+        <div class="metric-delta" id="d-solo">--</div>
+        <div class="metric-bg">💧</div>
+      </div>
+      <div class="metric-card">
+        <span class="metric-icon">🌫️</span>
+        <div class="metric-label">Umidade do Ar</div>
+        <div class="metric-value" id="m-ar">--</div>
+        <div class="metric-delta" id="d-ar">--</div>
+        <div class="metric-bg">🌫️</div>
+      </div>
+      <div class="metric-card">
+        <span class="metric-icon">🧪</span>
+        <div class="metric-label">pH do Solo</div>
+        <div class="metric-value" id="m-ph">--</div>
+        <div class="metric-delta" id="d-ph">--</div>
+        <div class="metric-bg">🧪</div>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs-container">
+      <div class="tabs-nav">
+        <button class="tab-btn active" onclick="switchTab('monitor', this)">📊 Monitoramento</button>
+        <button class="tab-btn" onclick="switchTab('atuadores', this)">🚜 Atuadores</button>
+        <button class="tab-btn" onclick="switchTab('proto', this)">📡 Protocolos</button>
+        <button class="tab-btn" onclick="switchTab('mapa', this)">🗺️ Mapa de Calor</button>
+      </div>
+
+      <div class="tabs-content">
+
+        <!-- ── TAB 1: Monitoramento ── -->
+        <div class="tab-panel active" id="tab-monitor">
+          <div class="section-title">📊 Monitoramento em Tempo Real</div>
+          <div class="charts-grid">
+            <div class="chart-box">
+              <div class="chart-box-title">🧪 Níveis de Nutrientes (NPK)</div>
+              <div class="chart-wrapper">
+                <canvas id="chartNPK"></canvas>
+              </div>
+            </div>
+            <div class="chart-box">
+              <div class="chart-box-title">🌡️ Condições Ambientais — Últimas 12h</div>
+              <div class="chart-wrapper">
+                <canvas id="chartAmbiente"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── TAB 2: Atuadores ── -->
+        <div class="tab-panel" id="tab-atuadores">
+          <div class="section-title">🚜 Controle de Atuadores</div>
+          <div class="atuadores-grid">
+
+            <!-- Irrigação -->
+            <div class="atuador-card">
+              <div class="section-title" style="font-size:0.88rem; margin-bottom:0;">💧 Sistema de Irrigação</div>
+
+              <div class="toggle-row">
+                <span class="toggle-label">Irrigação Automática</span>
+                <label class="toggle-switch">
+                  <input type="checkbox" id="toggleIrrig" checked onchange="toggleIrrigacao()">
+                  <div class="toggle-track"></div>
+                </label>
+              </div>
+
+              <div id="irrig-status">
+                <div class="status-badge active">● SISTEMA ATIVO</div>
+              </div>
+
+              <div class="slider-row" id="irrig-slider">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                  <span class="slider-label">Vazão (L/min)</span>
+                  <span class="slider-val" id="vazao-val">45 L/min</span>
+                </div>
+                <input type="range" min="0" max="100" value="45"
+                  oninput="document.getElementById('vazao-val').textContent = this.value + ' L/min'">
+              </div>
+
+              <div class="stats-list">
+                <div class="stat-row">
+                  <span class="stat-key">Tempo de operação hoje</span>
+                  <span class="stat-val">4h 23min</span>
+                </div>
+                <div class="stat-row">
+                  <span class="stat-key">Volume total</span>
+                  <span class="stat-val">12.450 L</span>
+                </div>
+                <div class="stat-row">
+                  <span class="stat-key">Próxima irrigação</span>
+                  <span class="stat-val" id="proxIrrig">--</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Fertilização -->
+            <div class="atuador-card">
+              <div class="section-title" style="font-size:0.88rem; margin-bottom:0;">🌱 Sistema de Fertilização</div>
+
+              <div class="toggle-row">
+                <span class="toggle-label">Fertilização Automática</span>
+                <label class="toggle-switch">
+                  <input type="checkbox" id="toggleFert" onchange="toggleFertilizacao()">
+                  <div class="toggle-track"></div>
+                </label>
+              </div>
+
+              <div id="fert-status">
+                <div class="status-badge inactive">⏸ STANDBY</div>
+              </div>
+
+              <div id="fert-controls" style="display:none; flex-direction:column; gap:12px;">
+                <select class="area-select" id="npkTipo">
+                  <option>NPK 20-10-10</option>
+                  <option>NPK 10-20-20</option>
+                  <option>NPK 15-15-15</option>
+                </select>
+                <div class="slider-row">
+                  <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <span class="slider-label">Taxa de Aplicação (kg/ha)</span>
+                    <span class="slider-val" id="taxa-val">80 kg/ha</span>
+                  </div>
+                  <input type="range" min="0" max="200" value="80"
+                    oninput="document.getElementById('taxa-val').textContent = this.value + ' kg/ha'">
+                </div>
+              </div>
+
+              <div class="stats-list">
+                <div class="stat-row">
+                  <span class="stat-key">Última aplicação</span>
+                  <span class="stat-val">há 3 dias</span>
+                </div>
+                <div class="stat-row">
+                  <span class="stat-key">Total aplicado (mês)</span>
+                  <span class="stat-val">2,4 toneladas</span>
+                </div>
+                <div class="stat-row">
+                  <span class="stat-key">Próxima aplicação</span>
+                  <span class="stat-val" id="proxFert">--</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- ── TAB 3: Protocolos ── -->
+        <div class="tab-panel" id="tab-proto">
+          <div class="section-title">📡 Monitoramento de Protocolos</div>
+          <div class="proto-grid">
+
+            <div class="proto-card">
+              <div class="chart-box-title">🔌 Protocolo CAN Bus</div>
+              <div class="code-block" id="canLog">CAN ID  : 0x18FF5017
+Status  : ACTIVE
+Baudrate: 250 kbps
+Msgs/s  : 87
+Erros   : 0</div>
+              <div class="progress-bar-wrap">
+                <div class="progress-label">Taxa de utilização do bus: <strong style="color:var(--green-1)">87%</strong></div>
+                <div class="progress-track">
+                  <div class="progress-fill" style="width:87%"></div>
+                </div>
+              </div>
+              <div class="chart-box-title" style="margin-top:4px;">Últimas mensagens CAN:</div>
+              <div class="can-messages" id="canMsgs">
+                <div class="can-msg"><span>0x123</span> → [01 02 03 04 05 06 07 08]</div>
+                <div class="can-msg"><span>0x456</span> → [FF EE DD CC BB AA 99 88]</div>
+                <div class="can-msg"><span>0x789</span> → [12 34 56 78 9A BC DE F0]</div>
+              </div>
+            </div>
+
+            <div class="proto-card">
+              <div class="chart-box-title">🚜 Protocolo ISOBUS</div>
+              <div class="code-block">ECU Name : AgriSense Control Unit
+Address  : 0xF4
+Task Ctrl: CONNECTED
+Implement: Sprayer
+State    : ACTIVE</div>
+              <div class="chart-box-title" style="margin-top:4px;">Comandos ISOBUS Ativos:</div>
+              <table class="cmd-table">
+                <thead>
+                  <tr>
+                    <th>Comando</th>
+                    <th>Status</th>
+                    <th>Timestamp</th>
+                  </tr>
+                </thead>
+                <tbody id="cmdTableBody">
+                  <tr>
+                    <td>SET_WORKSTATE</td>
+                    <td><span class="ok-badge">✅ OK</span></td>
+                    <td class="ts">14:23:45</td>
+                  </tr>
+                  <tr>
+                    <td>SET_VALUE</td>
+                    <td><span class="ok-badge">✅ OK</span></td>
+                    <td class="ts">14:23:46</td>
+                  </tr>
+                  <tr>
+                    <td>REQUEST_DATA</td>
+                    <td><span class="pend-badge">⏳ Processando</span></td>
+                    <td class="ts">14:23:47</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- ── TAB 4: Mapa de Calor ── -->
+        <div class="tab-panel" id="tab-mapa">
+          <div class="section-title">🗺️ Mapa de Calor — Produtividade</div>
+          <div class="info-banner">🚧 Em desenvolvimento — Integração com GPS para mapeamento de produtividade por zona</div>
+
+          <div class="colorbar">
+            <span>Baixa</span>
+            <div class="colorbar-strip"></div>
+            <span>Alta — Produtividade (sc/ha)</span>
+          </div>
+
+          <div class="heatmap-grid" id="heatmapGrid"></div>
+
+          <div class="heatmap-metrics">
+            <div class="hm-metric">
+              <div class="hm-metric-val">68,5</div>
+              <div class="hm-metric-label">📊 Produtividade Média (sc/ha)</div>
+            </div>
+            <div class="hm-metric">
+              <div class="hm-metric-val" style="color:#66bb6a;">85,2</div>
+              <div class="hm-metric-label">🏆 Zona Mais Produtiva (sc/ha)</div>
+            </div>
+            <div class="hm-metric">
+              <div class="hm-metric-val" style="color:#ef6c00;">42,1</div>
+              <div class="hm-metric-label">⚠️ Zona Menos Produtiva (sc/ha)</div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /tabs-content -->
+    </div><!-- /tabs-container -->
+
+  </main><!-- /main -->
+
+</div><!-- /layout -->
+
+<footer class="footer">
+  🌾 <strong>AgriSense — Sistema de Automação Agrícola</strong><br>
+  Desenvolvido para demonstração de sistemas embarcados em agricultura de precisão<br>
+  📧 daniel@agrisense.com &nbsp;|&nbsp; 🌐 <a href="https://daniel-1984.github.io/portfolio-protheus" target="_blank">github.com/Daniel-1984</a>
+</footer>
+
+<script>
+// ── UTILS ──────────────────────────────────────────────────────────────────
+function rnd(a, b, dec = 1) {
+  return parseFloat((Math.random() * (b - a) + a).toFixed(dec));
+}
+
+function fmtDelta(val, ref) {
+  const d = parseFloat((val - ref).toFixed(2));
+  return { text: (d >= 0 ? '▲ +' : '▼ ') + d, cls: d >= 0 ? 'pos' : 'neg' };
+}
+
+// ── CLOCK ──────────────────────────────────────────────────────────────────
+function updateClock() {
+  const now = new Date();
+  const ts = now.toLocaleTimeString('pt-BR');
+  document.getElementById('clockDisplay').textContent = ts;
+  document.getElementById('sideDate').textContent = now.toLocaleDateString('pt-BR');
+
+  // Proximas
+  const p6h = new Date(now.getTime() + 6 * 3600000);
+  document.getElementById('proxIrrig').textContent = p6h.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+  const p4d = new Date(now.getTime() + 4 * 86400000);
+  document.getElementById('proxFert').textContent = p4d.toLocaleDateString('pt-BR');
+}
+
+setInterval(updateClock, 1000);
+updateClock();
+
+// ── AREA ──────────────────────────────────────────────────────────────────
+function updateArea(v) {
+  document.getElementById('currentArea').textContent = v.toUpperCase();
+}
+
+// ── SENSORS DATA ──────────────────────────────────────────────────────────
+function gerarDados() {
+  return {
+    temp: rnd(20, 35),
+    solo: rnd(30, 70),
+    ar: rnd(40, 80),
+    ph: rnd(5.5, 7.5, 2),
+    n: rnd(10, 50),
+    p: rnd(5, 30),
+    k: rnd(15, 60)
+  };
+}
+
+function updateMetrics(d) {
+  function set(id, val, unit, ref, dId) {
+    document.getElementById(id).textContent = val + unit;
+    const { text, cls } = fmtDelta(val, ref);
+    const el = document.getElementById(dId);
+    el.textContent = text + unit;
+    el.className = 'metric-delta ' + cls;
+  }
+  set('m-temp', d.temp, '°C', 25, 'd-temp');
+  set('m-solo', d.solo, '%', 50, 'd-solo');
+  set('m-ar', d.ar, '%', 60, 'd-ar');
+  set('m-ph', d.ph, '', 6.5, 'd-ph');
+}
+
+// ── CHART NPK ─────────────────────────────────────────────────────────────
+let npkChart, ambChart;
+
+function initCharts() {
+  const d = gerarDados();
+
+  // NPK
+  npkChart = new Chart(document.getElementById('chartNPK'), {
+    type: 'bar',
+    data: {
+      labels: ['Nitrogênio', 'Fósforo', 'Potássio'],
+      datasets: [{
+        label: 'mg/kg',
+        data: [d.n, d.p, d.k],
+        backgroundColor: ['rgba(0,255,127,0.7)', 'rgba(0,188,212,0.7)', 'rgba(255,179,0,0.7)'],
+        borderColor: ['#00ff7f', '#00bcd4', '#ffb300'],
+        borderWidth: 1,
+        borderRadius: 6
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { ticks: { color: '#81c784', font: { family: 'Space Mono', size: 11 } }, grid: { color: 'rgba(30,58,30,0.5)' } },
+        y: { ticks: { color: '#4a7a4a', font: { family: 'Space Mono', size: 10 } }, grid: { color: 'rgba(30,58,30,0.5)' }, title: { display: true, text: 'Concentração (mg/kg)', color: '#4a7a4a', font: { family: 'Space Mono', size: 10 } } }
+      }
+    }
+  });
+
+  // Ambiente — 12h histórico
+  const now = new Date();
+  const labels = Array.from({ length: 13 }, (_, i) => {
+    const t = new Date(now - (12 - i) * 3600000);
+    return t.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+  });
+  const temps = Array.from({ length: 13 }, (_, i) => parseFloat((d.temp + (i - 6) * 0.5).toFixed(1)));
+  const solos = Array.from({ length: 13 }, (_, i) => parseFloat((d.solo + (i - 6) * 1.2).toFixed(1)));
+
+  ambChart = new Chart(document.getElementById('chartAmbiente'), {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [
+        {
+          label: 'Temperatura (°C)',
+          data: temps,
+          borderColor: '#ff5722',
+          backgroundColor: 'rgba(255,87,34,0.08)',
+          borderWidth: 2,
+          pointRadius: 3,
+          pointBackgroundColor: '#ff5722',
+          tension: 0.4,
+          fill: true,
+          yAxisID: 'y'
+        },
+        {
+          label: 'Umidade Solo (%)',
+          data: solos,
+          borderColor: '#00bcd4',
+          backgroundColor: 'rgba(0,188,212,0.08)',
+          borderWidth: 2,
+          pointRadius: 3,
+          pointBackgroundColor: '#00bcd4',
+          tension: 0.4,
+          fill: true,
+          yAxisID: 'y2'
+        }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          labels: { color: '#81c784', font: { family: 'Space Mono', size: 10 }, boxWidth: 12 }
+        }
+      },
+      scales: {
+        x: { ticks: { color: '#4a7a4a', font: { family: 'Space Mono', size: 9 }, maxTicksLimit: 7 }, grid: { color: 'rgba(30,58,30,0.5)' } },
+        y: { ticks: { color: '#ff5722', font: { family: 'Space Mono', size: 9 } }, grid: { color: 'rgba(30,58,30,0.3)' }, title: { display: true, text: '°C', color: '#ff5722', font: { size: 10 } } },
+        y2: { position: 'right', ticks: { color: '#00bcd4', font: { family: 'Space Mono', size: 9 } }, grid: { display: false }, title: { display: true, text: '%', color: '#00bcd4', font: { size: 10 } } }
+      }
+    }
+  });
+}
+
+function updateCharts(d) {
+  npkChart.data.datasets[0].data = [d.n, d.p, d.k];
+  npkChart.update('active');
+
+  // Shift ambiente
+  const now = new Date();
+  ambChart.data.labels.shift();
+  ambChart.data.labels.push(now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }));
+  ambChart.data.datasets[0].data.shift();
+  ambChart.data.datasets[0].data.push(d.temp);
+  ambChart.data.datasets[1].data.shift();
+  ambChart.data.datasets[1].data.push(d.solo);
+  ambChart.update('active');
+}
+
+// ── TABS ──────────────────────────────────────────────────────────────────
+function switchTab(name, btn) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  btn.classList.add('active');
+}
+
+// ── ATUADORES ─────────────────────────────────────────────────────────────
+function toggleIrrigacao() {
+  const on = document.getElementById('toggleIrrig').checked;
+  document.getElementById('irrig-status').innerHTML = on
+    ? '<div class="status-badge active">● SISTEMA ATIVO</div>'
+    : '<div class="status-badge inactive">⏸ PAUSADO</div>';
+  document.getElementById('irrig-slider').style.display = on ? 'flex' : 'none';
+}
+
+function toggleFertilizacao() {
+  const on = document.getElementById('toggleFert').checked;
+  document.getElementById('fert-status').innerHTML = on
+    ? '<div class="status-badge active">● SISTEMA ATIVO</div>'
+    : '<div class="status-badge inactive">⏸ STANDBY</div>';
+  const ctrl = document.getElementById('fert-controls');
+  ctrl.style.display = on ? 'flex' : 'none';
+}
+
+// ── HEATMAP ───────────────────────────────────────────────────────────────
+function buildHeatmap() {
+  const grid = document.getElementById('heatmapGrid');
+  const W = 20, H = 20;
+  const cells = [];
+
+  for (let r = 0; r < H; r++) {
+    for (let c = 0; c < W; c++) {
+      const v = Math.sin(c / 3.5) * Math.cos(r / 3.5) * 50 + 50 + rnd(-5, 5);
+      const norm = Math.max(0, Math.min(1, v / 100));
+      const color = heatColor(norm);
+      const cell = document.createElement('div');
+      cell.className = 'hm-cell';
+      cell.style.background = color;
+      cell.title = `Zona (${c},${r}): ${v.toFixed(1)} sc/ha`;
+      grid.appendChild(cell);
+      cells.push({ el: cell, base: v });
+    }
+  }
+
+  // Animate heatmap
+  setInterval(() => {
+    cells.forEach(c => {
+      const jitter = rnd(-2, 2);
+      const v = Math.max(0, Math.min(100, c.base + jitter));
+      c.el.style.background = heatColor(v / 100);
+    });
+  }, 3000);
+}
+
+function heatColor(t) {
+  // Red → Orange → Yellow → LightGreen → DarkGreen
+  const stops = [
+    [198, 40, 40],
+    [239, 108, 0],
+    [249, 168, 37],
+    [102, 187, 106],
+    [27, 94, 32]
+  ];
+  const idx = t * (stops.length - 1);
+  const lo = Math.floor(idx), hi = Math.ceil(idx);
+  const f = idx - lo;
+  const [r1, g1, b1] = stops[lo];
+  const [r2, g2, b2] = stops[hi] || stops[lo];
+  return `rgb(${Math.round(r1 + (r2 - r1) * f)},${Math.round(g1 + (g2 - g1) * f)},${Math.round(b1 + (b2 - b1) * f)})`;
+}
+
+// ── CAN MESSAGES ANIMATION ────────────────────────────────────────────────
+const canIds = ['0x123', '0x456', '0x789', '0xABC', '0xDEF', '0x100', '0x200'];
+function randomByte() { return Math.floor(Math.random() * 256).toString(16).toUpperCase().padStart(2, '0'); }
+function randomMsg() { return Array.from({ length: 8 }, randomByte).join(' '); }
+
+setInterval(() => {
+  const id = canIds[Math.floor(Math.random() * canIds.length)];
+  const msgs = document.getElementById('canMsgs');
+  if (!msgs) return;
+  const div = document.createElement('div');
+  div.className = 'can-msg';
+  div.innerHTML = `<span>${id}</span> → [${randomMsg()}]`;
+  msgs.appendChild(div);
+  if (msgs.children.length > 6) msgs.removeChild(msgs.firstChild);
+}, 1200);
+
+// Update cmd timestamps
+setInterval(() => {
+  document.querySelectorAll('.ts').forEach(el => {
+    const now = new Date();
+    el.textContent = now.toLocaleTimeString('pt-BR');
+  });
+}, 2000);
+
+// ── AUTO REFRESH (5s) ─────────────────────────────────────────────────────
+function refresh() {
+  const d = gerarDados();
+  updateMetrics(d);
+  updateCharts(d);
+}
+
+// ── INIT ──────────────────────────────────────────────────────────────────
+window.addEventListener('load', () => {
+  initCharts();
+  buildHeatmap();
+
+  const d = gerarDados();
+  updateMetrics(d);
+
+  setInterval(refresh, 5000);
+});
+</script>
+</body>
+</html>
