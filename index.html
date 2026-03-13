@@ -6,6 +6,161 @@
 <title>Daniel Luiz Alves — Desenvolvedor e Arquiteto de Soluções ERP Protheus</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+
+<!-- ============================================================
+  ██████╗  █████╗ 
+  ██╔════╝ ██╔══██╗  GOOGLE ANALYTICS 4 — BLOCO 1 de 2
+  ██║  ███╗███████║  Script de carregamento assíncrono
+  ██║   ██║██╔══██║  
+  ╚██████╔╝██║  ██║  
+   ╚═════╝ ╚═╝  ╚═╝  
+  
+  O QUE FAZ:
+  ─────────────────────────────────────────────────────────────
+  Este bloco carrega a biblioteca do Google Analytics (gtag.js)
+  de forma ASSÍNCRONA — ou seja, não trava o carregamento da
+  sua página enquanto o script do Google é baixado.
+
+  PARÂMETRO "G-XXXXXXXXXX":
+  ─────────────────────────────────────────────────────────────
+  Esse é o seu MEASUREMENT ID — o código único que diz ao
+  Google "esses dados pertencem à conta do Daniel".
+  
+  ⚠️  TROQUE "G-XXXXXXXXXX" pelo seu ID real ANTES de subir
+      para o GitHub. Para criar gratuitamente:
+      1. Acesse https://analytics.google.com
+      2. Crie uma propriedade → Web
+      3. Copie o Measurement ID (começa com G-)
+  ─────────────────────────────────────────────────────────────
+-->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-D0N8HN6LM3"></script>
+
+<!-- ============================================================
+  GOOGLE ANALYTICS 4 — BLOCO 2 de 2
+  Configuração e inicialização + rastreamento de eventos
+  ─────────────────────────────────────────────────────────────
+  
+  window.dataLayer: Array global onde o GA4 empilha todos
+  os eventos antes de enviá-los ao servidor do Google.
+  
+  gtag(): Função helper que empurra objetos para o dataLayer.
+  É ela que você chama para disparar qualquer evento.
+  
+  gtag('js', new Date()): Marca o timestamp de quando o
+  script foi iniciado — usado internamente pelo Google.
+  
+  gtag('config', 'G-XXXXXXXXXX'): Diz ao GA4 qual propriedade
+  usar. A partir daqui, toda pageview já é registrada.
+  ─────────────────────────────────────────────────────────────
+-->
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){ dataLayer.push(arguments); }
+  gtag('js', new Date());
+
+  // Configuração principal — substitua G-XXXXXXXXXX pelo seu ID real
+  gtag('config', 'G-XXXXXXXXXX', {
+    // send_page_view: true é o padrão — registra automaticamente
+    // cada vez que alguém abre a página
+    send_page_view: true,
+
+    // anonymize_ip: por boas práticas de privacidade (LGPD),
+    // o IP do visitante é anonimizado antes de chegar ao Google
+    anonymize_ip: true
+  });
+
+  // ============================================================
+  // FUNÇÃO: rastrearClique(nomeDaDemo)
+  // ============================================================
+  // Esta função é chamada toda vez que um visitante clica num
+  // card de demo. Ela envia um evento personalizado ao GA4 com:
+  //
+  //   event_category → "Demo Cards" (agrupamento no relatório)
+  //   event_label    → nome da demo clicada (ex: "CodeLens v2.0")
+  //   value          → 1 (peso do evento para métricas de conversão)
+  //
+  // No GA4 você verá isso em:
+  //   Relatórios → Engajamento → Eventos → "click_demo"
+  // ============================================================
+  function rastrearClique(nomeDaDemo) {
+    gtag('event', 'click_demo', {
+      event_category: 'Demo Cards',
+      event_label: nomeDaDemo,
+      value: 1
+    });
+  }
+
+  // ============================================================
+  // FUNÇÃO: rastrearScrollProfundo()
+  // ============================================================
+  // Detecta quando o visitante rolou pelo menos 50% da página.
+  // Isso indica "engajamento real" — não foi só um acesso rápido.
+  //
+  // Lógica:
+  //   scrollTop    → quantos pixels já foram rolados
+  //   scrollHeight → altura total da página
+  //   clientHeight → altura visível da janela
+  //   porcentagem  → (rolado + visível) / total * 100
+  //
+  // O flag "jaMarcou50" evita que o evento seja disparado
+  // várias vezes — só queremos registrar UMA VEZ por visita.
+  // ============================================================
+  let jaMarcou50 = false;
+  window.addEventListener('scroll', function() {
+    const porcentagem = (window.scrollY + window.innerHeight) / document.body.scrollHeight * 100;
+    if (porcentagem >= 50 && !jaMarcou50) {
+      jaMarcou50 = true;
+      gtag('event', 'scroll_profundo', {
+        event_category: 'Engajamento',
+        event_label: '50% da página rolada',
+        value: 1
+      });
+    }
+  });
+
+  // ============================================================
+  // FUNÇÃO: rastrearTempoNaPagina()
+  // ============================================================
+  // Registra quanto tempo o visitante ficou na página.
+  // Disparado nos marcos de: 30s, 60s e 120s.
+  //
+  // Por que isso importa para você?
+  // Se alguém ficou 2 minutos → provavelmente leu tudo, pode
+  // ser um recrutador ou cliente em potencial sério.
+  // Se ficou menos de 30s → acesso rápido, bounce (saída rápida).
+  // ============================================================
+  const marcos = [30000, 60000, 120000]; // em milissegundos
+  marcos.forEach(function(ms) {
+    setTimeout(function() {
+      gtag('event', 'tempo_pagina', {
+        event_category: 'Engajamento',
+        event_label: (ms / 1000) + ' segundos na página',
+        value: ms / 1000
+      });
+    }, ms);
+  });
+
+  // ============================================================
+  // RASTREAMENTO: Botões de Contato (e-mail / LinkedIn / GitHub)
+  // ============================================================
+  // Quando o documento terminar de carregar, adicionamos
+  // listeners nos links de contato para saber qual canal
+  // gerou mais interesse.
+  // ============================================================
+  document.addEventListener('DOMContentLoaded', function() {
+    const botoesContato = document.querySelectorAll('.contact-links a');
+    botoesContato.forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        gtag('event', 'click_contato', {
+          event_category: 'Conversão',
+          event_label: btn.textContent.trim().substring(0, 40),
+          value: 5  // peso maior pois é uma ação de conversão
+        });
+      });
+    });
+  });
+</script>
+
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -147,7 +302,6 @@
   }
   .btn-ghost:hover { border-color: var(--cyan); color: var(--cyan); }
 
-  /* Architecture diagram */
   .arch-diagram {
     background: rgba(255,255,255,.04);
     border: 1px solid rgba(255,255,255,.1);
@@ -165,7 +319,6 @@
   }
 
   .arch-flow { display: flex; flex-direction: column; gap: 0; }
-
   .arch-layer { display: flex; gap: 8px; margin-bottom: 4px; }
 
   .arch-node {
@@ -183,7 +336,6 @@
   .arch-node:hover { background: rgba(26,86,219,.25); border-color: var(--blue); }
   .arch-node.highlight { background: rgba(26,86,219,.25); border-color: var(--blue); color: var(--white); }
   .arch-node .tag { display: block; font-size: .65rem; font-weight: 400; color: var(--cyan); margin-top: 2px; opacity: .8; }
-
   .arch-arrow { text-align: center; color: rgba(6,182,212,.5); font-size: 1.1rem; margin: 4px 0; line-height: 1; }
 
   /* ── STATS ────────────────────────────────────────────────────────────── */
@@ -196,11 +348,8 @@
 
   /* ── SECTIONS ─────────────────────────────────────────────────────────── */
   .section { max-width: 1140px; margin: 0 auto; padding: 96px 48px; }
-
   .section-tag { font-family: 'Syne', sans-serif; font-size: .72rem; font-weight: 700; color: var(--blue); letter-spacing: .12em; text-transform: uppercase; margin-bottom: 12px; }
-
   .section-title { font-family: 'Syne', sans-serif; font-size: clamp(1.8rem, 3.5vw, 2.6rem); font-weight: 800; color: var(--navy); line-height: 1.15; margin-bottom: 16px; letter-spacing: -.02em; }
-
   .section-sub { font-size: 1rem; color: var(--muted); max-width: 560px; line-height: 1.7; margin-bottom: 56px; }
 
   /* ── PROJECTS ─────────────────────────────────────────────────────────── */
@@ -226,9 +375,7 @@
 
   /* ── DEMOS ────────────────────────────────────────────────────────────── */
   .demos-section { background: #0a0d14; }
-
   .demos-inner { max-width: 1140px; margin: 0 auto; padding: 96px 48px; }
-
   .demos-inner .section-tag  { color: var(--cyan); }
   .demos-inner .section-title { color: var(--white); }
   .demos-inner .section-sub   { color: rgba(255,255,255,.5); }
@@ -250,106 +397,24 @@
     text-decoration: none;
     display: block;
   }
-
-  .demo-card:hover {
-    transform: translateY(-8px);
-    border-color: var(--cyan);
-    box-shadow: 0 24px 60px rgba(6,182,212,.15);
-  }
-
-  .demo-card::before {
-    content: '';
-    position: absolute; top: 0; left: 0; right: 0;
-    height: 3px;
-    background: linear-gradient(90deg, var(--blue), var(--cyan));
-    opacity: 0;
-    transition: opacity .3s;
-  }
+  .demo-card:hover { transform: translateY(-8px); border-color: var(--cyan); box-shadow: 0 24px 60px rgba(6,182,212,.15); }
+  .demo-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--blue), var(--cyan)); opacity: 0; transition: opacity .3s; }
   .demo-card:hover::before { opacity: 1; }
 
-  .demo-preview {
-    width: 100%;
-    height: 180px;
-    background: #111827;
-    border-bottom: 1px solid rgba(255,255,255,.07);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 3rem;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .demo-preview-bg {
-    position: absolute; inset: 0;
-    opacity: .12;
-    background-size: 20px 20px;
-  }
-
-  .demo-preview-icon {
-    position: relative; z-index: 1;
-    width: 64px; height: 64px;
-    background: rgba(255,255,255,.06);
-    border: 1px solid rgba(255,255,255,.12);
-    border-radius: 16px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 1.8rem;
-    backdrop-filter: blur(4px);
-  }
-
-  .demo-badge {
-    position: absolute;
-    top: 12px; right: 12px;
-    background: rgba(6,182,212,.15);
-    border: 1px solid rgba(6,182,212,.3);
-    color: var(--cyan);
-    font-size: .65rem; font-weight: 600;
-    padding: 3px 10px; border-radius: 20px;
-    text-transform: uppercase; letter-spacing: .08em;
-    font-family: 'DM Sans', sans-serif;
-  }
-
+  .demo-preview { width: 100%; height: 180px; background: #111827; border-bottom: 1px solid rgba(255,255,255,.07); display: flex; align-items: center; justify-content: center; font-size: 3rem; position: relative; overflow: hidden; }
+  .demo-preview-bg { position: absolute; inset: 0; opacity: .12; background-size: 20px 20px; }
+  .demo-preview-icon { position: relative; z-index: 1; width: 64px; height: 64px; background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.12); border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; backdrop-filter: blur(4px); }
+  .demo-badge { position: absolute; top: 12px; right: 12px; background: rgba(6,182,212,.15); border: 1px solid rgba(6,182,212,.3); color: var(--cyan); font-size: .65rem; font-weight: 600; padding: 3px 10px; border-radius: 20px; text-transform: uppercase; letter-spacing: .08em; font-family: 'DM Sans', sans-serif; }
   .demo-body { padding: 22px 24px 24px; }
-
-  .demo-name {
-    font-family: 'Syne', sans-serif;
-    font-size: 1rem; font-weight: 700;
-    color: var(--white);
-    margin-bottom: 6px;
-  }
-
-  .demo-desc {
-    font-size: .82rem;
-    color: rgba(255,255,255,.45);
-    line-height: 1.6;
-    margin-bottom: 16px;
-  }
-
+  .demo-name { font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 700; color: var(--white); margin-bottom: 6px; }
+  .demo-desc { font-size: .82rem; color: rgba(255,255,255,.45); line-height: 1.6; margin-bottom: 16px; }
   .demo-tags { display: flex; gap: 6px; flex-wrap: wrap; }
-
-  .demo-tag {
-    background: rgba(26,86,219,.2);
-    border: 1px solid rgba(26,86,219,.3);
-    color: #93c5fd;
-    font-size: .68rem; font-weight: 500;
-    padding: 3px 9px; border-radius: 20px;
-    font-family: 'DM Sans', monospace;
-  }
-
-  .demo-link-hint {
-    display: flex; align-items: center; gap: 6px;
-    margin-top: 16px;
-    font-size: .78rem;
-    color: var(--cyan);
-    opacity: 0;
-    transform: translateX(-6px);
-    transition: opacity .25s, transform .25s;
-  }
+  .demo-tag { background: rgba(26,86,219,.2); border: 1px solid rgba(26,86,219,.3); color: #93c5fd; font-size: .68rem; font-weight: 500; padding: 3px 9px; border-radius: 20px; font-family: 'DM Sans', monospace; }
+  .demo-link-hint { display: flex; align-items: center; gap: 6px; margin-top: 16px; font-size: .78rem; color: var(--cyan); opacity: 0; transform: translateX(-6px); transition: opacity .25s, transform .25s; }
   .demo-card:hover .demo-link-hint { opacity: 1; transform: translateX(0); }
 
   /* ── ARCHITECTURE ─────────────────────────────────────────────────────── */
   .arch-section { background: var(--navy); }
-
   .arch-full { max-width: 1140px; margin: 0 auto; padding: 96px 48px; }
   .arch-full .section-title { color: var(--white); }
   .arch-full .section-sub   { color: rgba(255,255,255,.55); }
@@ -357,13 +422,11 @@
 
   .arch-visual { display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; align-items: center; margin-top: 48px; }
   .arch-col { display: flex; flex-direction: column; gap: 12px; }
-
   .arch-block { background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.12); border-radius: 12px; padding: 20px 16px; text-align: center; transition: all .25s; cursor: default; }
   .arch-block:hover { background: rgba(26,86,219,.3); border-color: var(--blue); transform: scale(1.03); }
   .arch-block-icon { font-size: 1.8rem; margin-bottom: 8px; }
   .arch-block-name { font-size: .82rem; font-weight: 600; color: var(--white); margin-bottom: 4px; font-family: 'Syne', sans-serif; }
   .arch-block-desc { font-size: .7rem; color: rgba(255,255,255,.45); line-height: 1.5; }
-
   .arch-connector { display: flex; flex-direction: column; align-items: center; gap: 8px; }
   .conn-line { width: 2px; height: 60px; background: linear-gradient(180deg, transparent, var(--cyan), transparent); }
   .conn-label { font-size: .65rem; color: var(--cyan); font-weight: 500; letter-spacing: .05em; text-transform: uppercase; background: rgba(6,182,212,.1); padding: 3px 8px; border-radius: 4px; }
@@ -395,7 +458,6 @@
 
   .divider { height: 1px; background: var(--line); margin: 0; }
 
-  /* ── RESPONSIVE ───────────────────────────────────────────────────────── */
   @media (max-width: 768px) {
     .hero-inner { grid-template-columns: 1fr; padding: 80px 24px 60px; gap: 40px; }
     .stats-inner { grid-template-columns: repeat(2, 1fr); padding: 32px; }
@@ -478,22 +540,10 @@
 <!-- STATS -->
 <div class="stats-bar">
   <div class="stats-inner">
-    <div class="stat">
-      <div class="stat-num">4<span>+</span></div>
-      <div class="stat-label">Anos com ADVPL / TLPP</div>
-    </div>
-    <div class="stat">
-      <div class="stat-num">11</div>
-      <div class="stat-label">Filiais em produção</div>
-    </div>
-    <div class="stat">
-      <div class="stat-num">5</div>
-      <div class="stat-label">Módulos Protheus</div>
-    </div>
-    <div class="stat">
-      <div class="stat-num">6</div>
-      <div class="stat-label">Ferramentas publicadas</div>
-    </div>
+    <div class="stat"><div class="stat-num">4<span>+</span></div><div class="stat-label">Anos com ADVPL / TLPP</div></div>
+    <div class="stat"><div class="stat-num">11</div><div class="stat-label">Filiais em produção</div></div>
+    <div class="stat"><div class="stat-num">5</div><div class="stat-label">Módulos Protheus</div></div>
+    <div class="stat"><div class="stat-num">6</div><div class="stat-label">Ferramentas publicadas</div></div>
   </div>
 </div>
 
@@ -504,58 +554,38 @@
   <p class="section-sub">Soluções desenvolvidas do zero, em ambiente de produção, para empresas com operações complexas no TOTVS Protheus.</p>
 
   <div class="projects-grid">
-
     <div class="project-card">
       <div class="proj-icon">⚖️</div>
       <div class="proj-name">Projeto Protheus — Venda por KG</div>
-      <p class="proj-desc">
-        Sistema completo de faturamento por peso para o Protheus. Criação de tabelas customizadas (ZKC/ZPK), campos no cadastro de produtos e itens do pedido, fluxo de aprovação de preço por perfil de acesso, notificação automática por e-mail para aprovadores e cálculo automático do valor final do pedido.
-      </p>
+      <p class="proj-desc">Sistema completo de faturamento por peso para o Protheus. Criação de tabelas customizadas (ZKC/ZPK), campos no cadastro de produtos e itens do pedido, fluxo de aprovação de preço por perfil de acesso, notificação automática por e-mail para aprovadores e cálculo automático do valor final do pedido.</p>
       <div class="proj-tags">
-        <span class="tag">ADVPL</span>
-        <span class="tag">TLPP</span>
-        <span class="tag">SIGAFAT</span>
-        <span class="tag">MVC</span>
-        <span class="tag">SQL Server</span>
+        <span class="tag">ADVPL</span><span class="tag">TLPP</span><span class="tag">SIGAFAT</span><span class="tag">MVC</span><span class="tag">SQL Server</span>
       </div>
     </div>
 
     <div class="project-card">
       <div class="proj-icon">📦</div>
       <div class="proj-name">Inteligência de Estoque - SQL/PROTHEUS/PWA</div>
-      <p class="proj-desc">
-        Relatório de análise e sugestão de estoque mínimo com query SQL otimizada para análise de consumo histórico (SD3), classificação automática por criticidade (Crítico / Atenção / OK / Overstock / Sem Giro), geração de PDF para gestores e relatório comparativo de consumo por período (RESTCOMP).
-      </p>
+      <p class="proj-desc">Relatório de análise e sugestão de estoque mínimo com query SQL otimizada para análise de consumo histórico (SD3), classificação automática por criticidade (Crítico / Atenção / OK / Overstock / Sem Giro), geração de PDF para gestores e relatório comparativo de consumo por período (RESTCOMP).</p>
       <div class="proj-tags">
-        <span class="tag">ADVPL</span>
-        <span class="tag">SQL Server</span>
-        <span class="tag">SIGAEST</span>
-        <span class="tag">TReport</span>
-        <span class="tag">PDF</span>
+        <span class="tag">ADVPL</span><span class="tag">SQL Server</span><span class="tag">SIGAEST</span><span class="tag">TReport</span><span class="tag">PDF</span>
       </div>
     </div>
 
     <div class="project-card">
       <div class="proj-icon">🔌</div>
       <div class="proj-name">APIs REST Multi-Módulo</div>
-      <p class="proj-desc">
-        Arquitetura e desenvolvimento de APIs RESTful em TLPP cobrindo Compras, Faturamento, Financeiro, Contabilidade e Estoque. Autenticação segura (Basic Auth / OAuth2), log completo de operações e documentação técnica para integração em ambiente multi-empresa com 11 filiais.
-      </p>
+      <p class="proj-desc">Arquitetura e desenvolvimento de APIs RESTful em TLPP cobrindo Compras, Faturamento, Financeiro, Contabilidade e Estoque. Autenticação segura (Basic Auth / OAuth2), log completo de operações e documentação técnica para integração em ambiente multi-empresa com 11 filiais.</p>
       <div class="proj-tags">
-        <span class="tag">TLPP REST</span>
-        <span class="tag">OAuth2</span>
-        <span class="tag">JSON</span>
-        <span class="tag">Postman</span>
-        <span class="tag">Multi-filial</span>
+        <span class="tag">TLPP REST</span><span class="tag">OAuth2</span><span class="tag">JSON</span><span class="tag">Postman</span><span class="tag">Multi-filial</span>
       </div>
     </div>
-
   </div>
 </section>
 
 <div class="divider"></div>
 
-<!-- ── DEMOS AO VIVO ──────────────────────────────────────────────────────── -->
+<!-- DEMOS — note o onclick="rastrearClique(...)" em cada card -->
 <section class="demos-section" id="demos">
   <div class="demos-inner">
     <div class="section-tag">Ferramentas &amp; Demos</div>
@@ -564,8 +594,30 @@
 
     <div class="demos-grid">
 
-      <!-- ✅ AgriSense — Sistema de Automação Agrícola -->
-      <a href="demos/agrisense.html" target="_blank" class="demo-card">
+      <!--
+        ══════════════════════════════════════════════════════════
+        RASTREAMENTO DE DEMO: onclick="rastrearClique('...')"
+        ══════════════════════════════════════════════════════════
+        Cada card de demo tem um onclick que chama a função
+        rastrearClique() definida no <head>.
+        
+        Isso envia um evento "click_demo" ao GA4 com o nome
+        exato da demo clicada.
+        
+        No relatório do GA4 você verá algo assim:
+          Evento: click_demo
+          Label:  AgriSense — Automação Agrícola   → 3 cliques
+          Label:  CodeLens v2.0 — Analisador ADVPL → 7 cliques
+          Label:  Diagnóstico Executivo            → 12 cliques
+        
+        Se o "Diagnóstico Executivo" tiver mais cliques,
+        isso mostra que recrutadores se interessam pela
+        análise do MATA103 — dado valioso!
+        ══════════════════════════════════════════════════════════
+      -->
+
+      <a href="demos/agrisense.html" target="_blank" class="demo-card"
+         onclick="rastrearClique('AgriSense — Automação Agrícola')">
         <div class="demo-preview" style="background: linear-gradient(135deg,#0a0f0a,#142014);">
           <div class="demo-preview-bg" style="background-image: linear-gradient(rgba(0,255,127,.1) 1px, transparent 1px), linear-gradient(90deg,rgba(0,255,127,.1) 1px,transparent 1px); background-size: 24px 24px;"></div>
           <div class="demo-preview-icon">🌾</div>
@@ -574,21 +626,13 @@
         <div class="demo-body">
           <div class="demo-name">AgriSense — Automação Agrícola</div>
           <div class="demo-desc">Dashboard de agricultura de precisão com monitoramento em tempo real de sensores (NPK, pH, temperatura, umidade), controle de irrigação/fertilização, protocolo CAN/ISOBUS e mapa de produtividade.</div>
-          <div class="demo-tags">
-            <span class="demo-tag">IoT</span>
-            <span class="demo-tag">CAN / ISOBUS</span>
-            <span class="demo-tag">Dashboard</span>
-            <span class="demo-tag">Python / Streamlit</span>
-          </div>
-          <div class="demo-link-hint">
-            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-            Abrir demo →
-          </div>
+          <div class="demo-tags"><span class="demo-tag">IoT</span><span class="demo-tag">CAN / ISOBUS</span><span class="demo-tag">Dashboard</span><span class="demo-tag">Python / Streamlit</span></div>
+          <div class="demo-link-hint"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>Abrir demo →</div>
         </div>
       </a>
 
-      <!-- ✅ Arquitetura em Nuvem -->
-      <a href="demos/arquitetura-nuvem.html" target="_blank" class="demo-card">
+      <a href="demos/arquitetura-nuvem.html" target="_blank" class="demo-card"
+         onclick="rastrearClique('Arquitetura em Nuvem')">
         <div class="demo-preview" style="background: linear-gradient(135deg,#0a1628,#0d2a4a);">
           <div class="demo-preview-bg" style="background-image: linear-gradient(rgba(6,182,212,.12) 1px, transparent 1px), linear-gradient(90deg,rgba(6,182,212,.12) 1px,transparent 1px); background-size: 24px 24px;"></div>
           <div class="demo-preview-icon">☁️</div>
@@ -597,20 +641,13 @@
         <div class="demo-body">
           <div class="demo-name">Arquitetura em Nuvem</div>
           <div class="demo-desc">Do servidor físico à infraestrutura global — como funciona Cloud Computing explicado de forma clara para qualquer pessoa, com diagrama interativo em camadas.</div>
-          <div class="demo-tags">
-            <span class="demo-tag">Cloud</span>
-            <span class="demo-tag">IaaS / PaaS / SaaS</span>
-            <span class="demo-tag">Protheus</span>
-          </div>
-          <div class="demo-link-hint">
-            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-            Abrir demo →
-          </div>
+          <div class="demo-tags"><span class="demo-tag">Cloud</span><span class="demo-tag">IaaS / PaaS / SaaS</span><span class="demo-tag">Protheus</span></div>
+          <div class="demo-link-hint"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>Abrir demo →</div>
         </div>
       </a>
 
-      <!-- 1. ADVPL Analyzer -->
-      <a href="demos/advpl-analyzer-v2.html" target="_blank" class="demo-card">
+      <a href="demos/advpl-analyzer-v2.html" target="_blank" class="demo-card"
+         onclick="rastrearClique('CodeLens v2.0 — Analisador ADVPL')">
         <div class="demo-preview" style="background: linear-gradient(135deg,#0f1f3d,#0a1628);">
           <div class="demo-preview-bg" style="background-image: linear-gradient(rgba(26,86,219,.15) 1px, transparent 1px), linear-gradient(90deg,rgba(26,86,219,.15) 1px,transparent 1px);"></div>
           <div class="demo-preview-icon">🔍</div>
@@ -619,20 +656,13 @@
         <div class="demo-body">
           <div class="demo-name">CodeLens v2.0 — Analisador ADVPL</div>
           <div class="demo-desc">Analisa fontes ADVPL/TLPP: mapeia funções, campos, tabelas, complexidade ciclomática e fluxo de execução. Arraste seu .PRW e explore.</div>
-          <div class="demo-tags">
-            <span class="demo-tag">ADVPL</span>
-            <span class="demo-tag">Análise de Código</span>
-            <span class="demo-tag">JavaScript</span>
-          </div>
-          <div class="demo-link-hint">
-            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-            Abrir demo →
-          </div>
+          <div class="demo-tags"><span class="demo-tag">ADVPL</span><span class="demo-tag">Análise de Código</span><span class="demo-tag">JavaScript</span></div>
+          <div class="demo-link-hint"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>Abrir demo →</div>
         </div>
       </a>
 
-      <!-- 2. MIT044 Engenharia Reversa -->
-      <a href="demos/MIT044_engenharia_reversa.html" target="_blank" class="demo-card">
+      <a href="demos/MIT044_engenharia_reversa.html" target="_blank" class="demo-card"
+         onclick="rastrearClique('MIT044 — Engenharia Reversa')">
         <div class="demo-preview" style="background: linear-gradient(135deg,#080810,#0f0f1e);">
           <div class="demo-preview-bg" style="background-image: radial-gradient(rgba(139,92,246,.1) 1px, transparent 1px); background-size: 20px 20px;"></div>
           <div class="demo-preview-icon">⚖️</div>
@@ -641,20 +671,13 @@
         <div class="demo-body">
           <div class="demo-name">Engenharia Reversa</div>
           <div class="demo-desc">Documentação técnica completa do sistema de Venda por KG: arquitetura, tabelas customizadas, fluxo de aprovação e pontos de entrada.</div>
-          <div class="demo-tags">
-            <span class="demo-tag">SIGAFAT</span>
-            <span class="demo-tag">MVC</span>
-            <span class="demo-tag">TLPP</span>
-          </div>
-          <div class="demo-link-hint">
-            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-            Abrir demo →
-          </div>
+          <div class="demo-tags"><span class="demo-tag">SIGAFAT</span><span class="demo-tag">MVC</span><span class="demo-tag">TLPP</span></div>
+          <div class="demo-link-hint"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>Abrir demo →</div>
         </div>
       </a>
 
-      <!-- 3. MIT044 Código -->
-      <a href="demos/MIT044_codigo_engenharia_reversa.html" target="_blank" class="demo-card">
+      <a href="demos/MIT044_codigo_engenharia_reversa.html" target="_blank" class="demo-card"
+         onclick="rastrearClique('MIT044 — Código Anotado')">
         <div class="demo-preview" style="background: linear-gradient(135deg,#080810,#101020);">
           <div class="demo-preview-bg" style="background-image: linear-gradient(rgba(99,102,241,.08) 1px, transparent 1px), linear-gradient(90deg,rgba(99,102,241,.08) 1px,transparent 1px); background-size: 16px 16px;"></div>
           <div class="demo-preview-icon">💻</div>
@@ -663,20 +686,13 @@
         <div class="demo-body">
           <div class="demo-name">Código Anotado</div>
           <div class="demo-desc">Visualização interativa do código-fonte do MIT044 com anotações de engenharia reversa, highlights por seção e navegação por funções.</div>
-          <div class="demo-tags">
-            <span class="demo-tag">ADVPL</span>
-            <span class="demo-tag">Code Review</span>
-            <span class="demo-tag">Documentação</span>
-          </div>
-          <div class="demo-link-hint">
-            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-            Abrir demo →
-          </div>
+          <div class="demo-tags"><span class="demo-tag">ADVPL</span><span class="demo-tag">Code Review</span><span class="demo-tag">Documentação</span></div>
+          <div class="demo-link-hint"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>Abrir demo →</div>
         </div>
       </a>
 
-      <!-- 4. Estoque IA -->
-      <a href="demos/estoque_IA.html" target="_blank" class="demo-card">
+      <a href="demos/estoque_IA.html" target="_blank" class="demo-card"
+         onclick="rastrearClique('Sistema IA de Estoque')">
         <div class="demo-preview" style="background: linear-gradient(135deg,#0a1628,#0f2040);">
           <div class="demo-preview-bg" style="background-image: radial-gradient(rgba(6,182,212,.08) 2px, transparent 2px); background-size: 28px 28px;"></div>
           <div class="demo-preview-icon">🤖</div>
@@ -685,20 +701,13 @@
         <div class="demo-body">
           <div class="demo-name">Sistema IA de Estoque-SQL/PROTHEUS</div>
           <div class="demo-desc">Dashboard inteligente de gestão de estoque com sugestões automáticas por IA, classificação de criticidade e análise de consumo histórico integrada ao Protheus.</div>
-          <div class="demo-tags">
-            <span class="demo-tag">IA</span>
-            <span class="demo-tag">SIGAEST</span>
-            <span class="demo-tag">Dashboard</span>
-          </div>
-          <div class="demo-link-hint">
-            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-            Abrir demo →
-          </div>
+          <div class="demo-tags"><span class="demo-tag">IA</span><span class="demo-tag">SIGAEST</span><span class="demo-tag">Dashboard</span></div>
+          <div class="demo-link-hint"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>Abrir demo →</div>
         </div>
       </a>
 
-      <!-- 5. Sistema Venda Inativo -->
-      <a href="demos/sistema_venda_inativo.html" target="_blank" class="demo-card">
+      <a href="demos/sistema_venda_inativo.html" target="_blank" class="demo-card"
+         onclick="rastrearClique('Controle Clientes Venda Direta')">
         <div class="demo-preview" style="background: linear-gradient(135deg,#1a0a2e,#2d1450);">
           <div class="demo-preview-bg" style="background-image: linear-gradient(rgba(139,92,246,.1) 1px, transparent 1px), linear-gradient(90deg,rgba(139,92,246,.1) 1px,transparent 1px); background-size: 24px 24px;"></div>
           <div class="demo-preview-icon">📊</div>
@@ -707,20 +716,13 @@
         <div class="demo-body">
           <div class="demo-name">Controle Clientes Venda Direta</div>
           <div class="demo-desc">Sistema de controle e monitoramento de clientes com venda direta — identifica inativos, histórico de compras e alertas automáticos para a equipe comercial.</div>
-          <div class="demo-tags">
-            <span class="demo-tag">SIGAFAT</span>
-            <span class="demo-tag">SA1</span>
-            <span class="demo-tag">Dashboard</span>
-          </div>
-          <div class="demo-link-hint">
-            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-            Abrir demo →
-          </div>
+          <div class="demo-tags"><span class="demo-tag">SIGAFAT</span><span class="demo-tag">SA1</span><span class="demo-tag">Dashboard</span></div>
+          <div class="demo-link-hint"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>Abrir demo →</div>
         </div>
       </a>
 
-      <!-- 6. MATA103 Diagnóstico -->
-      <a href="demos/mata103-executivo.html" target="_blank" class="demo-card">
+      <a href="demos/mata103-executivo.html" target="_blank" class="demo-card"
+         onclick="rastrearClique('Diagnóstico Executivo MATA103')">
         <div class="demo-preview" style="background: linear-gradient(135deg,#0a0a0f,#18181f);">
           <div class="demo-preview-bg" style="background-image: linear-gradient(rgba(0,229,255,.06) 1px, transparent 1px), linear-gradient(90deg,rgba(0,229,255,.06) 1px,transparent 1px); background-size: 20px 20px;"></div>
           <div class="demo-preview-icon">📋</div>
@@ -729,15 +731,8 @@
         <div class="demo-body">
           <div class="demo-name">Diagnóstico Executivo</div>
           <div class="demo-desc">Relatório executivo gerado pelo CodeLens: 26.723 linhas, 160 funções, 779 campos mapeados. Análise de complexidade do maior fonte do Protheus Fiscal.</div>
-          <div class="demo-tags">
-            <span class="demo-tag">MATA103</span>
-            <span class="demo-tag">Análise</span>
-            <span class="demo-tag">Fiscal</span>
-          </div>
-          <div class="demo-link-hint">
-            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-            Abrir demo →
-          </div>
+          <div class="demo-tags"><span class="demo-tag">MATA103</span><span class="demo-tag">Análise</span><span class="demo-tag">Fiscal</span></div>
+          <div class="demo-link-hint"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>Abrir demo →</div>
         </div>
       </a>
 
@@ -751,58 +746,21 @@
     <div class="section-tag">Visão Técnica</div>
     <h2 class="section-title">Arquitetura de Soluções</h2>
     <p class="section-sub">Projeto soluções que conectam o núcleo do ERP a interfaces modernas — da base de dados ao usuário final, passando por APIs e dashboards.</p>
-
     <div class="arch-visual">
       <div class="arch-col">
-        <div class="arch-block">
-          <div class="arch-block-icon">🗄️</div>
-          <div class="arch-block-name">SQL Server</div>
-          <div class="arch-block-desc">Queries, Procedures, Views otimizadas</div>
-        </div>
-        <div class="arch-block">
-          <div class="arch-block-icon">📊</div>
-          <div class="arch-block-name">Tabelas TOTVS</div>
-          <div class="arch-block-desc">SB1, SB2, SC5, SE1, SD3 e customizadas Z*</div>
-        </div>
+        <div class="arch-block"><div class="arch-block-icon">🗄️</div><div class="arch-block-name">SQL Server</div><div class="arch-block-desc">Queries, Procedures, Views otimizadas</div></div>
+        <div class="arch-block"><div class="arch-block-icon">📊</div><div class="arch-block-name">Tabelas TOTVS</div><div class="arch-block-desc">SB1, SB2, SC5, SE1, SD3 e customizadas Z*</div></div>
       </div>
-      <div class="arch-connector">
-        <div class="conn-line"></div>
-        <div class="conn-label">TopConnect</div>
-        <div class="conn-line"></div>
-      </div>
+      <div class="arch-connector"><div class="conn-line"></div><div class="conn-label">TopConnect</div><div class="conn-line"></div></div>
       <div class="arch-col">
-        <div class="arch-block" style="border-color: rgba(26,86,219,.5); background: rgba(26,86,219,.2);">
-          <div class="arch-block-icon">⚙️</div>
-          <div class="arch-block-name">ERP Protheus</div>
-          <div class="arch-block-desc">ADVPL / TLPP · MVC · ExecAuto · Pontos de Entrada</div>
-        </div>
-        <div class="arch-block">
-          <div class="arch-block-icon">🔧</div>
-          <div class="arch-block-name">Módulos ERP</div>
-          <div class="arch-block-desc">SIGACOM · SIGAEST · SIGAFAT · SIGAFIN · SIGACTB</div>
-        </div>
+        <div class="arch-block" style="border-color: rgba(26,86,219,.5); background: rgba(26,86,219,.2);"><div class="arch-block-icon">⚙️</div><div class="arch-block-name">ERP Protheus</div><div class="arch-block-desc">ADVPL / TLPP · MVC · ExecAuto · Pontos de Entrada</div></div>
+        <div class="arch-block"><div class="arch-block-icon">🔧</div><div class="arch-block-name">Módulos ERP</div><div class="arch-block-desc">SIGACOM · SIGAEST · SIGAFAT · SIGAFIN · SIGACTB</div></div>
       </div>
-      <div class="arch-connector">
-        <div class="conn-line"></div>
-        <div class="conn-label">REST API</div>
-        <div class="conn-line"></div>
-      </div>
+      <div class="arch-connector"><div class="conn-line"></div><div class="conn-label">REST API</div><div class="conn-line"></div></div>
       <div class="arch-col">
-        <div class="arch-block">
-          <div class="arch-block-icon">🌐</div>
-          <div class="arch-block-name">Angular / PO-UI</div>
-          <div class="arch-block-desc">Frontend moderno integrado ao Protheus</div>
-        </div>
-        <div class="arch-block">
-          <div class="arch-block-icon">📱</div>
-          <div class="arch-block-name">PWA / Mobile</div>
-          <div class="arch-block-desc">Acesso ao ERP pelo celular, offline-ready</div>
-        </div>
-        <div class="arch-block">
-          <div class="arch-block-icon">📈</div>
-          <div class="arch-block-name">SmartView</div>
-          <div class="arch-block-desc">Dashboards e relatórios gerenciais</div>
-        </div>
+        <div class="arch-block"><div class="arch-block-icon">🌐</div><div class="arch-block-name">Angular / PO-UI</div><div class="arch-block-desc">Frontend moderno integrado ao Protheus</div></div>
+        <div class="arch-block"><div class="arch-block-icon">📱</div><div class="arch-block-name">PWA / Mobile</div><div class="arch-block-desc">Acesso ao ERP pelo celular, offline-ready</div></div>
+        <div class="arch-block"><div class="arch-block-icon">📈</div><div class="arch-block-name">SmartView</div><div class="arch-block-desc">Dashboards e relatórios gerenciais</div></div>
       </div>
     </div>
   </div>
@@ -813,67 +771,13 @@
   <div class="section-tag">Competências</div>
   <h2 class="section-title">Stack Técnico</h2>
   <p class="section-sub">Tecnologias que uso no dia a dia para entregar soluções completas — do ERP ao front-end.</p>
-
   <div class="skills-grid">
-    <div class="skill-card">
-      <div class="skill-category">ERP / TOTVS</div>
-      <ul class="skill-list">
-        <li>ADVPL / TLPP</li>
-        <li>Arquitetura MVC TOTVS</li>
-        <li>ExecAuto / Pontos de Entrada</li>
-        <li>Módulos SIGACOM, SIGAEST, SIGAFAT</li>
-        <li>Módulos SIGAFIN, SIGACTB, SIGATMK</li>
-      </ul>
-    </div>
-    <div class="skill-card">
-      <div class="skill-category">APIs &amp; Integração</div>
-      <ul class="skill-list">
-        <li>TLPP REST / WSRESTFUL</li>
-        <li>REST, JSON, WebServices, SOAP</li>
-        <li>Basic Auth / OAuth2</li>
-        <li>Postman — testes e documentação</li>
-        <li>Log e rastreabilidade de integração</li>
-      </ul>
-    </div>
-    <div class="skill-card">
-      <div class="skill-category">Banco de Dados</div>
-      <ul class="skill-list">
-        <li>SQL Server — queries avançadas</li>
-        <li>Stored Procedures e Views</li>
-        <li>Análise de consumo histórico</li>
-        <li>Otimização de performance</li>
-        <li>Modelagem de tabelas customizadas</li>
-      </ul>
-    </div>
-    <div class="skill-card">
-      <div class="skill-category">Frontend / Web</div>
-      <ul class="skill-list">
-        <li>PO-UI (Angular TOTVS)</li>
-        <li>React / TypeScript</li>
-        <li>PWA — Progressive Web Apps</li>
-        <li>JavaScript moderno (ES2023+)</li>
-        <li>SmartView / TReports / PDF</li>
-      </ul>
-    </div>
-    <div class="skill-card">
-      <div class="skill-category">Fiscal &amp; NF-e</div>
-      <ul class="skill-list">
-        <li>CT-e, NF-e, SPED Fiscal</li>
-        <li>Importação automática de documentos</li>
-        <li>Customizações de obrigações acessórias</li>
-        <li>Integração TOTVS Transmite</li>
-      </ul>
-    </div>
-    <div class="skill-card">
-      <div class="skill-category">Ferramentas</div>
-      <ul class="skill-list">
-        <li>Git / GitHub</li>
-        <li>VS Code / TOTVS Developer Studio</li>
-        <li>SQL Server Management Studio</li>
-        <li>Postman</li>
-        <li>Ambiente multi-empresa e multi-filial</li>
-      </ul>
-    </div>
+    <div class="skill-card"><div class="skill-category">ERP / TOTVS</div><ul class="skill-list"><li>ADVPL / TLPP</li><li>Arquitetura MVC TOTVS</li><li>ExecAuto / Pontos de Entrada</li><li>Módulos SIGACOM, SIGAEST, SIGAFAT</li><li>Módulos SIGAFIN, SIGACTB, SIGATMK</li></ul></div>
+    <div class="skill-card"><div class="skill-category">APIs &amp; Integração</div><ul class="skill-list"><li>TLPP REST / WSRESTFUL</li><li>REST, JSON, WebServices, SOAP</li><li>Basic Auth / OAuth2</li><li>Postman — testes e documentação</li><li>Log e rastreabilidade de integração</li></ul></div>
+    <div class="skill-card"><div class="skill-category">Banco de Dados</div><ul class="skill-list"><li>SQL Server — queries avançadas</li><li>Stored Procedures e Views</li><li>Análise de consumo histórico</li><li>Otimização de performance</li><li>Modelagem de tabelas customizadas</li></ul></div>
+    <div class="skill-card"><div class="skill-category">Frontend / Web</div><ul class="skill-list"><li>PO-UI (Angular TOTVS)</li><li>React / TypeScript</li><li>PWA — Progressive Web Apps</li><li>JavaScript moderno (ES2023+)</li><li>SmartView / TReports / PDF</li></ul></div>
+    <div class="skill-card"><div class="skill-category">Fiscal &amp; NF-e</div><ul class="skill-list"><li>CT-e, NF-e, SPED Fiscal</li><li>Importação automática de documentos</li><li>Customizações de obrigações acessórias</li><li>Integração TOTVS Transmite</li></ul></div>
+    <div class="skill-card"><div class="skill-category">Ferramentas</div><ul class="skill-list"><li>Git / GitHub</li><li>VS Code / TOTVS Developer Studio</li><li>SQL Server Management Studio</li><li>Postman</li><li>Ambiente multi-empresa e multi-filial</li></ul></div>
   </div>
 </section>
 
@@ -883,6 +787,7 @@
   <h2 class="section-title">Vamos construir<br>algo juntos?</h2>
   <p class="section-sub">Disponível para projetos de integração Protheus, desenvolvimento de APIs, customizações e consultoria ERP.</p>
   <div class="contact-links">
+    <!-- onclick nos botões de contato também rastreia qual canal teve mais interesse -->
     <a href="mailto:teceletrotecnica84@gmail.com" class="btn-primary">
       ✉ teceletrotecnica84@gmail.com
     </a>
