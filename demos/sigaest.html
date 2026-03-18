@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SIGAEST — Estoque Protheus | Daniel Luiz Alves</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#06080F;--bg2:#090D18;--blue:#1A56DB;--cyan:#06B6D4;--amber:#F59E0B;--red:#EF4444;--green:#10B981;--purple:#8B5CF6;--white:#FFF;--muted:rgba(255,255,255,.45);--dimmed:rgba(255,255,255,.22);--line:rgba(255,255,255,.07);--card:rgba(255,255,255,.03);--accent:#06B6D4;--mono:'DM Mono',monospace;--sans:'DM Sans',sans-serif;--display:'Syne',sans-serif}
+html{scroll-behavior:smooth}body{font-family:var(--sans);background:var(--bg);color:var(--white);overflow-x:hidden}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(6,8,15,.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--line);padding:0 48px;height:60px;display:flex;align-items:center;justify-content:space-between}
+.nav-logo{font-family:var(--display);font-size:.95rem;font-weight:700;color:var(--white);text-decoration:none}.nav-logo span{color:var(--cyan)}
+.nav-links{display:flex;align-items:center;gap:20px}.nav-links a{font-size:.8rem;color:var(--muted);text-decoration:none;transition:color .2s}.nav-links a:hover{color:var(--white)}
+.nav-back{font-size:.78rem;color:var(--muted);text-decoration:none;display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.05);border:1px solid var(--line);padding:5px 12px;border-radius:6px;transition:color .2s,border-color .2s}.nav-back:hover{color:var(--cyan);border-color:rgba(6,182,212,.3)}
+.hero{min-height:100vh;background:radial-gradient(ellipse 65% 55% at 60% -5%,rgba(6,182,212,.15) 0%,transparent 70%),radial-gradient(ellipse 40% 30% at 5% 85%,rgba(26,86,219,.07) 0%,transparent 60%),var(--bg);display:flex;align-items:center;position:relative;overflow:hidden;padding-top:60px}
+.hero::before{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(6,182,212,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(6,182,212,.05) 1px,transparent 1px);background-size:52px 52px;mask-image:radial-gradient(ellipse 90% 70% at 50% 35%,black 20%,transparent 100%);pointer-events:none}
+.hero-inner{position:relative;z-index:2;max-width:1200px;margin:0 auto;padding:110px 48px 90px;display:grid;grid-template-columns:1.1fr .9fr;gap:72px;align-items:center}
+.mod-badge{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:.68rem;color:var(--cyan);letter-spacing:.1em;text-transform:uppercase;background:rgba(6,182,212,.07);border:1px solid rgba(6,182,212,.18);padding:5px 14px;border-radius:4px;margin-bottom:22px}
+.mod-badge::before{content:'';width:5px;height:5px;background:var(--cyan);border-radius:50%;animation:blink 2.4s ease-in-out infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.15}}
+h1{font-family:var(--display);font-size:clamp(2.8rem,4.8vw,4rem);font-weight:800;line-height:1.03;letter-spacing:-.03em;margin-bottom:22px}
+h1 .ac{color:var(--cyan)}
+.hero-desc{font-size:.97rem;color:var(--muted);line-height:1.8;margin-bottom:30px;max-width:500px}
+.chips{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:34px}
+.chip{font-family:var(--mono);font-size:.65rem;font-weight:500;padding:3px 10px;border-radius:3px;letter-spacing:.05em}
+.cc{background:rgba(6,182,212,.08);border:1px solid rgba(6,182,212,.2);color:var(--cyan)}
+.cb{background:rgba(26,86,219,.12);border:1px solid rgba(26,86,219,.25);color:#93c5fd}
+.ca{background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.2);color:var(--amber)}
+.cg{background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.2);color:#6ee7b7}
+.hero-btns{display:flex;gap:12px;flex-wrap:wrap}
+.btn-p{background:var(--cyan);color:#021218;padding:13px 26px;border-radius:7px;font-size:.88rem;font-weight:600;text-decoration:none;display:inline-flex;align-items:center;gap:8px;transition:opacity .2s,transform .2s;box-shadow:0 4px 24px rgba(6,182,212,.3)}
+.btn-p:hover{opacity:.9;transform:translateY(-2px)}
+.btn-g{background:transparent;border:1px solid rgba(255,255,255,.12);color:var(--muted);padding:13px 26px;border-radius:7px;font-size:.88rem;text-decoration:none;transition:border-color .2s,color .2s}
+.btn-g:hover{border-color:var(--cyan);color:var(--cyan)}
+.vis-card{background:rgba(6,8,15,.85);border:1px solid rgba(255,255,255,.09);border-radius:16px;padding:28px;backdrop-filter:blur(12px);position:relative;overflow:hidden}
+.vis-card::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--cyan),var(--blue),transparent)}
+.vc-label{font-family:var(--mono);font-size:.62rem;color:var(--cyan);letter-spacing:.12em;text-transform:uppercase;margin-bottom:18px}
+/* inventory steps visual */
+.inv-steps{display:flex;gap:0;align-items:stretch}
+.inv-step{flex:1;text-align:center;padding:14px 8px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-right:none;transition:all .25s}
+.inv-step:first-child{border-radius:8px 0 0 8px}
+.inv-step:last-child{border-right:1px solid rgba(255,255,255,.08);border-radius:0 8px 8px 0}
+.inv-step:hover{background:rgba(6,182,212,.1);border-color:rgba(6,182,212,.3)}
+.inv-num{font-family:var(--display);font-size:1.4rem;font-weight:800;color:var(--cyan);opacity:.4;line-height:1;margin-bottom:4px}
+.inv-name{font-size:.72rem;font-weight:600;margin-bottom:3px}
+.inv-tbl{font-family:var(--mono);font-size:.6rem;color:var(--cyan);opacity:.6}
+/* cost methods */
+.cost-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:16px}
+.cost-box{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:12px;transition:all .25s}
+.cost-box:hover{background:rgba(6,182,212,.08);border-color:rgba(6,182,212,.25)}
+.cost-name{font-family:var(--display);font-size:.78rem;font-weight:700;margin-bottom:4px}
+.cost-desc{font-size:.68rem;color:rgba(255,255,255,.4)}
+.wrap{max-width:1200px;margin:0 auto;padding:0 48px}
+.section{padding:84px 0;border-top:1px solid var(--line)}
+.s-tag{font-family:var(--mono);font-size:.64rem;color:var(--cyan);letter-spacing:.14em;text-transform:uppercase;margin-bottom:10px}
+.s-head{font-family:var(--display);font-size:clamp(1.75rem,2.8vw,2.4rem);font-weight:800;line-height:1.12;letter-spacing:-.025em;margin-bottom:14px}
+.s-sub{font-size:.92rem;color:var(--muted);max-width:600px;line-height:1.75;margin-bottom:44px}
+.tbl-wrap{overflow-x:auto;border-radius:12px;border:1px solid var(--line);margin-bottom:28px}
+table{width:100%;border-collapse:collapse}
+th{background:rgba(6,182,212,.08);font-family:var(--mono);font-size:.63rem;font-weight:500;color:var(--cyan);letter-spacing:.07em;text-transform:uppercase;padding:12px 16px;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap}
+td{padding:11px 16px;font-size:.81rem;color:rgba(255,255,255,.7);border-bottom:1px solid rgba(255,255,255,.04);vertical-align:top;line-height:1.6}
+tr:last-child td{border-bottom:none}tr:hover td{background:rgba(255,255,255,.02)}
+code{font-family:var(--mono);font-size:.78em;background:rgba(6,182,212,.1);color:var(--cyan);padding:1px 6px;border-radius:3px}
+strong{color:var(--white);font-weight:500}
+.flow-steps{display:flex;flex-direction:column;max-width:800px}
+.fs{display:flex;gap:22px;position:relative}.fs+.fs{margin-top:20px}
+.fs:not(:last-child)::after{content:'';position:absolute;left:19px;top:42px;bottom:-20px;width:2px;background:linear-gradient(180deg,rgba(6,182,212,.5),transparent)}
+.fs-num{width:38px;height:38px;border-radius:50%;flex-shrink:0;background:rgba(6,182,212,.15);border:2px solid rgba(6,182,212,.45);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:.76rem;color:var(--cyan);font-weight:600;margin-top:2px}
+.fs-body{padding-top:6px}.fs-label{font-family:var(--display);font-weight:700;font-size:.94rem;margin-bottom:5px}
+.fs-detail{font-size:.8rem;color:var(--muted);line-height:1.65}
+.fs-chips{display:flex;gap:5px;flex-wrap:wrap;margin-top:8px}
+.mv-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+.mv-group{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:20px}
+.mv-gt{font-family:var(--mono);font-size:.62rem;color:var(--purple);letter-spacing:.1em;text-transform:uppercase;margin-bottom:13px;padding-bottom:9px;border-bottom:1px solid rgba(139,92,246,.12)}
+.mv-item{display:flex;gap:10px;align-items:flex-start;margin-bottom:9px}.mv-item:last-child{margin-bottom:0}
+.mv-key{font-family:var(--mono);font-size:.67rem;color:var(--purple);background:rgba(139,92,246,.1);border:1px solid rgba(139,92,246,.2);padding:2px 7px;border-radius:3px;flex-shrink:0;white-space:nowrap;line-height:1.6}
+.mv-desc{font-size:.77rem;color:var(--muted);line-height:1.5}
+.riscos-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}
+.risco{background:var(--card);border:1px solid rgba(239,68,68,.12);border-radius:12px;padding:22px;position:relative;overflow:hidden;transition:border-color .25s}
+.risco:hover{border-color:rgba(239,68,68,.35)}.risco::before{content:'';position:absolute;top:0;left:0;bottom:0;width:3px;background:var(--red)}
+.risco-cat{font-family:var(--mono);font-size:.6rem;color:#fca5a5;letter-spacing:.09em;text-transform:uppercase;margin-bottom:7px}
+.risco-head{font-family:var(--display);font-weight:700;font-size:.9rem;margin-bottom:7px}
+.risco-desc{font-size:.78rem;color:var(--muted);line-height:1.65}
+.pe-list{display:flex;flex-direction:column;gap:8px}
+.pe{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:13px 18px;display:grid;grid-template-columns:200px 150px 1fr;gap:14px;align-items:center;transition:border-color .2s}
+.pe:hover{border-color:rgba(6,182,212,.2)}.pe-name{font-family:var(--mono);font-size:.72rem;color:var(--cyan)}
+.pe-fonte{font-size:.72rem;color:var(--dimmed);font-family:var(--mono)}.pe-use{font-size:.78rem;color:var(--muted);line-height:1.5}
+.outros{display:flex;gap:10px;flex-wrap:wrap;margin-top:32px}
+.outro-link{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 18px;text-decoration:none;display:flex;align-items:center;gap:10px;transition:border-color .2s,transform .2s}.outro-link:hover{transform:translateY(-2px)}
+footer{background:#04060D;text-align:center;padding:24px;font-size:.77rem;color:rgba(255,255,255,.22);border-top:1px solid var(--line)}
+footer a{color:var(--cyan);text-decoration:none}
+@media(max-width:960px){nav{padding:0 20px}.nav-links{display:none}.hero-inner{grid-template-columns:1fr;padding:85px 24px 65px;gap:44px}.wrap{padding:0 24px}.section{padding:60px 0}.pe{grid-template-columns:1fr;gap:3px}.pe-fonte{display:none}}
+.fade{opacity:0;transform:translateY(20px);animation:fu .6s ease forwards}
+.d1{animation-delay:.05s}.d2{animation-delay:.15s}.d3{animation-delay:.25s}.d4{animation-delay:.35s}
+@keyframes fu{to{opacity:1;transform:translateY(0)}}
+</style>
+</head>
+<body>
+<nav>
+  <a href="../../index.html" class="nav-logo">Daniel<span>.</span>dev</a>
+  <div class="nav-links">
+    <a href="#fluxo">Fluxo</a><a href="#tabelas">Tabelas</a><a href="#inventario">Inventário</a><a href="#parametros">MV_</a><a href="#riscos">Riscos</a>
+  </div>
+  <a href="../index.html" class="nav-back">← Todos os Módulos</a>
+</nav>
+
+<section class="hero">
+  <div class="hero-inner">
+    <div>
+      <div class="mod-badge fade d1">SIGAEST · Módulo de Estoque · Protheus 12</div>
+      <h1 class="fade d2">Controle de<br><span class="ac">Estoque</span><br>e Ressuprimento</h1>
+      <p class="hero-desc fade d3">Saldos físicos e financeiros, movimentações, custo médio, rastreabilidade por lote/sublote, endereçamento de armazém, inventário e virada de saldos mensal.</p>
+      <div class="chips fade d4">
+        <span class="chip cc">SB1 · SB2 · SD3</span>
+        <span class="chip cg">Custo Médio</span>
+        <span class="chip ca">FIFO/PEPS</span>
+        <span class="chip cb">Lotes · Endereços</span>
+        <span class="chip cc">Inventário</span>
+      </div>
+      <div class="hero-btns fade d4">
+        <a href="#inventario" class="btn-p">Ver Inventário</a>
+        <a href="#riscos" class="btn-g">Riscos Técnicos →</a>
+      </div>
+    </div>
+    <div class="vis-card fade d3">
+      <div class="vc-label">◈ Inventário — Sequência Obrigatória</div>
+      <div class="inv-steps">
+        <div class="inv-step"><div class="inv-num">1</div><div class="inv-name">Bloqueio</div><div class="inv-tbl">B2_DTINV</div></div>
+        <div class="inv-step"><div class="inv-num">2</div><div class="inv-name">Contagem</div><div class="inv-tbl">Físico</div></div>
+        <div class="inv-step"><div class="inv-num">3</div><div class="inv-name">Acerto</div><div class="inv-tbl">SD3 ajuste</div></div>
+        <div class="inv-step"><div class="inv-num">4</div><div class="inv-name">Desbloqueio</div><div class="inv-tbl">B2_DTINV=''</div></div>
+        <div class="inv-step"><div class="inv-num">5</div><div class="inv-name">Virada</div><div class="inv-tbl">SB3</div></div>
+      </div>
+      <div style="margin-top:20px">
+        <div class="vc-label">◈ Métodos de Custeio</div>
+        <div class="cost-grid">
+          <div class="cost-box"><div class="cost-name" style="color:var(--cyan)">Custo Médio</div><div class="cost-desc">Padrão — recalcula a cada entrada. MV_ULMES controla uso do último mês.</div></div>
+          <div class="cost-box"><div class="cost-name" style="color:var(--amber)">FIFO/PEPS</div><div class="cost-desc">Primeiro que entra, primeiro que sai. Ativado via MV_CUSFIFO=S.</div></div>
+          <div class="cost-box"><div class="cost-name" style="color:#6ee7b7">Último Preço</div><div class="cost-desc">Custo da última compra recebida no período.</div></div>
+          <div class="cost-box"><div class="cost-name" style="color:#c4b5fd">Por Estrutura</div><div class="cost-desc">Para produtos fabricados (PA) — custo explodido da BOM (SG1).</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="wrap">
+<section class="section" id="fluxo">
+  <div class="s-tag">Passo a Passo</div>
+  <h2 class="s-head">Fluxo Operacional</h2>
+  <p class="s-sub">Do cadastro do produto até o fechamento do inventário — cada etapa e tabela envolvida.</p>
+  <div class="flow-steps">
+    <div class="fs"><div class="fs-num">1</div><div class="fs-body"><div class="fs-label">Cadastro do Produto (SB1)</div><div class="fs-detail">Define tipo (PA/PI/MC/BN), unidade de medida, rastreabilidade (B1_RASTRO=L para lote), endereçamento (B1_LOCALIZ=S), ponto de pedido e estoque mínimo/máximo/segurança.</div><div class="fs-chips"><span class="chip cc">SB1</span></div></div></div>
+    <div class="fs"><div class="fs-num">2</div><div class="fs-body"><div class="fs-label">Entrada/Saída de Estoque</div><div class="fs-detail">SIGACOM → MATA103 grava entrada em SB2. SIGAFAT → MATA467 baixa saída em SB2. Movimentos registrados em SD3 com TM (Tipo de Movimento) identificando a origem.</div><div class="fs-chips"><span class="chip cc">SB2</span><span class="chip ca">SD3</span></div></div></div>
+    <div class="fs"><div class="fs-num">3</div><div class="fs-body"><div class="fs-label">Recálculo do Custo Médio</div><div class="fs-detail">A cada entrada, B2_CM1 é recalculado: (qtd_atual × custo_atual + qtd_entrada × custo_entrada) / qtd_nova. MV_CUSFIFO=S ativa custeio FIFO com rastreio por lote.</div><div class="fs-chips"><span class="chip cg">B2_CM1</span><span class="chip cb">B2_QATU</span></div></div></div>
+    <div class="fs"><div class="fs-num">4</div><div class="fs-body"><div class="fs-label">Rastreabilidade e Endereçamento</div><div class="fs-detail">Produtos com B1_RASTRO=L exigem lote em toda movimentação. B1_LOCALIZ=S ativa endereços NNR — produtos ficam localizados fisicamente no armazém com pick/put automático.</div><div class="fs-chips"><span class="chip cc">NNR</span><span class="chip ca">SB3</span></div></div></div>
+    <div class="fs"><div class="fs-num">5</div><div class="fs-body"><div class="fs-label">Inventário e Virada de Saldos</div><div class="fs-detail">Sequência obrigatória: Bloqueio (B2_DTINV preenchido) → Contagem física → Acerto (gera SD3 de ajuste) → Desbloqueio → Virada (fecha SB2, popula SB3). Sem virada mensal, custo acumula erro.</div><div class="fs-chips"><span class="chip ca">B2_DTINV</span><span class="chip cc">SB3</span></div></div></div>
+  </div>
+</section>
+
+<section class="section" id="tabelas">
+  <div class="s-tag">Estrutura de Dados</div>
+  <h2 class="s-head">Tabelas Principais</h2>
+  <p class="s-sub">Mapeamento completo das tabelas do SIGAEST com campos críticos para queries e customizações.</p>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Tabela</th><th>Descrição</th><th>Campos Críticos</th></tr></thead>
+      <tbody>
+        <tr><td><code>SB1</code></td><td><strong>Cadastro do Produto</strong></td><td><code>B1_COD</code> · <code>B1_DESC</code> · <code>B1_TIPO</code> (PA/PI/MC/BN) · <code>B1_UM</code> · <code>B1_RASTRO</code> · <code>B1_LOCALIZ</code> · <code>B1_EMIN</code> · <code>B1_ESTSEG</code> · <code>B1_EMAX</code> · <code>B1_LE</code> · <code>B1_LM</code></td></tr>
+        <tr><td><code>SB2</code></td><td><strong>Saldo Físico/Financeiro por Armazém</strong></td><td><code>B2_COD</code> · <code>B2_LOCAL</code> · <code>B2_QATU</code> (saldo atual) · <code>B2_CM1</code> (custo médio) · <code>B2_DTINV</code> (bloqueio inventário) · <code>B2_QPEDIDO</code> · <code>B2_RESERVA</code></td></tr>
+        <tr><td><code>SB3</code></td><td>Movimentos Acumulados (histórico por mês)</td><td><code>B3_COD</code> · <code>B3_LOCAL</code> · <code>B3_QUANT</code> · <code>B3_EMISSAO</code></td></tr>
+        <tr><td><code>SD3</code></td><td><strong>Movimentos de Estoque</strong></td><td><code>D3_COD</code> · <code>D3_TM</code> (Tipo de Movimento) · <code>D3_QUANT</code> · <code>D3_CUSTO</code> · <code>D3_EMISSAO</code> · <code>D3_LOCAL</code> · <code>D3_LOTE</code> · <code>D3_DOC</code></td></tr>
+        <tr><td><code>SG1</code></td><td>Estrutura do Produto / BOM</td><td><code>G1_COD</code> · <code>G1_COMP</code> · <code>G1_QUANT</code> · <code>G1_INI</code> · <code>G1_FIM</code></td></tr>
+        <tr><td><code>SC2</code></td><td>Ordens de Produção</td><td><code>C2_NUM</code> · <code>C2_PRODUTO</code> · <code>C2_QUANT</code> · <code>C2_DATPRI</code> · <code>C2_DATPRF</code> · <code>C2_TPOP</code> · <code>C2_QUJE</code></td></tr>
+        <tr><td><code>SCP</code></td><td>Solicitação ao Armazém</td><td><code>CP_PRODUTO</code> · <code>CP_QUANT</code> · <code>CP_LOCAL</code> · <code>CP_DATPRF</code></td></tr>
+        <tr><td><code>NNR</code></td><td>Endereços de Armazém</td><td><code>NR_ARMAZEM</code> · <code>NR_RUAS</code> · <code>NR_COLUNA</code> · <code>NR_NIVEL</code> · <code>NR_ALTURA</code></td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="section" id="inventario">
+  <div class="s-tag">Processo Crítico</div>
+  <h2 class="s-head">Inventário — Detalhamento</h2>
+  <p class="s-sub">O inventário é o processo mais crítico do SIGAEST. Executar fora de ordem pode corromper saldos e custo médio irrecuperavelmente.</p>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Etapa</th><th>O que acontece</th><th>Campo/Tabela afetada</th><th>Risco se pulada</th></tr></thead>
+      <tbody>
+        <tr><td><strong>1 — Bloqueio</strong></td><td>Sistema impede qualquer movimentação no produto/armazém</td><td><code>B2_DTINV</code> preenchido</td><td>Movimentação durante contagem = divergência</td></tr>
+        <tr><td><strong>2 — Contagem</strong></td><td>Digitação da quantidade física real encontrada</td><td>Arquivo temporário de inventário</td><td>Não aplicável — é a base de comparação</td></tr>
+        <tr><td><strong>3 — Acerto</strong></td><td>Sistema compara SB2 × contagem, gera SD3 de ajuste</td><td><code>SD3</code> com TM=Ajuste · <code>SB2</code> atualizado</td><td>Saldo no sistema ≠ físico</td></tr>
+        <tr><td><strong>4 — Desbloqueio</strong></td><td>B2_DTINV limpo, movimentações liberadas</td><td><code>B2_DTINV</code> = ''</td><td>Estoque continua bloqueado para todos os módulos</td></tr>
+        <tr><td><strong>5 — Virada de Saldos</strong></td><td>SB2 fechado, saldo migra para SB3 (histórico mensal)</td><td><code>SB3</code> populado · <code>SB2</code> zerado</td><td>Relatórios históricos sem dados · custo acumulado incorreto</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div style="background:rgba(245,158,11,.06);border:1px solid rgba(245,158,11,.15);border-radius:12px;padding:20px;max-width:700px">
+    <div style="font-family:var(--mono);font-size:.63rem;color:var(--amber);letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px">Fórmulas de Ressuprimento</div>
+    <div style="font-size:.82rem;color:rgba(255,255,255,.65);line-height:1.9">
+      <strong style="color:var(--white)">LE (Lote Econômico)</strong> = Consumo Médio × Período de Aquisição<br>
+      <strong style="color:var(--white)">Classificação ABC</strong>: A = compra a cada 30 dias · B = 60 dias · C = 90 dias<br>
+      <strong style="color:var(--white)">Estoque Segurança</strong> = B1_ESTSEG = ponto de disparo do ressuprimento<br>
+      <strong style="color:var(--white)">Ponto de Pedido</strong> = B1_EMIN = saldo mínimo aceitável
+    </div>
+  </div>
+</section>
+
+<section class="section" id="parametros">
+  <div class="s-tag">Configuração</div>
+  <h2 class="s-head">Parâmetros MV_</h2>
+  <p class="s-sub">Parâmetros que controlam o comportamento do estoque, custeio e rastreabilidade.</p>
+  <div class="mv-grid">
+    <div class="mv-group">
+      <div class="mv-gt">Rastreabilidade e Endereço</div>
+      <div class="mv-item"><span class="mv-key">MV_RASTRO</span><span class="mv-desc">S = Habilita rastreabilidade por lote globalmente</span></div>
+      <div class="mv-item"><span class="mv-key">MV_LOCALIZ</span><span class="mv-desc">S = Habilita endereçamento de armazém (NNR)</span></div>
+      <div class="mv-item"><span class="mv-key">MV_SAGERAE</span><span class="mv-desc">S = Gera pré-requisição automática ao atingir estoque mínimo</span></div>
+    </div>
+    <div class="mv-group">
+      <div class="mv-gt">Custeio</div>
+      <div class="mv-item"><span class="mv-key">MV_CUSFIFO</span><span class="mv-desc">S = Habilita custeio FIFO/PEPS</span></div>
+      <div class="mv-item"><span class="mv-key">MV_ULMES</span><span class="mv-desc">S = Usa último mês para cálculo de custo médio</span></div>
+      <div class="mv-item"><span class="mv-key">MV_CUSTEXC</span><span class="mv-desc">Itens a excluir do cálculo do custo médio</span></div>
+    </div>
+    <div class="mv-group">
+      <div class="mv-gt">Aprovação e Controle</div>
+      <div class="mv-item"><span class="mv-key">MV_APROVSA</span><span class="mv-desc">S = Ativa aprovação de Solicitação ao Armazém (SCP)</span></div>
+      <div class="mv-item"><span class="mv-key">MV_BXPRERQ</span><span class="mv-desc">S = Baixa pré-requisição pelo saldo disponível</span></div>
+      <div class="mv-item"><span class="mv-key">MV_LOCPROC</span><span class="mv-desc">Localização padrão para material de apropriação indireta</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="riscos">
+  <div class="s-tag">Atenção</div>
+  <h2 class="s-head">Riscos Técnicos</h2>
+  <p class="s-sub">Problemas críticos no SIGAEST que causam impacto em cascata nos módulos Financeiro e Contábil.</p>
+  <div class="riscos-grid">
+    <div class="risco"><div class="risco-cat">Inventário</div><div class="risco-head">Virada de Saldos sem processar</div><div class="risco-desc">Não executar a virada mensal acumula movimentos em SB2 sem fechar período. Custo Médio fica distorcido e relatórios históricos ficam sem dados — sem reversão simples.</div></div>
+    <div class="risco"><div class="risco-cat">Inventário</div><div class="risco-head">Movimentação durante bloqueio</div><div class="risco-desc">ExecAuto que movimenta SD3 sem verificar B2_DTINV pode forçar entrada/saída durante inventário. Acerto vai criar divergência fantasma no saldo final.</div></div>
+    <div class="risco"><div class="risco-cat">Custo Médio</div><div class="risco-head">Entrada com custo zero</div><div class="risco-desc">D3_CUSTO vazio ou D1_VUNIT não propagado corretamente para SB2 na integração com Compras. Custo Médio vai a zero progressivamente conforme entradas se acumulam.</div></div>
+    <div class="risco"><div class="risco-cat">Rastreabilidade</div><div class="risco-head">B1_RASTRO alterado após movimentações</div><div class="risco-desc">Mudar rastreabilidade (L/S) de produto com saldo e movimentações históricas causa inconsistência no SD3 — lotes existentes ficam órfãos sem rastreio.</div></div>
+    <div class="risco"><div class="risco-cat">ExecAuto</div><div class="risco-head">SD3 inserido diretamente por SQL</div><div class="risco-desc">Inserir movimentos diretamente na SD3 via SQL sem passar pelo ExecAuto não atualiza SB2 (B2_QATU e B2_CM1) — saldo divergente do livro de movimentos.</div></div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="s-tag">Customização</div>
+  <h2 class="s-head">Pontos de Entrada</h2>
+  <p class="s-sub">Entry points principais do SIGAEST para customizações sem alterar fontes padrão TOTVS.</p>
+  <div class="pe-list">
+    <div class="pe"><span class="pe-name">MT122OKB</span><span class="pe-fonte">MATA122.PRW</span><span class="pe-use">Validação customizada no movimento de estoque antes de gravar SD3</span></div>
+    <div class="pe"><span class="pe-name">MT122GRV</span><span class="pe-fonte">MATA122.PRW</span><span class="pe-use">Executado após gravação do SD3 — permite disparar processos adicionais</span></div>
+    <div class="pe"><span class="pe-name">MT270OK</span><span class="pe-fonte">MATA270.PRW</span><span class="pe-use">Validação no acerto de inventário antes de gerar SD3 de ajuste</span></div>
+    <div class="pe"><span class="pe-name">MT130OK</span><span class="pe-fonte">MATA130.PRW</span><span class="pe-use">Validação na requisição de material (SCP) ao armazém</span></div>
+  </div>
+</section>
+</div>
+
+<div class="wrap" style="padding-bottom:60px">
+  <div style="font-family:var(--mono);font-size:.63rem;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:14px">Outros Módulos</div>
+  <div class="outros">
+    <a href="sigacom.html" class="outro-link" style="border-color:rgba(16,185,129,.18)"><span>🛒</span><span style="font-family:var(--display);font-size:.82rem;font-weight:700;color:#6ee7b7">SIGACOM</span><span style="font-size:.75rem;color:var(--muted)">Compras</span></a>
+    <a href="sigafat.html" class="outro-link" style="border-color:rgba(245,158,11,.18)"><span>🧾</span><span style="font-family:var(--display);font-size:.82rem;font-weight:700;color:var(--amber)">SIGAFAT</span><span style="font-size:.75rem;color:var(--muted)">Faturamento</span></a>
+    <a href="sigafin.html" class="outro-link" style="border-color:rgba(26,86,219,.25)"><span>💰</span><span style="font-family:var(--display);font-size:.82rem;font-weight:700;color:#93c5fd">SIGAFIN</span><span style="font-size:.75rem;color:var(--muted)">Financeiro</span></a>
+    <a href="sigactb.html" class="outro-link" style="border-color:rgba(139,92,246,.2)"><span>📊</span><span style="font-family:var(--display);font-size:.82rem;font-weight:700;color:#c4b5fd">SIGACTB</span><span style="font-size:.75rem;color:var(--muted)">Contabilidade</span></a>
+    <a href="sigafis.html" class="outro-link" style="border-color:rgba(239,68,68,.18)"><span>⚖️</span><span style="font-family:var(--display);font-size:.82rem;font-weight:700;color:#fca5a5">SIGAFIS</span><span style="font-size:.75rem;color:var(--muted)">Fiscal</span></a>
+  </div>
+</div>
+<footer>© 2025 Daniel Luiz Alves — Desenvolvedor Protheus &nbsp;·&nbsp; <a href="../index.html">Portfólio</a></footer>
+</body>
+</html>

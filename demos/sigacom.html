@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SIGACOM — Compras Protheus | Daniel Luiz Alves</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#06080F;--bg2:#090D18;
+  --blue:#1A56DB;--cyan:#06B6D4;--amber:#F59E0B;--red:#EF4444;--green:#10B981;--purple:#8B5CF6;
+  --white:#FFF;--muted:rgba(255,255,255,.45);--dimmed:rgba(255,255,255,.22);
+  --line:rgba(255,255,255,.07);--card:rgba(255,255,255,.03);
+  --accent:#10B981;--accent2:#06B6D4;
+  --mono:'DM Mono',monospace;--sans:'DM Sans',sans-serif;--display:'Syne',sans-serif;
+}
+html{scroll-behavior:smooth}
+body{font-family:var(--sans);background:var(--bg);color:var(--white);overflow-x:hidden}
+
+nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(6,8,15,.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--line);padding:0 48px;height:60px;display:flex;align-items:center;justify-content:space-between}
+.nav-logo{font-family:var(--display);font-size:.95rem;font-weight:700;color:var(--white);text-decoration:none}
+.nav-logo span{color:var(--cyan)}
+.nav-links{display:flex;align-items:center;gap:20px}
+.nav-links a{font-size:.8rem;color:var(--muted);text-decoration:none;transition:color .2s}
+.nav-links a:hover{color:var(--white)}
+.nav-back{font-size:.78rem;color:var(--muted);text-decoration:none;display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.05);border:1px solid var(--line);padding:5px 12px;border-radius:6px;transition:color .2s,border-color .2s}
+.nav-back:hover{color:#6ee7b7;border-color:rgba(16,185,129,.3)}
+
+.hero{
+  min-height:100vh;
+  background:radial-gradient(ellipse 65% 55% at 60% -5%,rgba(16,185,129,.15) 0%,transparent 70%),radial-gradient(ellipse 40% 30% at 5% 85%,rgba(6,182,212,.07) 0%,transparent 60%),var(--bg);
+  display:flex;align-items:center;position:relative;overflow:hidden;padding-top:60px;
+}
+.hero::before{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(16,185,129,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(16,185,129,.05) 1px,transparent 1px);background-size:52px 52px;mask-image:radial-gradient(ellipse 90% 70% at 50% 35%,black 20%,transparent 100%);pointer-events:none}
+.hero-inner{position:relative;z-index:2;max-width:1200px;margin:0 auto;padding:110px 48px 90px;display:grid;grid-template-columns:1.1fr .9fr;gap:72px;align-items:center}
+
+.mod-badge{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:.68rem;color:var(--accent);letter-spacing:.1em;text-transform:uppercase;background:rgba(16,185,129,.07);border:1px solid rgba(16,185,129,.18);padding:5px 14px;border-radius:4px;margin-bottom:22px}
+.mod-badge::before{content:'';width:5px;height:5px;background:var(--accent);border-radius:50%;animation:blink 2.4s ease-in-out infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.15}}
+
+h1{font-family:var(--display);font-size:clamp(2.8rem,4.8vw,4rem);font-weight:800;line-height:1.03;letter-spacing:-.03em;margin-bottom:22px}
+h1 .ac{color:var(--accent)}
+.hero-desc{font-size:.97rem;color:var(--muted);line-height:1.8;margin-bottom:30px;max-width:500px}
+.chips{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:34px}
+.chip{font-family:var(--mono);font-size:.65rem;font-weight:500;padding:3px 10px;border-radius:3px;letter-spacing:.05em}
+.cg{background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.2);color:#6ee7b7}
+.cc{background:rgba(6,182,212,.08);border:1px solid rgba(6,182,212,.2);color:var(--cyan)}
+.cb{background:rgba(26,86,219,.12);border:1px solid rgba(26,86,219,.25);color:#93c5fd}
+.ca{background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.2);color:var(--amber)}
+
+.hero-btns{display:flex;gap:12px;flex-wrap:wrap}
+.btn-p{background:var(--accent);color:#052012;padding:13px 26px;border-radius:7px;font-size:.88rem;font-weight:600;text-decoration:none;display:inline-flex;align-items:center;gap:8px;transition:opacity .2s,transform .2s;box-shadow:0 4px 24px rgba(16,185,129,.3)}
+.btn-p:hover{opacity:.9;transform:translateY(-2px)}
+.btn-g{background:transparent;border:1px solid rgba(255,255,255,.12);color:var(--muted);padding:13px 26px;border-radius:7px;font-size:.88rem;text-decoration:none;transition:border-color .2s,color .2s}
+.btn-g:hover{border-color:var(--accent);color:#6ee7b7}
+
+/* visual card */
+.vis-card{background:rgba(6,8,15,.85);border:1px solid rgba(255,255,255,.09);border-radius:16px;padding:28px;backdrop-filter:blur(12px);position:relative;overflow:hidden}
+.vis-card::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent),var(--cyan),transparent)}
+.vc-label{font-family:var(--mono);font-size:.62rem;color:var(--accent);letter-spacing:.12em;text-transform:uppercase;margin-bottom:18px;display:flex;align-items:center;gap:7px}
+.flow-chain{display:flex;flex-direction:column;gap:6px}
+.fc-step{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);border-radius:8px;padding:10px 14px;transition:all .25s}
+.fc-step:hover{background:rgba(16,185,129,.1);border-color:rgba(16,185,129,.3)}
+.fc-step.active{background:rgba(16,185,129,.12);border-color:rgba(16,185,129,.35)}
+.fc-num{width:22px;height:22px;border-radius:50%;background:rgba(16,185,129,.2);border:1px solid rgba(16,185,129,.4);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:.6rem;color:#6ee7b7;flex-shrink:0}
+.fc-name{font-family:var(--mono);font-size:.73rem;color:#6ee7b7;flex-shrink:0;min-width:80px}
+.fc-desc{font-size:.72rem;color:rgba(255,255,255,.4)}
+.fc-arrow{text-align:center;color:rgba(16,185,129,.3);font-size:.8rem;margin-left:32px;line-height:1}
+
+/* LAYOUT */
+.wrap{max-width:1200px;margin:0 auto;padding:0 48px}
+.section{padding:84px 0;border-top:1px solid var(--line)}
+.s-tag{font-family:var(--mono);font-size:.64rem;color:var(--accent);letter-spacing:.14em;text-transform:uppercase;margin-bottom:10px}
+.s-head{font-family:var(--display);font-size:clamp(1.75rem,2.8vw,2.4rem);font-weight:800;line-height:1.12;letter-spacing:-.025em;margin-bottom:14px}
+.s-sub{font-size:.92rem;color:var(--muted);max-width:600px;line-height:1.75;margin-bottom:44px}
+
+/* TABLES */
+.tbl-wrap{overflow-x:auto;border-radius:12px;border:1px solid var(--line);margin-bottom:28px}
+table{width:100%;border-collapse:collapse}
+th{background:rgba(16,185,129,.08);font-family:var(--mono);font-size:.63rem;font-weight:500;color:#6ee7b7;letter-spacing:.07em;text-transform:uppercase;padding:12px 16px;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap}
+td{padding:11px 16px;font-size:.81rem;color:rgba(255,255,255,.7);border-bottom:1px solid rgba(255,255,255,.04);vertical-align:top;line-height:1.6}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(255,255,255,.02)}
+code{font-family:var(--mono);font-size:.78em;background:rgba(16,185,129,.1);color:#6ee7b7;padding:1px 6px;border-radius:3px}
+strong{color:var(--white);font-weight:500}
+
+/* CARDS */
+.cards-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+.info-card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:22px;transition:border-color .25s,transform .25s}
+.info-card:hover{border-color:rgba(16,185,129,.25);transform:translateY(-3px)}
+.ic-title{font-family:var(--mono);font-size:.63rem;color:var(--accent);letter-spacing:.1em;text-transform:uppercase;margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid rgba(16,185,129,.1)}
+.ic-list{list-style:none;display:flex;flex-direction:column;gap:8px}
+.ic-list li{font-size:.8rem;color:var(--muted);display:flex;gap:8px;align-items:flex-start;line-height:1.5}
+
+/* FLOW STEPS */
+.flow-steps{display:flex;flex-direction:column;max-width:800px}
+.fs{display:flex;gap:22px;position:relative}
+.fs+.fs{margin-top:20px}
+.fs:not(:last-child)::after{content:'';position:absolute;left:19px;top:42px;bottom:-20px;width:2px;background:linear-gradient(180deg,rgba(16,185,129,.5),transparent)}
+.fs-num{width:38px;height:38px;border-radius:50%;flex-shrink:0;background:rgba(16,185,129,.15);border:2px solid rgba(16,185,129,.45);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:.76rem;color:#6ee7b7;font-weight:600;margin-top:2px}
+.fs-body{padding-top:6px}
+.fs-label{font-family:var(--display);font-weight:700;font-size:.94rem;margin-bottom:5px}
+.fs-detail{font-size:.8rem;color:var(--muted);line-height:1.65}
+.fs-chips{display:flex;gap:5px;flex-wrap:wrap;margin-top:8px}
+
+/* MV_ */
+.mv-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+.mv-group{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:20px}
+.mv-gt{font-family:var(--mono);font-size:.62rem;color:var(--purple);letter-spacing:.1em;text-transform:uppercase;margin-bottom:13px;padding-bottom:9px;border-bottom:1px solid rgba(139,92,246,.12)}
+.mv-item{display:flex;gap:10px;align-items:flex-start;margin-bottom:9px}
+.mv-item:last-child{margin-bottom:0}
+.mv-key{font-family:var(--mono);font-size:.67rem;color:var(--purple);background:rgba(139,92,246,.1);border:1px solid rgba(139,92,246,.2);padding:2px 7px;border-radius:3px;flex-shrink:0;white-space:nowrap;line-height:1.6}
+.mv-desc{font-size:.77rem;color:var(--muted);line-height:1.5}
+
+/* RISCOS */
+.riscos-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}
+.risco{background:var(--card);border:1px solid rgba(239,68,68,.12);border-radius:12px;padding:22px;position:relative;overflow:hidden;transition:border-color .25s}
+.risco:hover{border-color:rgba(239,68,68,.35)}
+.risco::before{content:'';position:absolute;top:0;left:0;bottom:0;width:3px;background:var(--red)}
+.risco-cat{font-family:var(--mono);font-size:.6rem;color:#fca5a5;letter-spacing:.09em;text-transform:uppercase;margin-bottom:7px}
+.risco-head{font-family:var(--display);font-weight:700;font-size:.9rem;margin-bottom:7px}
+.risco-desc{font-size:.78rem;color:var(--muted);line-height:1.65}
+
+/* PE */
+.pe-list{display:flex;flex-direction:column;gap:8px}
+.pe{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:13px 18px;display:grid;grid-template-columns:200px 150px 1fr;gap:14px;align-items:center;transition:border-color .2s}
+.pe:hover{border-color:rgba(16,185,129,.2)}
+.pe-name{font-family:var(--mono);font-size:.72rem;color:var(--accent)}
+.pe-fonte{font-size:.72rem;color:var(--dimmed);font-family:var(--mono)}
+.pe-use{font-size:.78rem;color:var(--muted);line-height:1.5}
+
+/* INTEGRATION */
+.integ-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+.integ{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:20px;transition:transform .25s,border-color .25s}
+.integ:hover{transform:translateY(-4px);border-color:rgba(16,185,129,.25)}
+.integ-icon{font-size:1.6rem;margin-bottom:8px}
+.integ-from{font-family:var(--display);font-weight:700;font-size:.88rem;margin-bottom:4px}
+.integ-dir{color:var(--accent);font-size:.72rem;margin-bottom:8px;font-family:var(--mono)}
+.integ-desc{font-size:.77rem;color:var(--muted);line-height:1.6}
+
+/* OUTROS MODULOS NAV */
+.outros{display:flex;gap:10px;flex-wrap:wrap;margin-top:32px}
+.outro-link{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 18px;text-decoration:none;display:flex;align-items:center;gap:10px;transition:border-color .2s,transform .2s}
+.outro-link:hover{transform:translateY(-2px)}
+
+/* CTA */
+.cta{background:linear-gradient(135deg,#052012,#071a10);text-align:center;padding:72px 48px;border-top:1px solid rgba(16,185,129,.12)}
+.cta h2{font-family:var(--display);font-size:clamp(1.8rem,3vw,2.4rem);font-weight:800;margin-bottom:14px;letter-spacing:-.02em}
+.cta p{font-size:.93rem;color:var(--muted);margin-bottom:32px;max-width:480px;margin-left:auto;margin-right:auto}
+.cta-links{display:flex;justify-content:center;gap:14px;flex-wrap:wrap}
+
+footer{background:#04060D;text-align:center;padding:24px;font-size:.77rem;color:rgba(255,255,255,.22);border-top:1px solid var(--line)}
+footer a{color:var(--cyan);text-decoration:none}
+
+.bd{display:inline-flex;align-items:center;font-family:var(--mono);font-size:.61rem;font-weight:500;padding:2px 8px;border-radius:3px;letter-spacing:.04em;white-space:nowrap}
+.bd-r{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.22);color:#fca5a5}
+.bd-a{background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.22);color:var(--amber)}
+.bd-g{background:rgba(16,185,129,.09);border:1px solid rgba(16,185,129,.22);color:#6ee7b7}
+
+@media(max-width:960px){nav{padding:0 20px}.nav-links{display:none}.hero-inner{grid-template-columns:1fr;padding:85px 24px 65px;gap:44px}.wrap{padding:0 24px}.section{padding:60px 0}.pe{grid-template-columns:1fr;gap:3px}.pe-fonte{display:none}.cta{padding:56px 24px}}
+.fade{opacity:0;transform:translateY(20px);animation:fu .6s ease forwards}
+.d1{animation-delay:.05s}.d2{animation-delay:.15s}.d3{animation-delay:.25s}.d4{animation-delay:.35s}
+@keyframes fu{to{opacity:1;transform:translateY(0)}}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="../index.html" class="nav-logo">Daniel<span>.</span>dev</a>
+  <div class="nav-links">
+    <a href="#fluxo">Fluxo</a><a href="#tabelas">Tabelas</a>
+    <a href="#parametros">MV_</a><a href="#integracoes">Integrações</a><a href="#riscos">Riscos</a>
+  </div>
+  <a href="../index.html" class="nav-back">← Todos os Módulos</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-inner">
+    <div>
+      <div class="mod-badge fade d1">SIGACOM · Módulo de Compras · Protheus 12</div>
+      <h1 class="fade d2">Gestão de<br><span class="ac">Compras</span><br>e Suprimentos</h1>
+      <p class="hero-desc fade d3">Do levantamento de necessidade até o recebimento da NF de entrada — cotações, aprovação por alçada, geração automática de OC e integração com Estoque, Financeiro e Contabilidade.</p>
+      <div class="chips fade d4">
+        <span class="chip cg">SC1 · SC7 · SCJ</span>
+        <span class="chip cg">SF1 · SD1</span>
+        <span class="chip cc">SE2 · SB2</span>
+        <span class="chip cb">Workflow aprovação</span>
+        <span class="chip ca">MATA103</span>
+      </div>
+      <div class="hero-btns fade d4">
+        <a href="#fluxo" class="btn-p">Ver Fluxo Completo</a>
+        <a href="#riscos" class="btn-g">Riscos Técnicos →</a>
+      </div>
+    </div>
+
+    <div class="vis-card fade d3">
+      <div class="vc-label">◈ Fluxo de Compras</div>
+      <div class="flow-chain">
+        <div class="fc-step active"><div class="fc-num">1</div><div class="fc-name">SC1</div><div class="fc-desc">Solicitação de Compra</div></div>
+        <div class="fc-arrow">↓</div>
+        <div class="fc-step"><div class="fc-num">2</div><div class="fc-name">SCJ</div><div class="fc-desc">Cotação com fornecedores</div></div>
+        <div class="fc-arrow">↓</div>
+        <div class="fc-step"><div class="fc-num">3</div><div class="fc-name">Aprovação</div><div class="fc-desc">Workflow por alçada</div></div>
+        <div class="fc-arrow">↓</div>
+        <div class="fc-step"><div class="fc-num">4</div><div class="fc-name">SC7</div><div class="fc-desc">Pedido / Ordem de Compra</div></div>
+        <div class="fc-arrow">↓</div>
+        <div class="fc-step"><div class="fc-num">5</div><div class="fc-name">SF1/SD1</div><div class="fc-desc">Recebimento NF Entrada (MATA103)</div></div>
+        <div class="fc-arrow">↓</div>
+        <div class="fc-step"><div class="fc-num">6</div><div class="fc-name">SE2 · SB2</div><div class="fc-desc">A Pagar + entrada Estoque</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FLUXO DETALHADO -->
+<div class="wrap">
+<section class="section" id="fluxo">
+  <div class="s-tag">Passo a Passo</div>
+  <h2 class="s-head">Fluxo Operacional Detalhado</h2>
+  <p class="s-sub">Cada etapa do processo de compras, com as tabelas gravadas e rotinas envolvidas.</p>
+  <div class="flow-steps">
+    <div class="fs"><div class="fs-num">1</div><div class="fs-body"><div class="fs-label">Solicitação de Compra (SC1)</div><div class="fs-detail">Departamento identifica necessidade e abre SC1. Campos: produto, quantidade, data necessidade, CC. Pode gerar SC7 automaticamente via <code>MV_AUTOPC</code>.</div><div class="fs-chips"><span class="chip cg">SC1</span></div></div></div>
+    <div class="fs"><div class="fs-num">2</div><div class="fs-body"><div class="fs-label">Cotação com Fornecedores (SCJ)</div><div class="fs-detail">Comprador cria cotação, seleciona fornecedores (SA2), registra orçamentos. Quadro comparativo por item ou global. <code>MV_COTACMP=S</code> torna cotação obrigatória antes da OC.</div><div class="fs-chips"><span class="chip cg">SCJ</span><span class="chip cc">SA2</span></div></div></div>
+    <div class="fs"><div class="fs-num">3</div><div class="fs-body"><div class="fs-label">Aprovação por Alçada</div><div class="fs-detail">Workflow de aprovação configurado em <code>MV_APROVA1</code>. Aprovadores recebem e-mail automático. SC1 ou SC7 ficam bloqueados até aprovação completa.</div><div class="fs-chips"><span class="chip cb">Workflow</span></div></div></div>
+    <div class="fs"><div class="fs-num">4</div><div class="fs-body"><div class="fs-label">Ordem de Compra (SC7)</div><div class="fs-detail">Gerada manualmente ou automaticamente após cotação aprovada. Define fornecedor, preço, prazo de entrega, condição de pagamento e TES de entrada.</div><div class="fs-chips"><span class="chip cg">SC7</span><span class="chip cc">SA2</span></div></div></div>
+    <div class="fs"><div class="fs-num">5</div><div class="fs-body"><div class="fs-label">Recebimento da NF (MATA103)</div><div class="fs-detail">NF chegou — MATA103 grava SF1 (cabeçalho) e SD1 (itens). TES (SF4) determina: credita ICMS/IPI? Atualiza estoque SB2? Gera A Pagar SE2? FISXICMS calcula tributos.</div><div class="fs-chips"><span class="chip cg">SF1 · SD1</span><span class="chip ca">SF4 TES</span></div></div></div>
+    <div class="fs"><div class="fs-num">6</div><div class="fs-body"><div class="fs-label">Integrações Automáticas</div><div class="fs-detail">Estoque: SB2 atualizado via SD3 (se F4_ESTOQUE=S). Financeiro: SE2 criado (se F4_DUPLIC=S). Fiscal: SF3 atualizado. Contábil: CT2 via evento contábil. CIAP: SF9/SFA (se F4_ATUATF=S).</div><div class="fs-chips"><span class="chip cc">SB2 · SD3</span><span class="chip cb">SE2</span><span class="chip ca">SF3</span></div></div></div>
+  </div>
+</section>
+
+<!-- TABELAS -->
+<section class="section" id="tabelas">
+  <div class="s-tag">Estrutura de Dados</div>
+  <h2 class="s-head">Tabelas Principais</h2>
+  <p class="s-sub">Mapa completo das tabelas do SIGACOM com campos críticos para customizações e consultas SQL.</p>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Tabela</th><th>Descrição</th><th>Campos-Chave</th></tr></thead>
+      <tbody>
+        <tr><td><code>SA2</code></td><td>Fornecedores</td><td><code>A2_COD</code> · <code>A2_LOJA</code> · <code>A2_NOME</code> · <code>A2_CGC</code> · <code>A2_EST</code> · <code>A2_COND</code></td></tr>
+        <tr><td><code>SC1</code></td><td>Solicitações de Compra</td><td><code>C1_NUM</code> · <code>C1_PRODUTO</code> · <code>C1_QUANT</code> · <code>C1_DATPRF</code> · <code>C1_CC</code> · <code>C1_SOLICIT</code> · <code>C1_QUJE</code></td></tr>
+        <tr><td><code>SC7</code></td><td>Pedidos / Ordens de Compra</td><td><code>C7_NUM</code> · <code>C7_ITEM</code> · <code>C7_PRODUTO</code> · <code>C7_QUANT</code> · <code>C7_PRECO</code> · <code>C7_FORNECE</code> · <code>C7_DATPRF</code> · <code>C7_QUJE</code></td></tr>
+        <tr><td><code>SCJ</code></td><td>Cotações</td><td><code>CJ_NUM</code> · <code>CJ_PRODUTO</code> · <code>CJ_FORNECE</code> · <code>CJ_PRECO</code> · <code>CJ_PRAZO</code> · <code>CJ_MELHOR</code></td></tr>
+        <tr><td><code>SF1</code></td><td><strong>Cabeçalho NF Entrada</strong></td><td><code>F1_DOC</code> · <code>F1_SERIE</code> · <code>F1_FORNECE</code> · <code>F1_LOJA</code> · <code>F1_EMISSAO</code> · <code>F1_DTDIGIT</code> · <code>F1_CHVNFE</code> · <code>F1_STATUS</code></td></tr>
+        <tr><td><code>SD1</code></td><td><strong>Itens NF Entrada</strong></td><td><code>D1_COD</code> · <code>D1_TES</code> · <code>D1_QUANT</code> · <code>D1_VUNIT</code> · <code>D1_TOTAL</code> · <code>D1_BASEICM</code> · <code>D1_ICMS</code> · <code>D1_IPI</code> · <code>D1_PISCRED</code> · <code>D1_CF</code></td></tr>
+        <tr><td><code>SE2</code></td><td>Títulos a Pagar gerados</td><td><code>E2_NUM</code> · <code>E2_PARCELA</code> · <code>E2_VALOR</code> · <code>E2_VENCTO</code> · <code>E2_BAIXA</code> · <code>E2_FORNECE</code> · <code>E2_LOJA</code></td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- PROCESSO COTAÇÃO -->
+<section class="section">
+  <div class="s-tag">Processo Cotação</div>
+  <h2 class="s-head">6 Etapas da Cotação</h2>
+  <p class="s-sub">O processo de cotação é o coração do SIGACOM — garante a melhor oferta antes de emitir a Ordem de Compra.</p>
+  <div class="cards-grid">
+    <div class="info-card"><div class="ic-title">1 — Solicitação</div><ul class="ic-list"><li>SC1 com produto, qtd e data</li><li>Aprovação prévia se configurado</li><li>Pode agregar múltiplas SC1 numa cotação</li></ul></div>
+    <div class="info-card"><div class="ic-title">2 — Criação da Cotação</div><ul class="ic-list"><li>Comprador cria cotação no SCJ</li><li>Seleciona fornecedores do SA2</li><li>Define prazo de resposta</li></ul></div>
+    <div class="info-card"><div class="ic-title">3 — Comunicação</div><ul class="ic-list"><li>E-mail automático para fornecedores</li><li>Portal do fornecedor (se habilitado)</li><li>Impresso para coleta manual</li></ul></div>
+    <div class="info-card"><div class="ic-title">4 — Registro de Orçamentos</div><ul class="ic-list"><li>Preço, prazo e condição por item</li><li>Múltiplas versões de orçamento</li><li>Validação de CNPJ e IE do fornecedor</li></ul></div>
+    <div class="info-card"><div class="ic-title">5 — Quadro Comparativo</div><ul class="ic-list"><li>Melhor oferta por item (split)</li><li>Melhor oferta global (único fornecedor)</li><li>Destaque automático do menor preço</li></ul></div>
+    <div class="info-card"><div class="ic-title">6 — Geração da OC</div><ul class="ic-list"><li>SC7 gerada a partir do vencedor</li><li>Rastreabilidade SCJ → SC7 preservada</li><li>Encerramento automático da cotação</li></ul></div>
+  </div>
+</section>
+
+<!-- MV_ -->
+<section class="section" id="parametros">
+  <div class="s-tag">Configuração</div>
+  <h2 class="s-head">Parâmetros MV_</h2>
+  <p class="s-sub">Parâmetros que controlam o comportamento do módulo de Compras em cada empresa/filial.</p>
+  <div class="mv-grid">
+    <div class="mv-group">
+      <div class="mv-gt">Fluxo e Processo</div>
+      <div class="mv-item"><span class="mv-key">MV_COTACMP</span><span class="mv-desc">S = Exige cotação antes de gerar a OC (SC7)</span></div>
+      <div class="mv-item"><span class="mv-key">MV_AUTOPC</span><span class="mv-desc">S = Gera OC automaticamente a partir da SC1 aprovada</span></div>
+      <div class="mv-item"><span class="mv-key">MV_APROVA1</span><span class="mv-desc">Ativa aprovação de SC por alçada de valor</span></div>
+      <div class="mv-item"><span class="mv-key">MV_RECALIQ</span><span class="mv-desc">S = Recalcula alíquotas de ICMS/IPI no recebimento</span></div>
+    </div>
+    <div class="mv-group">
+      <div class="mv-gt">Controle e Limites</div>
+      <div class="mv-item"><span class="mv-key">MV_PCEMISS</span><span class="mv-desc">Controla emissão de SC sem pedido vinculado</span></div>
+      <div class="mv-item"><span class="mv-key">MV_1DUPNF</span><span class="mv-desc">Controle de duplicidade de NF do fornecedor</span></div>
+      <div class="mv-item"><span class="mv-key">MV_COMPRIR</span><span class="mv-desc">Permite comprar produto sem estrutura (PA)</span></div>
+      <div class="mv-item"><span class="mv-key">MV_NAOSRV</span><span class="mv-desc">Bloqueia entrega acima da quantidade da OC</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- INTEGRAÇÕES -->
+<section class="section" id="integracoes">
+  <div class="s-tag">Arquitetura</div>
+  <h2 class="s-head">Integrações Automáticas</h2>
+  <p class="s-sub">No recebimento da NF (MATA103), o SIGACOM dispara integrações em cadeia com todos os módulos envolvidos.</p>
+  <div class="integ-grid">
+    <div class="integ"><div class="integ-icon">📦</div><div class="integ-from">→ SIGAEST</div><div class="integ-dir">F4_ESTOQUE = S</div><div class="integ-desc">SB2 atualizado com quantidade e custo de entrada. SD3 registra movimento tipo E (entrada). Custo Médio recalculado automaticamente.</div></div>
+    <div class="integ"><div class="integ-icon">💰</div><div class="integ-from">→ SIGAFIN</div><div class="integ-dir">F4_DUPLIC = S</div><div class="integ-desc">SE2 gerado com valor, vencimento e fornecedor. Parcelamento conforme condição de pagamento SA2. Pronto para baixa e CNAB.</div></div>
+    <div class="integ"><div class="integ-icon">⚖️</div><div class="integ-from">→ SIGAFIS</div><div class="integ-dir">MATA103 → MaFisAtu</div><div class="integ-desc">SF1/SD1 gravados. SF3 (Livro Fiscal) atualizado. Crédito ICMS/IPI conforme F4_CREDIC e F4_CREDIPI. CST obrigatório para SPED.</div></div>
+    <div class="integ"><div class="integ-icon">📊</div><div class="integ-from">→ SIGACTB</div><div class="integ-dir">Evento contábil automático</div><div class="integ-desc">D: Estoque + D: ICMS a Recuperar / C: Fornecedores. Lançamento CT2 com Centro de Custo configurado na TES.</div></div>
+    <div class="integ"><div class="integ-icon">🏭</div><div class="integ-from">→ SIGAATF</div><div class="integ-dir">F4_ATUATF = S</div><div class="integ-desc">Bem entra no CIAP (SF9/SFA). Crédito ICMS do ativo parcelado em 1/48 por 48 meses via FISXCIAP.</div></div>
+  </div>
+</section>
+
+<!-- PONTOS DE ENTRADA -->
+<section class="section">
+  <div class="s-tag">Customização</div>
+  <h2 class="s-head">Pontos de Entrada Relevantes</h2>
+  <p class="s-sub">Entry points principais do SIGACOM para customizações ADVPL/TLPP sem alterar o fonte padrão.</p>
+  <div class="pe-list">
+    <div class="pe"><span class="pe-name">MT103GRV</span><span class="pe-fonte">MATA103.PRW</span><span class="pe-use">Executado antes de gravar a NF de entrada — permite alterar campos do SF1/SD1</span></div>
+    <div class="pe"><span class="pe-name">MT103OK</span><span class="pe-fonte">MATA103.PRW</span><span class="pe-use">Validação customizada antes de confirmar o recebimento da NF</span></div>
+    <div class="pe"><span class="pe-name">MT120OKB</span><span class="pe-fonte">MATA120.PRW</span><span class="pe-use">Validação no cabeçalho da Ordem de Compra (SC7) antes de gravar</span></div>
+    <div class="pe"><span class="pe-name">MT120ALIN</span><span class="pe-fonte">MATA120.PRW</span><span class="pe-use">Executado na inclusão de cada item da OC — permite defaultar campos</span></div>
+    <div class="pe"><span class="pe-name">PCAPROVA</span><span class="pe-fonte">MATA112.PRW</span><span class="pe-use">Customiza fluxo de aprovação de SC — permite adicionar aprovadores dinâmicos</span></div>
+    <div class="pe"><span class="pe-name">MT116XMLCT</span><span class="pe-fonte">MATA116.PRW</span><span class="pe-use">Captura dados do XML do CT-e para campos customizados (ex: pedagio)</span></div>
+  </div>
+</section>
+
+<!-- RISCOS -->
+<section class="section" id="riscos">
+  <div class="s-tag">Atenção</div>
+  <h2 class="s-head">Riscos Técnicos</h2>
+  <p class="s-sub">Problemas críticos que desenvolvedores ADVPL/TLPP encontram com frequência no SIGACOM em produção.</p>
+  <div class="riscos-grid">
+    <div class="risco"><div class="risco-cat">TES / Tributos</div><div class="risco-head">TES sem F4_SITTRIB/F4_SITPIS/F4_SITCOF</div><div class="risco-desc">SPED EFD rejeita registro C170/C190. CSTs são obrigatórios. Toda TES usada em compras precisa ter esses campos preenchidos antes de transmitir o EFD.</div></div>
+    <div class="risco"><div class="risco-cat">Custo Médio</div><div class="risco-head">Custo de entrada errado na SD1</div><div class="risco-desc">D1_VUNIT com valor incorreto ou D1_IPI não incluído no custo (F4_CREDIPI=N mas produto não gera crédito real) distorce o Custo Médio do SB2 para sempre até acerto manual.</div></div>
+    <div class="risco"><div class="risco-cat">Duplicidade</div><div class="risco-head">NF lançada em duplicidade</div><div class="risco-desc">Verificar sempre F1_STATUS antes de processar programaticamente. ExecAuto do MATA103 sem verificação prévia pode gerar SF1 duplicado, duplicando SE2 e a entrada em SB2.</div></div>
+    <div class="risco"><div class="risco-cat">Workflow</div><div class="risco-head">SC aprovada mas OC não gerada</div><div class="risco-desc">MV_AUTOPC desabilitado + operador não criou SC7 manualmente = necessidade desatendida sem visibilidade. Monitorar SC1 com C1_QUJE menor que C1_QUANT.</div></div>
+    <div class="risco"><div class="risco-cat">ExecAuto</div><div class="risco-head">MATA103 sem lMkStr configurado</div><div class="risco-desc">Ao chamar MATA103 via ExecAuto, definir corretamente o lMkStr com todos os campos obrigatórios do SD1. Campo vazio pode passar silenciosamente e gravar valor zero no custo.</div></div>
+  </div>
+</section>
+</div>
+
+<!-- NAVEGAR OUTROS MÓDULOS -->
+<div class="wrap" style="padding-bottom:60px">
+  <div style="font-family:var(--mono);font-size:.63rem;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:14px">Outros Módulos</div>
+  <div class="outros">
+    <a href="sigaest.html" class="outro-link" style="border-color:rgba(6,182,212,.18)"><span>📦</span><span style="font-family:var(--display);font-size:.82rem;font-weight:700;color:var(--cyan)">SIGAEST</span><span style="font-size:.75rem;color:var(--muted)">Estoque</span></a>
+    <a href="sigafat.html" class="outro-link" style="border-color:rgba(245,158,11,.18)"><span>🧾</span><span style="font-family:var(--display);font-size:.82rem;font-weight:700;color:var(--amber)">SIGAFAT</span><span style="font-size:.75rem;color:var(--muted)">Faturamento</span></a>
+    <a href="sigafin.html" class="outro-link" style="border-color:rgba(26,86,219,.25)"><span>💰</span><span style="font-family:var(--display);font-size:.82rem;font-weight:700;color:#93c5fd">SIGAFIN</span><span style="font-size:.75rem;color:var(--muted)">Financeiro</span></a>
+    <a href="sigactb.html" class="outro-link" style="border-color:rgba(139,92,246,.2)"><span>📊</span><span style="font-family:var(--display);font-size:.82rem;font-weight:700;color:#c4b5fd">SIGACTB</span><span style="font-size:.75rem;color:var(--muted)">Contabilidade</span></a>
+    <a href="sigafis.html" class="outro-link" style="border-color:rgba(239,68,68,.18)"><span>⚖️</span><span style="font-family:var(--display);font-size:.82rem;font-weight:700;color:#fca5a5">SIGAFIS</span><span style="font-size:.75rem;color:var(--muted)">Fiscal</span></a>
+  </div>
+</div>
+
+<footer>© 2025 Daniel Luiz Alves — Desenvolvedor Protheus &nbsp;·&nbsp; <a href="../index.html">Portfólio</a> &nbsp;·&nbsp; <a href="../../index.html">Daniel.dev</a></footer>
+</body>
+</html>
