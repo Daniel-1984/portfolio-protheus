@@ -7,81 +7,17 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
 
-<!-- ============================================================
-  ██████╗  █████╗ 
-  ██╔════╝ ██╔══██╗  GOOGLE ANALYTICS 4 — BLOCO 1 de 2
-  ██║  ███╗███████║  Script de carregamento assíncrono
-  ██║   ██║██╔══██║  
-  ╚██████╔╝██║  ██║  
-   ╚═════╝ ╚═╝  ╚═╝  
-  
-  O QUE FAZ:
-  ─────────────────────────────────────────────────────────────
-  Este bloco carrega a biblioteca do Google Analytics (gtag.js)
-  de forma ASSÍNCRONA — ou seja, não trava o carregamento da
-  sua página enquanto o script do Google é baixado.
-
-  PARÂMETRO "G-D0N8HN6LM3":
-  ─────────────────────────────────────────────────────────────
-  Esse é o seu MEASUREMENT ID — o código único que diz ao
-  Google "esses dados pertencem à conta do Daniel".
-  
-  ⚠️  TROQUE "G-D0N8HN6LM3" pelo seu ID real ANTES de subir
-      para o GitHub. Para criar gratuitamente:
-      1. Acesse https://analytics.google.com
-      2. Crie uma propriedade → Web
-      3. Copie o Measurement ID (começa com G-)
-  ─────────────────────────────────────────────────────────────
--->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-D0N8HN6LM3"></script>
-
-<!-- ============================================================
-  GOOGLE ANALYTICS 4 — BLOCO 2 de 2
-  Configuração e inicialização + rastreamento de eventos
-  ─────────────────────────────────────────────────────────────
-  
-  window.dataLayer: Array global onde o GA4 empilha todos
-  os eventos antes de enviá-los ao servidor do Google.
-  
-  gtag(): Função helper que empurra objetos para o dataLayer.
-  É ela que você chama para disparar qualquer evento.
-  
-  gtag('js', new Date()): Marca o timestamp de quando o
-  script foi iniciado — usado internamente pelo Google.
-  
-  gtag('config', 'G-D0N8HN6LM3'): Diz ao GA4 qual propriedade
-  usar. A partir daqui, toda pageview já é registrada.
-  ─────────────────────────────────────────────────────────────
--->
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){ dataLayer.push(arguments); }
   gtag('js', new Date());
 
-  // Configuração principal — substitua G-D0N8HN6LM3 pelo seu ID real
   gtag('config', 'G-D0N8HN6LM3', {
-    // send_page_view: true é o padrão — registra automaticamente
-    // cada vez que alguém abre a página
     send_page_view: true,
-
-    // anonymize_ip: por boas práticas de privacidade (LGPD),
-    // o IP do visitante é anonimizado antes de chegar ao Google
     anonymize_ip: true
   });
 
-  // ============================================================
-  // FUNÇÃO: rastrearClique(nomeDaDemo)
-  // ============================================================
-  // Esta função é chamada toda vez que um visitante clica num
-  // card de demo. Ela envia um evento personalizado ao GA4 com:
-  //
-  //   event_category → "Demo Cards" (agrupamento no relatório)
-  //   event_label    → nome da demo clicada (ex: "CodeLens v2.0")
-  //   value          → 1 (peso do evento para métricas de conversão)
-  //
-  // No GA4 você verá isso em:
-  //   Relatórios → Engajamento → Eventos → "click_demo"
-  // ============================================================
   function rastrearClique(nomeDaDemo) {
     gtag('event', 'click_demo', {
       event_category: 'Demo Cards',
@@ -90,21 +26,6 @@
     });
   }
 
-  // ============================================================
-  // FUNÇÃO: rastrearScrollProfundo()
-  // ============================================================
-  // Detecta quando o visitante rolou pelo menos 50% da página.
-  // Isso indica "engajamento real" — não foi só um acesso rápido.
-  //
-  // Lógica:
-  //   scrollTop    → quantos pixels já foram rolados
-  //   scrollHeight → altura total da página
-  //   clientHeight → altura visível da janela
-  //   porcentagem  → (rolado + visível) / total * 100
-  //
-  // O flag "jaMarcou50" evita que o evento seja disparado
-  // várias vezes — só queremos registrar UMA VEZ por visita.
-  // ============================================================
   let jaMarcou50 = false;
   window.addEventListener('scroll', function() {
     const porcentagem = (window.scrollY + window.innerHeight) / document.body.scrollHeight * 100;
@@ -118,18 +39,7 @@
     }
   });
 
-  // ============================================================
-  // FUNÇÃO: rastrearTempoNaPagina()
-  // ============================================================
-  // Registra quanto tempo o visitante ficou na página.
-  // Disparado nos marcos de: 30s, 60s e 120s.
-  //
-  // Por que isso importa para você?
-  // Se alguém ficou 2 minutos → provavelmente leu tudo, pode
-  // ser um recrutador ou cliente em potencial sério.
-  // Se ficou menos de 30s → acesso rápido, bounce (saída rápida).
-  // ============================================================
-  const marcos = [30000, 60000, 120000]; // em milissegundos
+  const marcos = [30000, 60000, 120000];
   marcos.forEach(function(ms) {
     setTimeout(function() {
       gtag('event', 'tempo_pagina', {
@@ -140,13 +50,6 @@
     }, ms);
   });
 
-  // ============================================================
-  // RASTREAMENTO: Botões de Contato (e-mail / LinkedIn / GitHub)
-  // ============================================================
-  // Quando o documento terminar de carregar, adicionamos
-  // listeners nos links de contato para saber qual canal
-  // gerou mais interesse.
-  // ============================================================
   document.addEventListener('DOMContentLoaded', function() {
     const botoesContato = document.querySelectorAll('.contact-links a');
     botoesContato.forEach(function(btn) {
@@ -154,7 +57,7 @@
         gtag('event', 'click_contato', {
           event_category: 'Conversão',
           event_label: btn.textContent.trim().substring(0, 40),
-          value: 5  // peso maior pois é uma ação de conversão
+          value: 5
         });
       });
     });
@@ -413,6 +316,40 @@
   .demo-link-hint { display: flex; align-items: center; gap: 6px; margin-top: 16px; font-size: .78rem; color: var(--cyan); opacity: 0; transform: translateX(-6px); transition: opacity .25s, transform .25s; }
   .demo-card:hover .demo-link-hint { opacity: 1; transform: translateX(0); }
 
+  /* ── MINI FLOW — exclusivo do card de Módulos ──────────────────────────
+     Animação discreta nos steps do fluxo interno.
+     Fica dentro do demo-body, abaixo da descrição.
+  ── */
+  .demo-mini-flow {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin-top: 14px;
+    margin-bottom: 2px;
+    flex-wrap: nowrap;
+    overflow: hidden;
+  }
+  .dmf-step {
+    font-family: 'DM Sans', monospace;
+    font-size: .62rem;
+    font-weight: 500;
+    padding: 3px 7px;
+    border-radius: 3px;
+    white-space: nowrap;
+    border: 1px solid rgba(6,182,212,.25);
+    background: rgba(6,182,212,.08);
+    color: var(--cyan);
+    animation: dmfPulse 3s ease-in-out infinite;
+  }
+  .dmf-step:nth-child(3) { animation-delay: .5s; border-color: rgba(26,86,219,.25); background: rgba(26,86,219,.1); color: #93c5fd; }
+  .dmf-step:nth-child(5) { animation-delay: 1s;  border-color: rgba(245,158,11,.25); background: rgba(245,158,11,.08); color: #fcd34d; }
+  .dmf-step:nth-child(7) { animation-delay: 1.5s;}
+  .dmf-arr { color: rgba(255,255,255,.2); font-size: .65rem; padding: 0 3px; flex-shrink: 0; }
+  @keyframes dmfPulse {
+    0%, 100% { opacity: .5; }
+    50%       { opacity: 1;  }
+  }
+
   /* ── ARCHITECTURE ─────────────────────────────────────────────────────── */
   .arch-section { background: var(--navy); }
   .arch-full { max-width: 1140px; margin: 0 auto; padding: 96px 48px; }
@@ -542,8 +479,8 @@
   <div class="stats-inner">
     <div class="stat"><div class="stat-num">4<span>+</span></div><div class="stat-label">Anos com ADVPL / TLPP</div></div>
     <div class="stat"><div class="stat-num">11</div><div class="stat-label">Filiais em produção</div></div>
-    <div class="stat"><div class="stat-num">5</div><div class="stat-label">Módulos Protheus</div></div>
-    <div class="stat"><div class="stat-num">6</div><div class="stat-label">Ferramentas publicadas</div></div>
+    <div class="stat"><div class="stat-num">6</div><div class="stat-label">Módulos Protheus</div></div>
+    <div class="stat"><div class="stat-num">9</div><div class="stat-label">Ferramentas publicadas</div></div>
   </div>
 </div>
 
@@ -585,7 +522,7 @@
 
 <div class="divider"></div>
 
-<!-- DEMOS — note o onclick="rastrearClique(...)" em cada card -->
+<!-- DEMOS -->
 <section class="demos-section" id="demos">
   <div class="demos-inner">
     <div class="section-tag">Ferramentas &amp; Demos</div>
@@ -594,27 +531,69 @@
 
     <div class="demos-grid">
 
-      <!--
-        ══════════════════════════════════════════════════════════
-        RASTREAMENTO DE DEMO: onclick="rastrearClique('...')"
-        ══════════════════════════════════════════════════════════
-        Cada card de demo tem um onclick que chama a função
-        rastrearClique() definida no <head>.
-        
-        Isso envia um evento "click_demo" ao GA4 com o nome
-        exato da demo clicada.
-        
-        No relatório do GA4 você verá algo assim:
-          Evento: click_demo
-          Label:  AgriSense — Automação Agrícola   → 3 cliques
-          Label:  CodeLens v2.0 — Analisador ADVPL → 7 cliques
-          Label:  Diagnóstico Executivo            → 12 cliques
-        
-        Se o "Diagnóstico Executivo" tiver mais cliques,
-        isso mostra que recrutadores se interessam pela
-        análise do MATA103 — dado valioso!
-        ══════════════════════════════════════════════════════════
-      -->
+      <!-- ══════════════════════════════════════════
+           NOVO CARD — Módulos Protheus
+           Posição: PRIMEIRO — destaque visual
+      ══════════════════════════════════════════ -->
+      <a href="demos/modulos/index.html" class="demo-card"
+         onclick="rastrearClique('Módulos Protheus — Visão Técnica')">
+        <div class="demo-preview" style="background: linear-gradient(135deg,#060B18,#0F2B5B);">
+          <!-- grade animada no preview -->
+          <div class="demo-preview-bg" style="
+            background-image:
+              linear-gradient(rgba(6,182,212,.1) 1px, transparent 1px),
+              linear-gradient(90deg,rgba(6,182,212,.1) 1px,transparent 1px);
+            background-size: 24px 24px;
+            opacity: 1;
+          "></div>
+          <!-- mini mapa de integrações no preview -->
+          <div style="position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;gap:6px">
+            <div style="display:flex;gap:6px;align-items:center">
+              <div style="background:rgba(16,185,129,.15);border:1px solid rgba(16,185,129,.3);border-radius:6px;padding:5px 8px;font-size:.6rem;color:#6ee7b7;font-family:monospace">SIGACOM</div>
+              <div style="color:rgba(6,182,212,.4);font-size:.7rem">→</div>
+              <div style="background:rgba(6,182,212,.15);border:1px solid rgba(6,182,212,.4);border-radius:6px;padding:5px 8px;font-size:.6rem;color:var(--cyan);font-family:monospace;font-weight:700">SIGAEST</div>
+              <div style="color:rgba(6,182,212,.4);font-size:.7rem">→</div>
+              <div style="background:rgba(26,86,219,.15);border:1px solid rgba(26,86,219,.3);border-radius:6px;padding:5px 8px;font-size:.6rem;color:#93c5fd;font-family:monospace">SIGAFIN</div>
+            </div>
+            <div style="display:flex;gap:6px;align-items:center">
+              <div style="background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.3);border-radius:6px;padding:5px 8px;font-size:.6rem;color:#fcd34d;font-family:monospace">SIGAFAT</div>
+              <div style="color:rgba(6,182,212,.3);font-size:.7rem">→</div>
+              <div style="background:rgba(139,92,246,.12);border:1px solid rgba(139,92,246,.3);border-radius:6px;padding:5px 8px;font-size:.6rem;color:#c4b5fd;font-family:monospace">SIGACTB</div>
+              <div style="color:rgba(6,182,212,.3);font-size:.7rem">→</div>
+              <div style="background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.3);border-radius:6px;padding:5px 8px;font-size:.6rem;color:#fca5a5;font-family:monospace">SIGAFIS</div>
+            </div>
+          </div>
+          <div class="demo-badge" style="background:rgba(26,86,219,.2);border-color:rgba(26,86,219,.4);color:#93c5fd;">6 Módulos</div>
+        </div>
+        <div class="demo-body">
+          <div class="demo-name">Módulos Protheus — Visão Técnica</div>
+          <div class="demo-desc">Mapa completo de fluxos, tabelas, integrações e riscos dos 6 módulos backoffice — SIGACOM, SIGAEST, SIGAFAT, SIGAFIN, SIGACTB e SIGAFIS. Cada módulo tem página própria com pontos de entrada ADVPL/TLPP.</div>
+          <!-- mini fluxo animado exclusivo deste card -->
+          <div class="demo-mini-flow">
+            <span class="dmf-step">SC1→SC7</span>
+            <span class="dmf-arr">→</span>
+            <span class="dmf-step">SB2·SD3</span>
+            <span class="dmf-arr">→</span>
+            <span class="dmf-step">SE1·SE2</span>
+            <span class="dmf-arr">→</span>
+            <span class="dmf-step">SF3·SPED</span>
+          </div>
+          <div class="demo-tags">
+            <span class="demo-tag">SIGACOM</span>
+            <span class="demo-tag">SIGAEST</span>
+            <span class="demo-tag">SIGAFAT</span>
+            <span class="demo-tag">SIGAFIN</span>
+            <span class="demo-tag">SIGACTB</span>
+            <span class="demo-tag">SIGAFIS</span>
+          </div>
+          <div class="demo-link-hint">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+            Explorar módulos →
+          </div>
+        </div>
+      </a>
+
+      <!-- cards existentes ─────────────────────────────── -->
 
       <a href="demos/agrisense.html" target="_blank" class="demo-card"
          onclick="rastrearClique('AgriSense — Automação Agrícola')">
@@ -754,7 +733,7 @@
       <div class="arch-connector"><div class="conn-line"></div><div class="conn-label">TopConnect</div><div class="conn-line"></div></div>
       <div class="arch-col">
         <div class="arch-block" style="border-color: rgba(26,86,219,.5); background: rgba(26,86,219,.2);"><div class="arch-block-icon">⚙️</div><div class="arch-block-name">ERP Protheus</div><div class="arch-block-desc">ADVPL / TLPP · MVC · ExecAuto · Pontos de Entrada</div></div>
-        <div class="arch-block"><div class="arch-block-icon">🔧</div><div class="arch-block-name">Módulos ERP</div><div class="arch-block-desc">SIGACOM · SIGAEST · SIGAFAT · SIGAFIN · SIGACTB</div></div>
+        <div class="arch-block"><div class="arch-block-icon">🔧</div><div class="arch-block-name">Módulos ERP</div><div class="arch-block-desc">SIGACOM · SIGAEST · SIGAFAT · SIGAFIN · SIGACTB · SIGAFIS</div></div>
       </div>
       <div class="arch-connector"><div class="conn-line"></div><div class="conn-label">REST API</div><div class="conn-line"></div></div>
       <div class="arch-col">
@@ -787,7 +766,6 @@
   <h2 class="section-title">Vamos construir<br>algo juntos?</h2>
   <p class="section-sub">Disponível para projetos de integração Protheus, desenvolvimento de APIs, customizações e consultoria ERP.</p>
   <div class="contact-links">
-    <!-- onclick nos botões de contato também rastreia qual canal teve mais interesse -->
     <a href="mailto:teceletrotecnica84@gmail.com" class="btn-primary">
       ✉ teceletrotecnica84@gmail.com
     </a>
