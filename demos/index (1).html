@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Daniel Luiz Alves — Desenvolvedor e Arquiteto de Soluções ERP Protheus</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-D0N8HN6LM3"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){ dataLayer.push(arguments); }
+  gtag('js', new Date());
+
+  gtag('config', 'G-D0N8HN6LM3', {
+    send_page_view: true,
+    anonymize_ip: true
+  });
+
+  function rastrearClique(nomeDaDemo) {
+    gtag('event', 'click_demo', {
+      event_category: 'Demo Cards',
+      event_label: nomeDaDemo,
+      value: 1
+    });
+  }
+
+  let jaMarcou50 = false;
+  window.addEventListener('scroll', function() {
+    const porcentagem = (window.scrollY + window.innerHeight) / document.body.scrollHeight * 100;
+    if (porcentagem >= 50 && !jaMarcou50) {
+      jaMarcou50 = true;
+      gtag('event', 'scroll_profundo', {
+        event_category: 'Engajamento',
+        event_label: '50% da página rolada',
+        value: 1
+      });
+    }
+  });
+
+  const marcos = [30000, 60000, 120000];
+  marcos.forEach(function(ms) {
+    setTimeout(function() {
+      gtag('event', 'tempo_pagina', {
+        event_category: 'Engajamento',
+        event_label: (ms / 1000) + ' segundos na página',
+        value: ms / 1000
+      });
+    }, ms);
+  });
+
+  document.addEventListener('DOMContentLoaded', function() {
+    const botoesContato = document.querySelectorAll('.contact-links a');
+    botoesContato.forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        gtag('event', 'click_contato', {
+          event_category: 'Conversão',
+          event_label: btn.textContent.trim().substring(0, 40),
+          value: 5
+        });
+      });
+    });
+  });
+</script>
+
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --ink:    #0D1117;
+    --navy:   #0F2B5B;
+    --blue:   #1A56DB;
+    --cyan:   #06B6D4;
+    --light:  #EFF6FF;
+    --muted:  #64748B;
+    --line:   #E2E8F0;
+    --white:  #FFFFFF;
+    --card:   #F8FAFC;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--white);
+    color: var(--ink);
+    overflow-x: hidden;
+  }
+
+  /* ── HERO ─────────────────────────────────────────────────────────────── */
+  .hero {
+    min-height: 100vh;
+    background: var(--navy);
+    position: relative;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+  }
+
+  .hero-grid {
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(26,86,219,.08) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(26,86,219,.08) 1px, transparent 1px);
+    background-size: 48px 48px;
+    mask-image: radial-gradient(ellipse 80% 60% at 50% 50%, black 40%, transparent 100%);
+  }
+
+  .hero-glow {
+    position: absolute;
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(6,182,212,.18) 0%, transparent 70%);
+    top: -100px; right: -150px;
+    pointer-events: none;
+  }
+  .hero-glow2 {
+    position: absolute;
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, rgba(26,86,219,.2) 0%, transparent 70%);
+    bottom: -80px; left: -80px;
+    pointer-events: none;
+  }
+
+  .hero-inner {
+    position: relative; z-index: 2;
+    max-width: 1140px; margin: 0 auto;
+    padding: 100px 48px 80px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 64px;
+    align-items: center;
+  }
+
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(6,182,212,.12);
+    border: 1px solid rgba(6,182,212,.3);
+    color: var(--cyan);
+    font-size: 12px; font-weight: 500; letter-spacing: .08em;
+    padding: 6px 14px; border-radius: 20px;
+    margin-bottom: 24px;
+    font-family: 'DM Sans', sans-serif;
+    text-transform: uppercase;
+  }
+
+  .hero-badge::before {
+    content: '';
+    width: 6px; height: 6px;
+    background: var(--cyan);
+    border-radius: 50%;
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50%       { opacity: .4; transform: scale(.7); }
+  }
+
+  .hero h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(2.8rem, 5vw, 4.2rem);
+    font-weight: 800;
+    color: var(--white);
+    line-height: 1.05;
+    margin-bottom: 20px;
+    letter-spacing: -.02em;
+  }
+
+  .hero h1 span { color: var(--cyan); }
+
+  .hero-sub {
+    font-size: 1.05rem; font-weight: 300;
+    color: rgba(255,255,255,.65);
+    line-height: 1.7;
+    margin-bottom: 40px;
+    max-width: 480px;
+  }
+
+  .hero-actions { display: flex; gap: 16px; flex-wrap: wrap; }
+
+  .btn-primary {
+    background: var(--blue);
+    color: var(--white);
+    padding: 14px 28px;
+    border-radius: 8px;
+    font-size: .95rem; font-weight: 500;
+    text-decoration: none;
+    transition: background .2s, transform .2s;
+    font-family: 'DM Sans', sans-serif;
+    display: inline-flex; align-items: center; gap: 8px;
+  }
+  .btn-primary:hover { background: #1d4ed8; transform: translateY(-2px); }
+
+  .btn-ghost {
+    background: transparent;
+    border: 1px solid rgba(255,255,255,.25);
+    color: rgba(255,255,255,.8);
+    padding: 14px 28px;
+    border-radius: 8px;
+    font-size: .95rem; font-weight: 400;
+    text-decoration: none;
+    transition: border-color .2s, color .2s;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .btn-ghost:hover { border-color: var(--cyan); color: var(--cyan); }
+
+  .arch-diagram {
+    background: rgba(255,255,255,.04);
+    border: 1px solid rgba(255,255,255,.1);
+    border-radius: 16px;
+    padding: 32px;
+    backdrop-filter: blur(8px);
+  }
+
+  .arch-title {
+    font-family: 'Syne', sans-serif;
+    font-size: .75rem; font-weight: 600;
+    color: var(--cyan); letter-spacing: .1em;
+    text-transform: uppercase;
+    margin-bottom: 28px;
+  }
+
+  .arch-flow { display: flex; flex-direction: column; gap: 0; }
+  .arch-layer { display: flex; gap: 8px; margin-bottom: 4px; }
+
+  .arch-node {
+    flex: 1;
+    background: rgba(255,255,255,.06);
+    border: 1px solid rgba(255,255,255,.12);
+    border-radius: 8px;
+    padding: 10px 12px;
+    text-align: center;
+    font-size: .8rem; font-weight: 500;
+    color: rgba(255,255,255,.85);
+    font-family: 'DM Sans', sans-serif;
+    transition: background .2s;
+  }
+  .arch-node:hover { background: rgba(26,86,219,.25); border-color: var(--blue); }
+  .arch-node.highlight { background: rgba(26,86,219,.25); border-color: var(--blue); color: var(--white); }
+  .arch-node .tag { display: block; font-size: .65rem; font-weight: 400; color: var(--cyan); margin-top: 2px; opacity: .8; }
+  .arch-arrow { text-align: center; color: rgba(6,182,212,.5); font-size: 1.1rem; margin: 4px 0; line-height: 1; }
+
+  /* ── STATS ────────────────────────────────────────────────────────────── */
+  .stats-bar { background: var(--light); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); padding: 48px; }
+  .stats-inner { max-width: 1140px; margin: 0 auto; display: grid; grid-template-columns: repeat(4, 1fr); gap: 32px; }
+  .stat { text-align: center; }
+  .stat-num { font-family: 'Syne', sans-serif; font-size: 2.8rem; font-weight: 800; color: var(--navy); line-height: 1; margin-bottom: 6px; }
+  .stat-num span { color: var(--blue); }
+  .stat-label { font-size: .85rem; color: var(--muted); font-weight: 400; }
+
+  /* ── SECTIONS ─────────────────────────────────────────────────────────── */
+  .section { max-width: 1140px; margin: 0 auto; padding: 96px 48px; }
+  .section-tag { font-family: 'Syne', sans-serif; font-size: .72rem; font-weight: 700; color: var(--blue); letter-spacing: .12em; text-transform: uppercase; margin-bottom: 12px; }
+  .section-title { font-family: 'Syne', sans-serif; font-size: clamp(1.8rem, 3.5vw, 2.6rem); font-weight: 800; color: var(--navy); line-height: 1.15; margin-bottom: 16px; letter-spacing: -.02em; }
+  .section-sub { font-size: 1rem; color: var(--muted); max-width: 560px; line-height: 1.7; margin-bottom: 56px; }
+
+  /* ── PROJECTS ─────────────────────────────────────────────────────────── */
+  .projects-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px; }
+
+  .project-card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 32px;
+    transition: transform .25s, box-shadow .25s, border-color .25s;
+    position: relative; overflow: hidden;
+  }
+  .project-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--blue), var(--cyan)); opacity: 0; transition: opacity .25s; }
+  .project-card:hover { transform: translateY(-6px); box-shadow: 0 20px 48px rgba(15,43,91,.1); border-color: rgba(26,86,219,.25); }
+  .project-card:hover::before { opacity: 1; }
+
+  .proj-icon { width: 48px; height: 48px; background: var(--light); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; margin-bottom: 20px; }
+  .proj-name { font-family: 'Syne', sans-serif; font-size: 1.15rem; font-weight: 700; color: var(--navy); margin-bottom: 8px; }
+  .proj-desc { font-size: .9rem; color: var(--muted); line-height: 1.65; margin-bottom: 20px; }
+  .proj-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+  .tag { background: var(--light); color: var(--blue); font-size: .72rem; font-weight: 500; padding: 4px 10px; border-radius: 20px; letter-spacing: .03em; font-family: 'DM Sans', monospace; }
+
+  /* ── DEMOS ────────────────────────────────────────────────────────────── */
+  .demos-section { background: #0a0d14; }
+  .demos-inner { max-width: 1140px; margin: 0 auto; padding: 96px 48px; }
+  .demos-inner .section-tag  { color: var(--cyan); }
+  .demos-inner .section-title { color: var(--white); }
+  .demos-inner .section-sub   { color: rgba(255,255,255,.5); }
+
+  .demos-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+  }
+
+  .demo-card {
+    position: relative;
+    background: rgba(255,255,255,.04);
+    border: 1px solid rgba(255,255,255,.1);
+    border-radius: 16px;
+    overflow: hidden;
+    transition: transform .3s, border-color .3s, box-shadow .3s;
+    cursor: pointer;
+    text-decoration: none;
+    display: block;
+  }
+  .demo-card:hover { transform: translateY(-8px); border-color: var(--cyan); box-shadow: 0 24px 60px rgba(6,182,212,.15); }
+  .demo-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--blue), var(--cyan)); opacity: 0; transition: opacity .3s; }
+  .demo-card:hover::before { opacity: 1; }
+
+  .demo-preview { width: 100%; height: 180px; background: #111827; border-bottom: 1px solid rgba(255,255,255,.07); display: flex; align-items: center; justify-content: center; font-size: 3rem; position: relative; overflow: hidden; }
+  .demo-preview-bg { position: absolute; inset: 0; opacity: .12; background-size: 20px 20px; }
+  .demo-preview-icon { position: relative; z-index: 1; width: 64px; height: 64px; background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.12); border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; backdrop-filter: blur(4px); }
+  .demo-badge { position: absolute; top: 12px; right: 12px; background: rgba(6,182,212,.15); border: 1px solid rgba(6,182,212,.3); color: var(--cyan); font-size: .65rem; font-weight: 600; padding: 3px 10px; border-radius: 20px; text-transform: uppercase; letter-spacing: .08em; font-family: 'DM Sans', sans-serif; }
+  .demo-body { padding: 22px 24px 24px; }
+  .demo-name { font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 700; color: var(--white); margin-bottom: 6px; }
+  .demo-desc { font-size: .82rem; color: rgba(255,255,255,.45); line-height: 1.6; margin-bottom: 16px; }
+  .demo-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+  .demo-tag { background: rgba(26,86,219,.2); border: 1px solid rgba(26,86,219,.3); color: #93c5fd; font-size: .68rem; font-weight: 500; padding: 3px 9px; border-radius: 20px; font-family: 'DM Sans', monospace; }
+  .demo-link-hint { display: flex; align-items: center; gap: 6px; margin-top: 16px; font-size: .78rem; color: var(--cyan); opacity: 0; transform: translateX(-6px); transition: opacity .25s, transform .25s; }
+  .demo-card:hover .demo-link-hint { opacity: 1; transform: translateX(0); }
+
+  /* ── MINI FLOW — exclusivo do card de Módulos ──────────────────────────
+     Animação discreta nos steps do fluxo interno.
+     Fica dentro do demo-body, abaixo da descrição.
+  ── */
+  .demo-mini-flow {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin-top: 14px;
+    margin-bottom: 2px;
+    flex-wrap: nowrap;
+    overflow: hidden;
+  }
+  .dmf-step {
+    font-family: 'DM Sans', monospace;
+    font-size: .62rem;
+    font-weight: 500;
+    padding: 3px 7px;
+    border-radius: 3px;
+    white-space: nowrap;
+    border: 1px solid rgba(6,182,212,.25);
+    background: rgba(6,182,212,.08);
+    color: var(--cyan);
+    animation: dmfPulse 3s ease-in-out infinite;
+  }
+  .dmf-step:nth-child(3) { animation-delay: .5s; border-color: rgba(26,86,219,.25); background: rgba(26,86,219,.1); color: #93c5fd; }
+  .dmf-step:nth-child(5) { animation-delay: 1s;  border-color: rgba(245,158,11,.25); background: rgba(245,158,11,.08); color: #fcd34d; }
+  .dmf-step:nth-child(7) { animation-delay: 1.5s;}
+  .dmf-arr { color: rgba(255,255,255,.2); font-size: .65rem; padding: 0 3px; flex-shrink: 0; }
+  @keyframes dmfPulse {
+    0%, 100% { opacity: .5; }
+    50%       { opacity: 1;  }
+  }
+
+  /* ── ARCHITECTURE ─────────────────────────────────────────────────────── */
+  .arch-section { background: var(--navy); }
+  .arch-full { max-width: 1140px; margin: 0 auto; padding: 96px 48px; }
+  .arch-full .section-title { color: var(--white); }
+  .arch-full .section-sub   { color: rgba(255,255,255,.55); }
+  .arch-full .section-tag   { color: var(--cyan); }
+
+  .arch-visual { display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; align-items: center; margin-top: 48px; }
+  .arch-col { display: flex; flex-direction: column; gap: 12px; }
+  .arch-block { background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.12); border-radius: 12px; padding: 20px 16px; text-align: center; transition: all .25s; cursor: default; }
+  .arch-block:hover { background: rgba(26,86,219,.3); border-color: var(--blue); transform: scale(1.03); }
+  .arch-block-icon { font-size: 1.8rem; margin-bottom: 8px; }
+  .arch-block-name { font-size: .82rem; font-weight: 600; color: var(--white); margin-bottom: 4px; font-family: 'Syne', sans-serif; }
+  .arch-block-desc { font-size: .7rem; color: rgba(255,255,255,.45); line-height: 1.5; }
+  .arch-connector { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+  .conn-line { width: 2px; height: 60px; background: linear-gradient(180deg, transparent, var(--cyan), transparent); }
+  .conn-label { font-size: .65rem; color: var(--cyan); font-weight: 500; letter-spacing: .05em; text-transform: uppercase; background: rgba(6,182,212,.1); padding: 3px 8px; border-radius: 4px; }
+
+  /* ── SKILLS ───────────────────────────────────────────────────────────── */
+  .skills-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; }
+  .skill-card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 24px; }
+  .skill-category { font-family: 'Syne', sans-serif; font-size: .8rem; font-weight: 700; color: var(--blue); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 14px; }
+  .skill-list { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+  .skill-list li { font-size: .88rem; color: var(--ink); display: flex; align-items: center; gap: 8px; }
+  .skill-list li::before { content: ''; width: 5px; height: 5px; background: var(--cyan); border-radius: 50%; flex-shrink: 0; }
+
+  /* ── CONTACT ──────────────────────────────────────────────────────────── */
+  .contact-section { background: linear-gradient(135deg, var(--navy) 0%, #162d5e 100%); text-align: center; padding: 96px 48px; }
+  .contact-section .section-title { color: var(--white); max-width: 600px; margin: 0 auto 16px; }
+  .contact-section .section-sub   { color: rgba(255,255,255,.55); margin: 0 auto 48px; max-width: 500px; }
+  .contact-links { display: flex; justify-content: center; gap: 16px; flex-wrap: wrap; }
+
+  /* ── FOOTER ───────────────────────────────────────────────────────────── */
+  footer { background: #080E1A; text-align: center; padding: 24px; font-size: .8rem; color: rgba(255,255,255,.25); }
+
+  /* ── NAV ──────────────────────────────────────────────────────────────── */
+  nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: rgba(13,17,23,.85); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255,255,255,.08); padding: 0 48px; display: flex; align-items: center; justify-content: space-between; height: 60px; }
+  .nav-logo { font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 700; color: var(--white); letter-spacing: -.01em; }
+  .nav-logo span { color: var(--cyan); }
+  .nav-links { display: flex; gap: 32px; }
+  .nav-links a { font-size: .85rem; color: rgba(255,255,255,.55); text-decoration: none; transition: color .2s; }
+  .nav-links a:hover { color: var(--white); }
+
+  .divider { height: 1px; background: var(--line); margin: 0; }
+
+  @media (max-width: 768px) {
+    .hero-inner { grid-template-columns: 1fr; padding: 80px 24px 60px; gap: 40px; }
+    .stats-inner { grid-template-columns: repeat(2, 1fr); padding: 32px; }
+    .section { padding: 64px 24px; }
+    .demos-inner { padding: 64px 24px; }
+    .arch-visual { grid-template-columns: 1fr; }
+    .arch-connector { display: none; }
+    nav { padding: 0 24px; }
+    .nav-links { display: none; }
+    .contact-section { padding: 64px 24px; }
+  }
+
+  .fade-in { opacity: 0; transform: translateY(20px); animation: fadeUp .6s ease forwards; }
+  .fade-in:nth-child(2) { animation-delay: .1s; }
+  .fade-in:nth-child(3) { animation-delay: .2s; }
+  .fade-in:nth-child(4) { animation-delay: .3s; }
+  @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">Daniel<span>.</span>dev</div>
+  <div class="nav-links">
+    <a href="#projetos">Projetos</a>
+    <a href="#demos">Demos</a>
+    <a href="#arquitetura">Arquitetura</a>
+    <a href="#skills">Skills</a>
+    <a href="#contato">Contato</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-glow"></div>
+  <div class="hero-glow2"></div>
+  <div class="hero-inner">
+    <div>
+      <div class="hero-badge fade-in">Disponível para projetos</div>
+      <h1 class="fade-in">Desenvolvedor e Arquiteto de<br>Soluções <span>ERP</span><br>Protheus</h1>
+      <p class="hero-sub fade-in">
+        Conecto o TOTVS Protheus ao mundo moderno — APIs REST, aplicações web e inteligência de dados — transformando rotinas ERP em vantagem competitiva real.
+      </p>
+      <div class="hero-actions fade-in">
+        <a href="#projetos" class="btn-primary">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="13 2 13 9 20 9"/></svg>
+          Ver Projetos
+        </a>
+        <a href="#contato" class="btn-ghost">Entre em contato →</a>
+      </div>
+    </div>
+
+    <div class="arch-diagram fade-in">
+      <div class="arch-title">◈ Arquitetura de Integração</div>
+      <div class="arch-flow">
+        <div class="arch-layer">
+          <div class="arch-node highlight">
+            TOTVS Protheus ERP
+            <span class="tag">ADVPL / TLPP</span>
+          </div>
+        </div>
+        <div class="arch-arrow">↕</div>
+        <div class="arch-layer">
+          <div class="arch-node">API REST TLPP<span class="tag">JSON · Auth</span></div>
+          <div class="arch-node">SQL Server<span class="tag">Queries · Views</span></div>
+        </div>
+        <div class="arch-arrow">↕</div>
+        <div class="arch-layer">
+          <div class="arch-node">Angular / PO-UI<span class="tag">Frontend</span></div>
+          <div class="arch-node">PWA / Web<span class="tag">Mobile</span></div>
+          <div class="arch-node">SmartView<span class="tag">Relatórios</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="stats-bar">
+  <div class="stats-inner">
+    <div class="stat"><div class="stat-num">4<span>+</span></div><div class="stat-label">Anos com ADVPL / TLPP</div></div>
+    <div class="stat"><div class="stat-num">11</div><div class="stat-label">Filiais em produção</div></div>
+    <div class="stat"><div class="stat-num">6</div><div class="stat-label">Módulos Protheus</div></div>
+    <div class="stat"><div class="stat-num">9</div><div class="stat-label">Ferramentas publicadas</div></div>
+  </div>
+</div>
+
+<!-- PROJECTS -->
+<section class="section" id="projetos">
+  <div class="section-tag">Portfólio</div>
+  <h2 class="section-title">Projetos em Destaque</h2>
+  <p class="section-sub">Soluções desenvolvidas do zero, em ambiente de produção, para empresas com operações complexas no TOTVS Protheus.</p>
+
+  <div class="projects-grid">
+    <div class="project-card">
+      <div class="proj-icon">⚖️</div>
+      <div class="proj-name">Projeto Protheus — Venda por KG</div>
+      <p class="proj-desc">Sistema completo de faturamento por peso para o Protheus. Criação de tabelas customizadas (ZKC/ZPK), campos no cadastro de produtos e itens do pedido, fluxo de aprovação de preço por perfil de acesso, notificação automática por e-mail para aprovadores e cálculo automático do valor final do pedido.</p>
+      <div class="proj-tags">
+        <span class="tag">ADVPL</span><span class="tag">TLPP</span><span class="tag">SIGAFAT</span><span class="tag">MVC</span><span class="tag">SQL Server</span>
+      </div>
+    </div>
+
+    <div class="project-card">
+      <div class="proj-icon">📦</div>
+      <div class="proj-name">Inteligência de Estoque - SQL/PROTHEUS/PWA</div>
+      <p class="proj-desc">Relatório de análise e sugestão de estoque mínimo com query SQL otimizada para análise de consumo histórico (SD3), classificação automática por criticidade (Crítico / Atenção / OK / Overstock / Sem Giro), geração de PDF para gestores e relatório comparativo de consumo por período (RESTCOMP).</p>
+      <div class="proj-tags">
+        <span class="tag">ADVPL</span><span class="tag">SQL Server</span><span class="tag">SIGAEST</span><span class="tag">TReport</span><span class="tag">PDF</span>
+      </div>
+    </div>
+
+    <div class="project-card">
+      <div class="proj-icon">🔌</div>
+      <div class="proj-name">APIs REST Multi-Módulo</div>
+      <p class="proj-desc">Arquitetura e desenvolvimento de APIs RESTful em TLPP cobrindo Compras, Faturamento, Financeiro, Contabilidade e Estoque. Autenticação segura (Basic Auth / OAuth2), log completo de operações e documentação técnica para integração em ambiente multi-empresa com 11 filiais.</p>
+      <div class="proj-tags">
+        <span class="tag">TLPP REST</span><span class="tag">OAuth2</span><span class="tag">JSON</span><span class="tag">Postman</span><span class="tag">Multi-filial</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- DEMOS -->
+<section class="demos-section" id="demos">
+  <div class="demos-inner">
+    <div class="section-tag">Ferramentas &amp; Demos</div>
+    <h2 class="section-title">Veja ao Vivo</h2>
+    <p class="section-sub">Ferramentas interativas desenvolvidas para o ecossistema Protheus. Clique em qualquer card para abrir a demo diretamente no browser.</p>
+
+    <div class="demos-grid">
+
+      <!-- ══════════════════════════════════════════
+           NOVO CARD — Módulos Protheus
+           Posição: PRIMEIRO — destaque visual
+      ══════════════════════════════════════════ -->
+      <a href="demos/modulos/index.html" class="demo-card"
+         onclick="rastrearClique('Módulos Protheus — Visão Técnica')">
+        <div class="demo-preview" style="background: linear-gradient(135deg,#060B18,#0F2B5B);">
+          <!-- grade animada no preview -->
+          <div class="demo-preview-bg" style="
+            background-image:
+              linear-gradient(rgba(6,182,212,.1) 1px, transparent 1px),
+              linear-gradient(90deg,rgba(6,182,212,.1) 1px,transparent 1px);
+            background-size: 24px 24px;
+            opacity: 1;
+          "></div>
+          <!-- mini mapa de integrações no preview -->
+          <div style="position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;gap:6px">
+            <div style="display:flex;gap:6px;align-items:center">
+              <div style="background:rgba(16,185,129,.15);border:1px solid rgba(16,185,129,.3);border-radius:6px;padding:5px 8px;font-size:.6rem;color:#6ee7b7;font-family:monospace">SIGACOM</div>
+              <div style="color:rgba(6,182,212,.4);font-size:.7rem">→</div>
+              <div style="background:rgba(6,182,212,.15);border:1px solid rgba(6,182,212,.4);border-radius:6px;padding:5px 8px;font-size:.6rem;color:var(--cyan);font-family:monospace;font-weight:700">SIGAEST</div>
+              <div style="color:rgba(6,182,212,.4);font-size:.7rem">→</div>
+              <div style="background:rgba(26,86,219,.15);border:1px solid rgba(26,86,219,.3);border-radius:6px;padding:5px 8px;font-size:.6rem;color:#93c5fd;font-family:monospace">SIGAFIN</div>
+            </div>
+            <div style="display:flex;gap:6px;align-items:center">
+              <div style="background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.3);border-radius:6px;padding:5px 8px;font-size:.6rem;color:#fcd34d;font-family:monospace">SIGAFAT</div>
+              <div style="color:rgba(6,182,212,.3);font-size:.7rem">→</div>
+              <div style="background:rgba(139,92,246,.12);border:1px solid rgba(139,92,246,.3);border-radius:6px;padding:5px 8px;font-size:.6rem;color:#c4b5fd;font-family:monospace">SIGACTB</div>
+              <div style="color:rgba(6,182,212,.3);font-size:.7rem">→</div>
+              <div style="background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.3);border-radius:6px;padding:5px 8px;font-size:.6rem;color:#fca5a5;font-family:monospace">SIGAFIS</div>
+            </div>
+          </div>
+          <div class="demo-badge" style="background:rgba(26,86,219,.2);border-color:rgba(26,86,219,.4);color:#93c5fd;">6 Módulos</div>
+        </div>
+        <div class="demo-body">
+          <div class="demo-name">Módulos Protheus — Visão Técnica</div>
+          <div class="demo-desc">Mapa completo de fluxos, tabelas, integrações e riscos dos 6 módulos backoffice — SIGACOM, SIGAEST, SIGAFAT, SIGAFIN, SIGACTB e SIGAFIS. Cada módulo tem página própria com pontos de entrada ADVPL/TLPP.</div>
+          <!-- mini fluxo animado exclusivo deste card -->
+          <div class="demo-mini-flow">
+            <span class="dmf-step">SC1→SC7</span>
+            <span class="dmf-arr">→</span>
+            <span class="dmf-step">SB2·SD3</span>
+            <span class="dmf-arr">→</span>
+            <span class="dmf-step">SE1·SE2</span>
+            <span class="dmf-arr">→</span>
+            <span class="dmf-step">SF3·SPED</span>
+          </div>
+          <div class="demo-tags">
+            <span class="demo-tag">SIGACOM</span>
+            <span class="demo-tag">SIGAEST</span>
+            <span class="demo-tag">SIGAFAT</span>
+            <span class="demo-tag">SIGAFIN</span>
+            <span class="demo-tag">SIGACTB</span>
+            <span class="demo-tag">SIGAFIS</span>
+          </div>
+          <div class="demo-link-hint">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+            Explorar módulos →
+          </div>
+        </div>
+      </a>
+
+      <!-- cards existentes ─────────────────────────────── -->
+
+      <a href="demos/agrisense.html" target="_blank" class="demo-card"
+         onclick="rastrearClique('AgriSense — Automação Agrícola')">
+        <div class="demo-preview" style="background: linear-gradient(135deg,#0a0f0a,#142014);">
+          <div class="demo-preview-bg" style="background-image: linear-gradient(rgba(0,255,127,.1) 1px, transparent 1px), linear-gradient(90deg,rgba(0,255,127,.1) 1px,transparent 1px); background-size: 24px 24px;"></div>
+          <div class="demo-preview-icon">🌾</div>
+          <div class="demo-badge" style="background:rgba(0,255,127,.15);border-color:rgba(0,255,127,.3);color:#00ff7f;">Automação</div>
+        </div>
+        <div class="demo-body">
+          <div class="demo-name">AgriSense — Automação Agrícola</div>
+          <div class="demo-desc">Dashboard de agricultura de precisão com monitoramento em tempo real de sensores (NPK, pH, temperatura, umidade), controle de irrigação/fertilização, protocolo CAN/ISOBUS e mapa de produtividade.</div>
+          <div class="demo-tags"><span class="demo-tag">IoT</span><span class="demo-tag">CAN / ISOBUS</span><span class="demo-tag">Dashboard</span><span class="demo-tag">Python / Streamlit</span></div>
+          <div class="demo-link-hint"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>Abrir demo →</div>
+        </div>
+      </a>
+
+      <a href="demos/arquitetura-nuvem.html" target="_blank" class="demo-card"
+         onclick="rastrearClique('Arquitetura em Nuvem')">
+        <div class="demo-preview" style="background: linear-gradient(135deg,#0a1628,#0d2a4a);">
+          <div class="demo-preview-bg" style="background-image: linear-gradient(rgba(6,182,212,.12) 1px, transparent 1px), linear-gradient(90deg,rgba(6,182,212,.12) 1px,transparent 1px); background-size: 24px 24px;"></div>
+          <div class="demo-preview-icon">☁️</div>
+          <div class="demo-badge">Arquitetura</div>
+        </div>
+        <div class="demo-body">
+          <div class="demo-name">Arquitetura em Nuvem</div>
+          <div class="demo-desc">Do servidor físico à infraestrutura global — como funciona Cloud Computing explicado de forma clara para qualquer pessoa, com diagrama interativo em camadas.</div>
+          <div class="demo-tags"><span class="demo-tag">Cloud</span><span class="demo-tag">IaaS / PaaS / SaaS</span><span class="demo-tag">Protheus</span></div>
+          <div class="demo-link-hint"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>Abrir demo →</div>
+        </div>
+      </a>
+
+      <a href="demos/advpl-analyzer-v2.html" target="_blank" class="demo-card"
+         onclick="rastrearClique('CodeLens v2.0 — Analisador ADVPL')">
+        <div class="demo-preview" style="background: linear-gradient(135deg,#0f1f3d,#0a1628);">
+          <div class="demo-preview-bg" style="background-image: linear-gradient(rgba(26,86,219,.15) 1px, transparent 1px), linear-gradient(90deg,rgba(26,86,219,.15) 1px,transparent 1px);"></div>
+          <div class="demo-preview-icon">🔍</div>
+          <div class="demo-badge">Ferramenta</div>
+        </div>
+        <div class="demo-body">
+          <div class="demo-name">CodeLens v2.0 — Analisador ADVPL</div>
+          <div class="demo-desc">Analisa fontes ADVPL/TLPP: mapeia funções, campos, tabelas, complexidade ciclomática e fluxo de execução. Arraste seu .PRW e explore.</div>
+          <div class="demo-tags"><span class="demo-tag">ADVPL</span><span class="demo-tag">Análise de Código</span><span class="demo-tag">JavaScript</span></div>
+          <div class="demo-link-hint"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>Abrir demo →</div>
+        </div>
+      </a>
+
+      <a href="demos/MIT044_engenharia_reversa.html" target="_blank" class="demo-card"
+         onclick="rastrearClique('MIT044 — Engenharia Reversa')">
+        <div class="demo-preview" style="background: linear-gradient(135deg,#080810,#0f0f1e);">
+          <div class="demo-preview-bg" style="background-image: radial-gradient(rgba(139,92,246,.1) 1px, transparent 1px); background-size: 20px 20px;"></div>
+          <div class="demo-preview-icon">⚖️</div>
+          <div class="demo-badge">Análise</div>
+        </div>
+        <div class="demo-body">
+          <div class="demo-name">Engenharia Reversa</div>
+          <div class="demo-desc">Documentação técnica completa do sistema de Venda por KG: arquitetura, tabelas customizadas, fluxo de aprovação e pontos de entrada.</div>
+          <div class="demo-tags"><span class="demo-tag">SIGAFAT</span><span class="demo-tag">MVC</span><span class="demo-tag">TLPP</span></div>
+          <div class="demo-link-hint"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>Abrir demo →</div>
+        </div>
+      </a>
+
+      <a href="demos/MIT044_codigo_engenharia_reversa.html" target="_blank" class="demo-card"
+         onclick="rastrearClique('MIT044 — Código Anotado')">
+        <div class="demo-preview" style="background: linear-gradient(135deg,#080810,#101020);">
+          <div class="demo-preview-bg" style="background-image: linear-gradient(rgba(99,102,241,.08) 1px, transparent 1px), linear-gradient(90deg,rgba(99,102,241,.08) 1px,transparent 1px); background-size: 16px 16px;"></div>
+          <div class="demo-preview-icon">💻</div>
+          <div class="demo-badge">Código</div>
+        </div>
+        <div class="demo-body">
+          <div class="demo-name">Código Anotado</div>
+          <div class="demo-desc">Visualização interativa do código-fonte do MIT044 com anotações de engenharia reversa, highlights por seção e navegação por funções.</div>
+          <div class="demo-tags"><span class="demo-tag">ADVPL</span><span class="demo-tag">Code Review</span><span class="demo-tag">Documentação</span></div>
+          <div class="demo-link-hint"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>Abrir demo →</div>
+        </div>
+      </a>
+
+      <a href="demos/estoque_IA.html" target="_blank" class="demo-card"
+         onclick="rastrearClique('Sistema IA de Estoque')">
+        <div class="demo-preview" style="background: linear-gradient(135deg,#0a1628,#0f2040);">
+          <div class="demo-preview-bg" style="background-image: radial-gradient(rgba(6,182,212,.08) 2px, transparent 2px); background-size: 28px 28px;"></div>
+          <div class="demo-preview-icon">🤖</div>
+          <div class="demo-badge">IA</div>
+        </div>
+        <div class="demo-body">
+          <div class="demo-name">Sistema IA de Estoque-SQL/PROTHEUS</div>
+          <div class="demo-desc">Dashboard inteligente de gestão de estoque com sugestões automáticas por IA, classificação de criticidade e análise de consumo histórico integrada ao Protheus.</div>
+          <div class="demo-tags"><span class="demo-tag">IA</span><span class="demo-tag">SIGAEST</span><span class="demo-tag">Dashboard</span></div>
+          <div class="demo-link-hint"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>Abrir demo →</div>
+        </div>
+      </a>
+
+      <a href="demos/sistema_venda_inativo.html" target="_blank" class="demo-card"
+         onclick="rastrearClique('Controle Clientes Venda Direta')">
+        <div class="demo-preview" style="background: linear-gradient(135deg,#1a0a2e,#2d1450);">
+          <div class="demo-preview-bg" style="background-image: linear-gradient(rgba(139,92,246,.1) 1px, transparent 1px), linear-gradient(90deg,rgba(139,92,246,.1) 1px,transparent 1px); background-size: 24px 24px;"></div>
+          <div class="demo-preview-icon">📊</div>
+          <div class="demo-badge">Relatório</div>
+        </div>
+        <div class="demo-body">
+          <div class="demo-name">Controle Clientes Venda Direta</div>
+          <div class="demo-desc">Sistema de controle e monitoramento de clientes com venda direta — identifica inativos, histórico de compras e alertas automáticos para a equipe comercial.</div>
+          <div class="demo-tags"><span class="demo-tag">SIGAFAT</span><span class="demo-tag">SA1</span><span class="demo-tag">Dashboard</span></div>
+          <div class="demo-link-hint"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>Abrir demo →</div>
+        </div>
+      </a>
+
+      <a href="demos/mata103-executivo.html" target="_blank" class="demo-card"
+         onclick="rastrearClique('Diagnóstico Executivo MATA103')">
+        <div class="demo-preview" style="background: linear-gradient(135deg,#0a0a0f,#18181f);">
+          <div class="demo-preview-bg" style="background-image: linear-gradient(rgba(0,229,255,.06) 1px, transparent 1px), linear-gradient(90deg,rgba(0,229,255,.06) 1px,transparent 1px); background-size: 20px 20px;"></div>
+          <div class="demo-preview-icon">📋</div>
+          <div class="demo-badge">Diagnóstico</div>
+        </div>
+        <div class="demo-body">
+          <div class="demo-name">Diagnóstico Executivo</div>
+          <div class="demo-desc">Relatório executivo gerado pelo CodeLens: 26.723 linhas, 160 funções, 779 campos mapeados. Análise de complexidade do maior fonte do Protheus Fiscal.</div>
+          <div class="demo-tags"><span class="demo-tag">MATA103</span><span class="demo-tag">Análise</span><span class="demo-tag">Fiscal</span></div>
+          <div class="demo-link-hint"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>Abrir demo →</div>
+        </div>
+      </a>
+
+    </div>
+  </div>
+</section>
+
+<!-- ARCHITECTURE -->
+<section class="arch-section" id="arquitetura">
+  <div class="arch-full">
+    <div class="section-tag">Visão Técnica</div>
+    <h2 class="section-title">Arquitetura de Soluções</h2>
+    <p class="section-sub">Projeto soluções que conectam o núcleo do ERP a interfaces modernas — da base de dados ao usuário final, passando por APIs e dashboards.</p>
+    <div class="arch-visual">
+      <div class="arch-col">
+        <div class="arch-block"><div class="arch-block-icon">🗄️</div><div class="arch-block-name">SQL Server</div><div class="arch-block-desc">Queries, Procedures, Views otimizadas</div></div>
+        <div class="arch-block"><div class="arch-block-icon">📊</div><div class="arch-block-name">Tabelas TOTVS</div><div class="arch-block-desc">SB1, SB2, SC5, SE1, SD3 e customizadas Z*</div></div>
+      </div>
+      <div class="arch-connector"><div class="conn-line"></div><div class="conn-label">TopConnect</div><div class="conn-line"></div></div>
+      <div class="arch-col">
+        <div class="arch-block" style="border-color: rgba(26,86,219,.5); background: rgba(26,86,219,.2);"><div class="arch-block-icon">⚙️</div><div class="arch-block-name">ERP Protheus</div><div class="arch-block-desc">ADVPL / TLPP · MVC · ExecAuto · Pontos de Entrada</div></div>
+        <div class="arch-block"><div class="arch-block-icon">🔧</div><div class="arch-block-name">Módulos ERP</div><div class="arch-block-desc">SIGACOM · SIGAEST · SIGAFAT · SIGAFIN · SIGACTB · SIGAFIS</div></div>
+      </div>
+      <div class="arch-connector"><div class="conn-line"></div><div class="conn-label">REST API</div><div class="conn-line"></div></div>
+      <div class="arch-col">
+        <div class="arch-block"><div class="arch-block-icon">🌐</div><div class="arch-block-name">Angular / PO-UI</div><div class="arch-block-desc">Frontend moderno integrado ao Protheus</div></div>
+        <div class="arch-block"><div class="arch-block-icon">📱</div><div class="arch-block-name">PWA / Mobile</div><div class="arch-block-desc">Acesso ao ERP pelo celular, offline-ready</div></div>
+        <div class="arch-block"><div class="arch-block-icon">📈</div><div class="arch-block-name">SmartView</div><div class="arch-block-desc">Dashboards e relatórios gerenciais</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SKILLS -->
+<section class="section" id="skills">
+  <div class="section-tag">Competências</div>
+  <h2 class="section-title">Stack Técnico</h2>
+  <p class="section-sub">Tecnologias que uso no dia a dia para entregar soluções completas — do ERP ao front-end.</p>
+  <div class="skills-grid">
+    <div class="skill-card"><div class="skill-category">ERP / TOTVS</div><ul class="skill-list"><li>ADVPL / TLPP</li><li>Arquitetura MVC TOTVS</li><li>ExecAuto / Pontos de Entrada</li><li>Módulos SIGACOM, SIGAEST, SIGAFAT</li><li>Módulos SIGAFIN, SIGACTB, SIGATMK</li></ul></div>
+    <div class="skill-card"><div class="skill-category">APIs &amp; Integração</div><ul class="skill-list"><li>TLPP REST / WSRESTFUL</li><li>REST, JSON, WebServices, SOAP</li><li>Basic Auth / OAuth2</li><li>Postman — testes e documentação</li><li>Log e rastreabilidade de integração</li></ul></div>
+    <div class="skill-card"><div class="skill-category">Banco de Dados</div><ul class="skill-list"><li>SQL Server — queries avançadas</li><li>Stored Procedures e Views</li><li>Análise de consumo histórico</li><li>Otimização de performance</li><li>Modelagem de tabelas customizadas</li></ul></div>
+    <div class="skill-card"><div class="skill-category">Frontend / Web</div><ul class="skill-list"><li>PO-UI (Angular TOTVS)</li><li>React / TypeScript</li><li>PWA — Progressive Web Apps</li><li>JavaScript moderno (ES2023+)</li><li>SmartView / TReports / PDF</li></ul></div>
+    <div class="skill-card"><div class="skill-category">Fiscal &amp; NF-e</div><ul class="skill-list"><li>CT-e, NF-e, SPED Fiscal</li><li>Importação automática de documentos</li><li>Customizações de obrigações acessórias</li><li>Integração TOTVS Transmite</li></ul></div>
+    <div class="skill-card"><div class="skill-category">Ferramentas</div><ul class="skill-list"><li>Git / GitHub</li><li>VS Code / TOTVS Developer Studio</li><li>SQL Server Management Studio</li><li>Postman</li><li>Ambiente multi-empresa e multi-filial</li></ul></div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section class="contact-section" id="contato">
+  <div class="section-tag" style="color: var(--cyan); margin-bottom: 12px;">Contato</div>
+  <h2 class="section-title">Vamos construir<br>algo juntos?</h2>
+  <p class="section-sub">Disponível para projetos de integração Protheus, desenvolvimento de APIs, customizações e consultoria ERP.</p>
+  <div class="contact-links">
+    <a href="mailto:teceletrotecnica84@gmail.com" class="btn-primary">
+      ✉ teceletrotecnica84@gmail.com
+    </a>
+    <a href="https://www.linkedin.com/in/daniel-luiz-a300b415b" target="_blank" class="btn-ghost">LinkedIn →</a>
+    <a href="https://github.com/Daniel-1984/" target="_blank" class="btn-ghost">GitHub →</a>
+  </div>
+  <div style="margin-top: 32px; color: rgba(255,255,255,.35); font-size: .85rem;">
+    (41) 98536-9251 &nbsp;•&nbsp; (65) 99674-5951 &nbsp;•&nbsp; Curitiba, PR
+  </div>
+</section>
+
+<footer>
+  © 2025 Daniel Luiz Alves — Desenvolvedor e Arquiteto de Soluções ERP Protheus
+</footer>
+
+</body>
+</html>
