@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Módulos Protheus — Daniel Luiz Alves</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-D0N8HN6LM3"></script>
+<script>
+  window.dataLayer=window.dataLayer||[];
+  function gtag(){dataLayer.push(arguments)}
+  gtag('js',new Date());
+  gtag('config','G-D0N8HN6LM3',{send_page_view:true,anonymize_ip:true});
+  function track(n){gtag('event','click_modulo',{event_category:'Módulos Protheus',event_label:n,value:1})}
+</script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#06080F;--bg2:#090D18;
+  --blue:#1A56DB;--cyan:#06B6D4;--amber:#F59E0B;
+  --red:#EF4444;--green:#10B981;--purple:#8B5CF6;
+  --white:#FFF;--muted:rgba(255,255,255,.45);--dimmed:rgba(255,255,255,.22);
+  --line:rgba(255,255,255,.07);--card:rgba(255,255,255,.03);
+  --mono:'DM Mono',monospace;--sans:'DM Sans',sans-serif;--display:'Syne',sans-serif;
+}
+html{scroll-behavior:smooth}
+body{font-family:var(--sans);background:var(--bg);color:var(--white);overflow-x:hidden}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(6,8,15,.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--line);padding:0 48px;height:60px;display:flex;align-items:center;justify-content:space-between}
+.nav-logo{font-family:var(--display);font-size:.95rem;font-weight:700;color:var(--white);text-decoration:none}
+.nav-logo span{color:var(--cyan)}
+.nav-links{display:flex;gap:28px}
+.nav-links a{font-size:.82rem;color:var(--muted);text-decoration:none;transition:color .2s}
+.nav-links a:hover{color:var(--white)}
+.nav-back{font-size:.8rem;color:var(--muted);text-decoration:none;display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.05);border:1px solid var(--line);padding:6px 14px;border-radius:6px;transition:color .2s,border-color .2s}
+.nav-back:hover{color:var(--cyan);border-color:rgba(6,182,212,.3)}
+
+/* HERO */
+.hero{min-height:58vh;background:radial-gradient(ellipse 80% 65% at 50% -10%,rgba(26,86,219,.2) 0%,transparent 70%),radial-gradient(ellipse 35% 25% at 8% 85%,rgba(245,158,11,.07) 0%,transparent 60%),var(--bg);display:flex;align-items:center;justify-content:center;text-align:center;position:relative;overflow:hidden;padding:130px 48px 90px}
+.hero::before{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(26,86,219,.055) 1px,transparent 1px),linear-gradient(90deg,rgba(26,86,219,.055) 1px,transparent 1px);background-size:54px 54px;mask-image:radial-gradient(ellipse 90% 80% at 50% 30%,black 20%,transparent 100%);pointer-events:none}
+.hero-inner{position:relative;z-index:2;max-width:760px}
+.hero-tag{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:.68rem;color:var(--cyan);letter-spacing:.1em;text-transform:uppercase;background:rgba(6,182,212,.07);border:1px solid rgba(6,182,212,.18);padding:5px 16px;border-radius:4px;margin-bottom:24px}
+.hero-tag::before{content:'';width:5px;height:5px;background:var(--cyan);border-radius:50%;animation:blink 2.4s ease-in-out infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.15}}
+.hero h1{font-family:var(--display);font-size:clamp(2.4rem,5vw,3.8rem);font-weight:800;line-height:1.05;letter-spacing:-.03em;margin-bottom:18px}
+.hero h1 span{color:var(--cyan)}
+.hero p{font-size:1rem;color:var(--muted);line-height:1.8;max-width:620px;margin:0 auto}
+
+/* WRAP */
+.wrap{max-width:1200px;margin:0 auto;padding:0 48px}
+
+/* SECTION HEADERS */
+.sec{padding:80px 0}
+.sec+.sec{border-top:1px solid var(--line)}
+.sec-alt{background:var(--bg2)}
+.s-tag{font-family:var(--mono);font-size:.65rem;color:var(--cyan);letter-spacing:.14em;text-transform:uppercase;margin-bottom:10px}
+.s-head{font-family:var(--display);font-size:clamp(1.8rem,3vw,2.5rem);font-weight:800;line-height:1.1;letter-spacing:-.025em;margin-bottom:14px}
+.s-sub{font-size:.93rem;color:var(--muted);max-width:640px;line-height:1.75;margin-bottom:44px}
+
+/* ═══════════════════════════════════════════════
+   INTEGRATION MAP
+═══════════════════════════════════════════════ */
+.intmap-card{background:rgba(255,255,255,.02);border:1px solid var(--line);border-radius:20px;padding:36px;position:relative;overflow:hidden}
+.intmap-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--cyan),var(--blue),transparent)}
+
+/* 5-col grid for the map */
+.map-grid{display:grid;grid-template-columns:1fr 80px 1fr 80px 1fr;align-items:center;gap:12px;margin-bottom:16px}
+
+/* single map node */
+.mn{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:16px 12px;text-align:center;text-decoration:none;display:block;position:relative;overflow:hidden;transition:transform .25s,box-shadow .25s,border-color .25s}
+.mn::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;opacity:0;transition:opacity .25s}
+.mn:hover{transform:translateY(-5px);box-shadow:0 14px 40px rgba(0,0,0,.55)}
+.mn:hover::after{opacity:1}
+.mn-icon{font-size:1.5rem;margin-bottom:5px}
+.mn-name{font-family:var(--display);font-size:.85rem;font-weight:800;margin-bottom:3px}
+.mn-tbls{font-family:var(--mono);font-size:.59rem;opacity:.5;line-height:1.6}
+
+/* left col = COM + FAT stacked */
+.col-left{display:flex;flex-direction:column;gap:10px}
+/* center = EST (taller) */
+.mn-est-big{padding:22px 16px}
+.mn-est-big .mn-icon{font-size:2rem;margin-bottom:8px}
+.mn-est-big .mn-name{font-size:.95rem}
+/* right col = FIN */
+
+/* arrow columns */
+.arr{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px}
+.arr-lbl{font-family:var(--mono);font-size:.57rem;color:rgba(255,255,255,.25);text-align:center;letter-spacing:.05em;text-transform:uppercase;line-height:1.4}
+.arr-sym{color:rgba(6,182,212,.45);font-size:1.1rem;animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:.3}50%{opacity:.9}}
+
+/* bottom row */
+.map-bottom{display:grid;grid-template-columns:1fr 80px 1fr 80px 1fr;align-items:center;gap:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,.05);margin-top:4px}
+
+/* module color themes */
+.mn-com{border-color:rgba(16,185,129,.2)}.mn-com:hover{border-color:rgba(16,185,129,.5)}.mn-com::after{background:linear-gradient(90deg,#10B981,#06B6D4)}.mn-com .mn-name{color:#6ee7b7}
+.mn-fat{border-color:rgba(245,158,11,.2)}.mn-fat:hover{border-color:rgba(245,158,11,.5)}.mn-fat::after{background:linear-gradient(90deg,#F59E0B,#EF4444)}.mn-fat .mn-name{color:var(--amber)}
+.mn-est{background:rgba(6,182,212,.06);border-color:rgba(6,182,212,.28)}.mn-est:hover{border-color:rgba(6,182,212,.6)}.mn-est::after{background:linear-gradient(90deg,#06B6D4,#1A56DB)}.mn-est .mn-name{color:var(--cyan)}
+.mn-fin{border-color:rgba(26,86,219,.25)}.mn-fin:hover{border-color:rgba(26,86,219,.6)}.mn-fin::after{background:linear-gradient(90deg,#1A56DB,#8B5CF6)}.mn-fin .mn-name{color:#93c5fd}
+.mn-ctb{border-color:rgba(139,92,246,.2)}.mn-ctb:hover{border-color:rgba(139,92,246,.55)}.mn-ctb::after{background:linear-gradient(90deg,#8B5CF6,#06B6D4)}.mn-ctb .mn-name{color:#c4b5fd}
+.mn-fis{border-color:rgba(239,68,68,.2)}.mn-fis:hover{border-color:rgba(239,68,68,.55)}.mn-fis::after{background:linear-gradient(90deg,#EF4444,#F59E0B)}.mn-fis .mn-name{color:#fca5a5}
+
+/* legend */
+.map-legend{display:flex;gap:18px;flex-wrap:wrap;padding-top:20px;border-top:1px solid rgba(255,255,255,.05);margin-top:20px}
+.leg{display:flex;align-items:center;gap:6px;font-size:.74rem;color:var(--muted)}
+.leg-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+
+/* ═══════════════════════════════════════════════
+   MODULE CARDS
+═══════════════════════════════════════════════ */
+.mods-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+
+.mc{background:var(--card);border:1px solid var(--line);border-radius:18px;overflow:hidden;text-decoration:none;display:flex;flex-direction:column;transition:transform .3s,box-shadow .3s;position:relative}
+.mc:hover{transform:translateY(-8px);box-shadow:0 28px 64px rgba(0,0,0,.55)}
+.mc-bar{height:3px;width:100%;flex-shrink:0}
+
+/* head */
+.mc-head{padding:22px 22px 0;display:flex;align-items:flex-start;gap:12px}
+.mc-icon{width:44px;height:44px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:1.35rem;flex-shrink:0;border:1px solid}
+.mc-meta{flex:1}
+.mc-sigla{font-family:var(--mono);font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;margin-bottom:2px}
+.mc-name{font-family:var(--display);font-size:1.08rem;font-weight:800;letter-spacing:-.01em}
+.mc-desc{font-size:.79rem;color:var(--muted);line-height:1.65;padding:10px 22px 0}
+
+/* tables block */
+.mc-block{padding:12px 22px 0}
+.mc-block-lbl{font-family:var(--mono);font-size:.57rem;color:var(--dimmed);letter-spacing:.1em;text-transform:uppercase;margin-bottom:7px}
+.mc-tbls{display:flex;gap:4px;flex-wrap:wrap}
+.mc-tbl{font-family:var(--mono);font-size:.63rem;font-weight:500;padding:3px 8px;border-radius:3px;border:1px solid;white-space:nowrap}
+
+/* animated flow */
+.mc-flow{display:flex;align-items:center;gap:0;overflow-x:auto;padding-bottom:2px}
+.mc-flow::-webkit-scrollbar{display:none}
+.mc-fs{font-family:var(--mono);font-size:.62rem;font-weight:500;padding:4px 8px;border-radius:3px;border:1px solid;white-space:nowrap;animation:fp 3s ease-in-out infinite}
+.mc-fs:nth-child(3){animation-delay:.6s}
+.mc-fs:nth-child(5){animation-delay:1.2s}
+.mc-fs:nth-child(7){animation-delay:1.8s}
+.mc-fs:nth-child(9){animation-delay:2.4s}
+@keyframes fp{0%,100%{opacity:.5}50%{opacity:1}}
+.mc-fa{color:rgba(255,255,255,.18);font-size:.68rem;padding:0 2px;flex-shrink:0}
+
+/* footer */
+.mc-footer{padding:12px 22px 20px;margin-top:auto;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.mc-risk{font-size:.72rem;color:rgba(255,255,255,.3);display:flex;align-items:center;gap:4px;flex:1;min-width:0}
+.mc-risk span:first-child{flex-shrink:0;opacity:.5}
+.mc-risk-txt{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mc-cta{font-family:var(--mono);font-size:.67rem;letter-spacing:.05em;display:flex;align-items:center;gap:4px;flex-shrink:0;opacity:0;transform:translateX(-6px);transition:opacity .25s,transform .25s}
+.mc:hover .mc-cta{opacity:1;transform:translateX(0)}
+
+/* per-module */
+.mc-com .mc-bar{background:linear-gradient(90deg,#10B981,#06B6D4)}
+.mc-com .mc-icon{background:rgba(16,185,129,.09);border-color:rgba(16,185,129,.22)}
+.mc-com .mc-sigla,.mc-com .mc-cta{color:#6ee7b7}.mc-com:hover{border-color:rgba(16,185,129,.28)}
+.mc-com .mc-tbl{background:rgba(16,185,129,.07);border-color:rgba(16,185,129,.18);color:#6ee7b7}
+.mc-com .mc-fs{background:rgba(16,185,129,.07);border-color:rgba(16,185,129,.16);color:#6ee7b7}
+
+.mc-est .mc-bar{background:linear-gradient(90deg,#06B6D4,#3B82F6)}
+.mc-est .mc-icon{background:rgba(6,182,212,.09);border-color:rgba(6,182,212,.22)}
+.mc-est .mc-sigla,.mc-est .mc-cta{color:var(--cyan)}.mc-est:hover{border-color:rgba(6,182,212,.28)}
+.mc-est .mc-tbl{background:rgba(6,182,212,.07);border-color:rgba(6,182,212,.18);color:var(--cyan)}
+.mc-est .mc-fs{background:rgba(6,182,212,.07);border-color:rgba(6,182,212,.16);color:var(--cyan)}
+
+.mc-fat .mc-bar{background:linear-gradient(90deg,#F59E0B,#EF4444)}
+.mc-fat .mc-icon{background:rgba(245,158,11,.09);border-color:rgba(245,158,11,.22)}
+.mc-fat .mc-sigla,.mc-fat .mc-cta{color:var(--amber)}.mc-fat:hover{border-color:rgba(245,158,11,.28)}
+.mc-fat .mc-tbl{background:rgba(245,158,11,.07);border-color:rgba(245,158,11,.18);color:var(--amber)}
+.mc-fat .mc-fs{background:rgba(245,158,11,.07);border-color:rgba(245,158,11,.16);color:var(--amber)}
+
+.mc-fin .mc-bar{background:linear-gradient(90deg,#1A56DB,#8B5CF6)}
+.mc-fin .mc-icon{background:rgba(26,86,219,.1);border-color:rgba(26,86,219,.24)}
+.mc-fin .mc-sigla,.mc-fin .mc-cta{color:#93c5fd}.mc-fin:hover{border-color:rgba(26,86,219,.35)}
+.mc-fin .mc-tbl{background:rgba(26,86,219,.08);border-color:rgba(26,86,219,.2);color:#93c5fd}
+.mc-fin .mc-fs{background:rgba(26,86,219,.08);border-color:rgba(26,86,219,.18);color:#93c5fd}
+
+.mc-ctb .mc-bar{background:linear-gradient(90deg,#8B5CF6,#06B6D4)}
+.mc-ctb .mc-icon{background:rgba(139,92,246,.09);border-color:rgba(139,92,246,.22)}
+.mc-ctb .mc-sigla,.mc-ctb .mc-cta{color:#c4b5fd}.mc-ctb:hover{border-color:rgba(139,92,246,.32)}
+.mc-ctb .mc-tbl{background:rgba(139,92,246,.07);border-color:rgba(139,92,246,.18);color:#c4b5fd}
+.mc-ctb .mc-fs{background:rgba(139,92,246,.07);border-color:rgba(139,92,246,.16);color:#c4b5fd}
+
+.mc-fis .mc-bar{background:linear-gradient(90deg,#EF4444,#F59E0B)}
+.mc-fis .mc-icon{background:rgba(239,68,68,.09);border-color:rgba(239,68,68,.22)}
+.mc-fis .mc-sigla,.mc-fis .mc-cta{color:#fca5a5}.mc-fis:hover{border-color:rgba(239,68,68,.28)}
+.mc-fis .mc-tbl{background:rgba(239,68,68,.06);border-color:rgba(239,68,68,.16);color:#fca5a5}
+.mc-fis .mc-fs{background:rgba(239,68,68,.06);border-color:rgba(239,68,68,.14);color:#fca5a5}
+
+/* RISK TABLE */
+.tbl-wrap{overflow-x:auto;border-radius:14px;border:1px solid var(--line)}
+table{width:100%;border-collapse:collapse}
+th{background:rgba(26,86,219,.12);font-family:var(--mono);font-size:.63rem;font-weight:500;color:var(--cyan);letter-spacing:.07em;text-transform:uppercase;padding:12px 16px;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap}
+td{padding:12px 16px;font-size:.82rem;color:rgba(255,255,255,.7);border-bottom:1px solid rgba(255,255,255,.04);vertical-align:top;line-height:1.6}
+tr:last-child td{border-bottom:none}tr:hover td{background:rgba(255,255,255,.025)}
+code{font-family:var(--mono);font-size:.78em;background:rgba(6,182,212,.1);color:var(--cyan);padding:1px 6px;border-radius:3px}
+.bd{display:inline-flex;font-family:var(--mono);font-size:.62rem;font-weight:500;padding:2px 8px;border-radius:3px;letter-spacing:.04em;white-space:nowrap}
+.bd-r{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.22);color:#fca5a5}
+.bd-a{background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.22);color:var(--amber)}
+
+/* FOOTER */
+footer{background:#04060D;text-align:center;padding:28px;font-size:.78rem;color:rgba(255,255,255,.22);border-top:1px solid var(--line)}
+footer a{color:var(--cyan);text-decoration:none}
+footer a:hover{text-decoration:underline}
+
+/* RESPONSIVE */
+@media(max-width:1024px){.mods-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:768px){
+  nav{padding:0 20px}.nav-links{display:none}
+  .hero{padding:100px 24px 60px}
+  .wrap{padding:0 24px}
+  .sec{padding:56px 0}
+  .mods-grid{grid-template-columns:1fr}
+  .map-grid,.map-bottom{grid-template-columns:1fr;gap:8px}
+  .arr{display:none}
+  .mc-flow{overflow-x:auto}
+}
+
+/* FADE IN */
+.fade{opacity:0;transform:translateY(20px);animation:fu .65s ease forwards}
+.d1{animation-delay:.05s}.d2{animation-delay:.15s}.d3{animation-delay:.25s}
+.d4{animation-delay:.35s}.d5{animation-delay:.45s}.d6{animation-delay:.55s}
+@keyframes fu{to{opacity:1;transform:translateY(0)}}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="../index.html" class="nav-logo">Daniel<span>.</span>dev</a>
+  <div class="nav-links">
+    <a href="#mapa">Mapa</a>
+    <a href="#modulos">Módulos</a>
+    <a href="#riscos">Riscos</a>
+  </div>
+  <a href="../index.html" class="nav-back">
+    <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+    Portfólio
+  </a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-inner">
+    <div class="hero-tag fade d1">TOTVS Protheus · Backoffice · 6 Módulos</div>
+    <h1 class="fade d2">Módulos do ERP <span>Protheus</span><br>Visão Técnica Completa</h1>
+    <p class="fade d3">Arquitetura, fluxos, tabelas, integrações e riscos técnicos dos 6 módulos backoffice — SIGACOM, SIGAEST, SIGAFAT, SIGAFIN, SIGACTB e SIGAFIS. Clique em qualquer módulo para explorar em detalhe.</p>
+  </div>
+</section>
+
+<!-- MAPA DE INTEGRAÇÕES -->
+<section class="sec sec-alt" id="mapa">
+<div class="wrap">
+  <div class="s-tag">Arquitetura</div>
+  <h2 class="s-head">Mapa de Integrações</h2>
+  <p class="s-sub">O SIGAEST é o hub central que recebe entradas de Compras e baixas do Faturamento. SIGACTB e SIGAFIS recebem de todos. Clique em qualquer nó para abrir a página do módulo.</p>
+
+  <div class="intmap-card">
+
+    <!-- ROW PRINCIPAL -->
+    <div class="map-grid">
+
+      <!-- COL 1: COM + FAT empilhados -->
+      <div class="col-left">
+        <a href="sigacom.html" class="mn mn-com" onclick="track('SIGACOM')">
+          <div class="mn-icon">🛒</div>
+          <div class="mn-name">SIGACOM</div>
+          <div class="mn-tbls">SC1 · SC7 · SCJ<br>SF1 · SD1 · SE2</div>
+        </a>
+        <a href="sigafat.html" class="mn mn-fat" onclick="track('SIGAFAT')">
+          <div class="mn-icon">🧾</div>
+          <div class="mn-name">SIGAFAT</div>
+          <div class="mn-tbls">SC5 · SC6 · SD2<br>SF2 · SF4 · SE1</div>
+        </a>
+      </div>
+
+      <!-- COL 2: arrow → EST -->
+      <div class="arr">
+        <div class="arr-sym">→</div>
+        <div class="arr-lbl">NF Entrada<br>Baixa Saída<br>SB2 · SD3</div>
+        <div class="arr-sym" style="animation-delay:.8s">→</div>
+      </div>
+
+      <!-- COL 3: SIGAEST central -->
+      <a href="sigaest.html" class="mn mn-est mn-est-big" onclick="track('SIGAEST')" style="height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center">
+        <div class="mn-icon">📦</div>
+        <div class="mn-name">SIGAEST</div>
+        <div class="mn-tbls" style="margin-top:8px">SB1 · SB2 · SD3<br>SG1 · SCP · NNR · SB3</div>
+        <div style="margin-top:10px;font-family:var(--mono);font-size:.57rem;color:rgba(6,182,212,.45);text-transform:uppercase;letter-spacing:.08em">⬟ Hub Central</div>
+      </a>
+
+      <!-- COL 4: arrow → FIN -->
+      <div class="arr">
+        <div class="arr-sym" style="animation-delay:.4s">→</div>
+        <div class="arr-lbl">SE1 A Rec.<br>SE2 A Pag.<br>SIGAFIN</div>
+        <div class="arr-sym" style="animation-delay:1.2s">→</div>
+      </div>
+
+      <!-- COL 5: SIGAFIN -->
+      <a href="sigafin.html" class="mn mn-fin" onclick="track('SIGAFIN')" style="height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center">
+        <div class="mn-icon">💰</div>
+        <div class="mn-name">SIGAFIN</div>
+        <div class="mn-tbls" style="margin-top:8px">SE1 · SE2 · SE5<br>FK2 · FK5 · FKB · SA6</div>
+      </a>
+
+    </div><!-- end map-grid -->
+
+    <!-- ROW INFERIOR: CTB ← todos → FIS -->
+    <div class="map-bottom">
+      <a href="sigactb.html" class="mn mn-ctb" onclick="track('SIGACTB')">
+        <div class="mn-icon">📊</div>
+        <div class="mn-name">SIGACTB</div>
+        <div class="mn-tbls">CT1 · CT2 · CT5 · SEJ · SEG</div>
+      </a>
+
+      <div class="arr">
+        <div class="arr-sym" style="transform:rotate(180deg);animation-delay:.3s">←</div>
+        <div class="arr-lbl">CT2 via<br>Evento Contábil</div>
+      </div>
+
+      <div style="text-align:center;padding:12px">
+        <div style="font-family:var(--mono);font-size:.59rem;color:rgba(255,255,255,.18);letter-spacing:.06em;text-transform:uppercase;line-height:1.7">Todos os módulos<br>geram CT2 (Contábil)<br>e SF3 (Fiscal)</div>
+      </div>
+
+      <div class="arr">
+        <div class="arr-sym" style="animation-delay:.7s">→</div>
+        <div class="arr-lbl">SF3 Livro<br>Fiscal / SPED</div>
+      </div>
+
+      <a href="sigafis.html" class="mn mn-fis" onclick="track('SIGAFIS')">
+        <div class="mn-icon">⚖️</div>
+        <div class="mn-name">SIGAFIS</div>
+        <div class="mn-tbls">SF3 · SF4 · SFB · SFP · SF9</div>
+      </a>
+    </div>
+
+    <!-- LEGENDA -->
+    <div class="map-legend">
+      <div class="leg"><div class="leg-dot" style="background:#10B981"></div>SIGACOM — Compras</div>
+      <div class="leg"><div class="leg-dot" style="background:#06B6D4"></div>SIGAEST — Estoque</div>
+      <div class="leg"><div class="leg-dot" style="background:#F59E0B"></div>SIGAFAT — Faturamento</div>
+      <div class="leg"><div class="leg-dot" style="background:#1A56DB"></div>SIGAFIN — Financeiro</div>
+      <div class="leg"><div class="leg-dot" style="background:#8B5CF6"></div>SIGACTB — Contabilidade</div>
+      <div class="leg"><div class="leg-dot" style="background:#EF4444"></div>SIGAFIS — Fiscal</div>
+    </div>
+
+  </div>
+</div>
+</section>
+
+<!-- MÓDULOS -->
+<section class="sec" id="modulos">
+<div class="wrap">
+  <div class="s-tag">Explore os Módulos</div>
+  <h2 class="s-head">Selecione um Módulo</h2>
+  <p class="s-sub">Cada card abre uma página com fluxo detalhado, tabelas, MV_, pontos de entrada e riscos. Passe o mouse e clique para explorar.</p>
+
+  <div class="mods-grid">
+
+    <!-- SIGACOM -->
+    <a href="sigacom.html" class="mc mc-com fade d1" onclick="track('SIGACOM')">
+      <div class="mc-bar"></div>
+      <div class="mc-head">
+        <div class="mc-icon">🛒</div>
+        <div class="mc-meta"><div class="mc-sigla">SIGACOM</div><div class="mc-name">Compras</div></div>
+      </div>
+      <p class="mc-desc">Do levantamento de necessidade à NF de entrada — cotações, aprovação por alçada e OC automática integrada ao estoque.</p>
+
+      <div class="mc-block">
+        <div class="mc-block-lbl">Tabelas Principais</div>
+        <div class="mc-tbls">
+          <span class="mc-tbl">SA2</span><span class="mc-tbl">SC1</span><span class="mc-tbl">SC7</span>
+          <span class="mc-tbl">SCJ</span><span class="mc-tbl">SF1</span><span class="mc-tbl">SD1</span><span class="mc-tbl">SE2</span>
+        </div>
+      </div>
+
+      <div class="mc-block">
+        <div class="mc-block-lbl">Fluxo do Módulo</div>
+        <div class="mc-flow">
+          <span class="mc-fs">SC1</span><span class="mc-fa">→</span>
+          <span class="mc-fs">SCJ</span><span class="mc-fa">→</span>
+          <span class="mc-fs">SC7</span><span class="mc-fa">→</span>
+          <span class="mc-fs">SF1/SD1</span><span class="mc-fa">→</span>
+          <span class="mc-fs">SE2</span>
+        </div>
+      </div>
+
+      <div class="mc-footer">
+        <div class="mc-risk"><span>⚠</span><span class="mc-risk-txt">Custo errado = Custo Médio distorcido</span></div>
+        <div class="mc-cta" style="color:#6ee7b7">Explorar <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+      </div>
+    </a>
+
+    <!-- SIGAEST -->
+    <a href="sigaest.html" class="mc mc-est fade d2" onclick="track('SIGAEST')">
+      <div class="mc-bar"></div>
+      <div class="mc-head">
+        <div class="mc-icon">📦</div>
+        <div class="mc-meta"><div class="mc-sigla">SIGAEST</div><div class="mc-name">Estoque</div></div>
+      </div>
+      <p class="mc-desc">Saldos, movimentos, custo médio, rastreabilidade por lote, endereçamento de armazém e inventário com virada mensal.</p>
+
+      <div class="mc-block">
+        <div class="mc-block-lbl">Tabelas Principais</div>
+        <div class="mc-tbls">
+          <span class="mc-tbl">SB1</span><span class="mc-tbl">SB2</span><span class="mc-tbl">SB3</span>
+          <span class="mc-tbl">SD3</span><span class="mc-tbl">SG1</span><span class="mc-tbl">SCP</span><span class="mc-tbl">NNR</span>
+        </div>
+      </div>
+
+      <div class="mc-block">
+        <div class="mc-block-lbl">Fluxo do Módulo</div>
+        <div class="mc-flow">
+          <span class="mc-fs">SB1</span><span class="mc-fa">→</span>
+          <span class="mc-fs">SB2</span><span class="mc-fa">→</span>
+          <span class="mc-fs">SD3</span><span class="mc-fa">→</span>
+          <span class="mc-fs">Custo Médio</span><span class="mc-fa">→</span>
+          <span class="mc-fs">Inventário</span>
+        </div>
+      </div>
+
+      <div class="mc-footer">
+        <div class="mc-risk"><span>⚠</span><span class="mc-risk-txt">Virada sem processar = saldo divergente</span></div>
+        <div class="mc-cta" style="color:var(--cyan)">Explorar <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+      </div>
+    </a>
+
+    <!-- SIGAFAT -->
+    <a href="sigafat.html" class="mc mc-fat fade d3" onclick="track('SIGAFAT')">
+      <div class="mc-bar"></div>
+      <div class="mc-head">
+        <div class="mc-icon">🧾</div>
+        <div class="mc-meta"><div class="mc-sigla">SIGAFAT</div><div class="mc-name">Faturamento</div></div>
+      </div>
+      <p class="mc-desc">Do pedido à NF de saída — TES define tributação, gera A Receber, baixa estoque e escreve livro fiscal automaticamente.</p>
+
+      <div class="mc-block">
+        <div class="mc-block-lbl">Tabelas Principais</div>
+        <div class="mc-tbls">
+          <span class="mc-tbl">SA1</span><span class="mc-tbl">SC5</span><span class="mc-tbl">SC6</span>
+          <span class="mc-tbl">SD2</span><span class="mc-tbl">SF2</span><span class="mc-tbl">SF4</span><span class="mc-tbl">SE1</span>
+        </div>
+      </div>
+
+      <div class="mc-block">
+        <div class="mc-block-lbl">Fluxo do Módulo</div>
+        <div class="mc-flow">
+          <span class="mc-fs">SC5/6</span><span class="mc-fa">→</span>
+          <span class="mc-fs">SF4 TES</span><span class="mc-fa">→</span>
+          <span class="mc-fs">SD2/SF2</span><span class="mc-fa">→</span>
+          <span class="mc-fs">SE1 + SB2</span>
+        </div>
+      </div>
+
+      <div class="mc-footer">
+        <div class="mc-risk"><span>⚠</span><span class="mc-risk-txt">TES errada = NF com tributo incorreto</span></div>
+        <div class="mc-cta" style="color:var(--amber)">Explorar <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+      </div>
+    </a>
+
+    <!-- SIGAFIN -->
+    <a href="sigafin.html" class="mc mc-fin fade d4" onclick="track('SIGAFIN')">
+      <div class="mc-bar"></div>
+      <div class="mc-head">
+        <div class="mc-icon">💰</div>
+        <div class="mc-meta"><div class="mc-sigla">SIGAFIN</div><div class="mc-name">Financeiro</div></div>
+      </div>
+      <p class="mc-desc">A Pagar, A Receber, baixa de títulos, CNAB bancário (remessa/retorno), conciliação e fluxo de caixa.</p>
+
+      <div class="mc-block">
+        <div class="mc-block-lbl">Tabelas Principais</div>
+        <div class="mc-tbls">
+          <span class="mc-tbl">SE1</span><span class="mc-tbl">SE2</span><span class="mc-tbl">SE5</span>
+          <span class="mc-tbl">FK2</span><span class="mc-tbl">FK5</span><span class="mc-tbl">FKB</span><span class="mc-tbl">SA6</span>
+        </div>
+      </div>
+
+      <div class="mc-block">
+        <div class="mc-block-lbl">Fluxo do Módulo</div>
+        <div class="mc-flow">
+          <span class="mc-fs">SE1/SE2</span><span class="mc-fa">→</span>
+          <span class="mc-fs">Baixa</span><span class="mc-fa">→</span>
+          <span class="mc-fs">SE5</span><span class="mc-fa">→</span>
+          <span class="mc-fs">CNAB</span><span class="mc-fa">→</span>
+          <span class="mc-fs">CT2</span>
+        </div>
+      </div>
+
+      <div class="mc-footer">
+        <div class="mc-risk"><span>⚠</span><span class="mc-risk-txt">Baixa duplicada = fluxo de caixa incorreto</span></div>
+        <div class="mc-cta" style="color:#93c5fd">Explorar <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+      </div>
+    </a>
+
+    <!-- SIGACTB -->
+    <a href="sigactb.html" class="mc mc-ctb fade d5" onclick="track('SIGACTB')">
+      <div class="mc-bar"></div>
+      <div class="mc-head">
+        <div class="mc-icon">📊</div>
+        <div class="mc-meta"><div class="mc-sigla">SIGACTB</div><div class="mc-name">Contabilidade</div></div>
+      </div>
+      <p class="mc-desc">Escrituração contábil, eventos automáticos de todos os módulos, DRE, ECD (SPED Contábil) e ECF.</p>
+
+      <div class="mc-block">
+        <div class="mc-block-lbl">Tabelas Principais</div>
+        <div class="mc-tbls">
+          <span class="mc-tbl">CT1</span><span class="mc-tbl">CT2</span><span class="mc-tbl">CT5</span>
+          <span class="mc-tbl">SED</span><span class="mc-tbl">SEJ</span><span class="mc-tbl">SEG</span>
+        </div>
+      </div>
+
+      <div class="mc-block">
+        <div class="mc-block-lbl">Fluxo do Módulo</div>
+        <div class="mc-flow">
+          <span class="mc-fs">CT1</span><span class="mc-fa">→</span>
+          <span class="mc-fs">CT2/SEJ</span><span class="mc-fa">→</span>
+          <span class="mc-fs">DRE</span><span class="mc-fa">→</span>
+          <span class="mc-fs">ECD/ECF</span>
+        </div>
+      </div>
+
+      <div class="mc-footer">
+        <div class="mc-risk"><span>⚠</span><span class="mc-risk-txt">Lançamento sem CC = DRE distorcido</span></div>
+        <div class="mc-cta" style="color:#c4b5fd">Explorar <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+      </div>
+    </a>
+
+    <!-- SIGAFIS -->
+    <a href="sigafis.html" class="mc mc-fis fade d6" onclick="track('SIGAFIS')">
+      <div class="mc-bar"></div>
+      <div class="mc-head">
+        <div class="mc-icon">⚖️</div>
+        <div class="mc-meta"><div class="mc-sigla">SIGAFIS</div><div class="mc-name">Fiscal</div></div>
+      </div>
+      <p class="mc-desc">Hub fiscal — TES como motor de tributos, apuração ICMS/IPI/PIS/COFINS, CIAP 1/48, SPED EFD e EFD Contribuições.</p>
+
+      <div class="mc-block">
+        <div class="mc-block-lbl">Tabelas Principais</div>
+        <div class="mc-tbls">
+          <span class="mc-tbl">SF3</span><span class="mc-tbl">SF4</span><span class="mc-tbl">SFB</span>
+          <span class="mc-tbl">SFC</span><span class="mc-tbl">SFP</span><span class="mc-tbl">SF9</span><span class="mc-tbl">SFG</span>
+        </div>
+      </div>
+
+      <div class="mc-block">
+        <div class="mc-block-lbl">Fluxo do Módulo</div>
+        <div class="mc-flow">
+          <span class="mc-fs">SF1/SF2</span><span class="mc-fa">→</span>
+          <span class="mc-fs">SF3</span><span class="mc-fa">→</span>
+          <span class="mc-fs">SFB/SFC</span><span class="mc-fa">→</span>
+          <span class="mc-fs">SPED</span>
+        </div>
+      </div>
+
+      <div class="mc-footer">
+        <div class="mc-risk"><span>⚠</span><span class="mc-risk-txt">F4_SITTRIB vazio = PVA rejeita C170</span></div>
+        <div class="mc-cta" style="color:#fca5a5">Explorar <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+      </div>
+    </a>
+
+  </div>
+</div>
+</section>
+
+<!-- RISCOS -->
+<section class="sec sec-alt" id="riscos">
+<div class="wrap">
+  <div class="s-tag">Resumo Técnico</div>
+  <h2 class="s-head">Riscos por Módulo</h2>
+  <p class="s-sub">Pontos de atenção críticos para desenvolvedores ADVPL/TLPP em ambiente de produção multi-filial.</p>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Módulo</th><th>Tabela Central</th><th>Integra com</th><th>Risco Principal</th><th>Impacto</th></tr></thead>
+      <tbody>
+        <tr><td><strong style="color:#6ee7b7">SIGACOM</strong></td><td><code>SC7 / SF1</code></td><td>Est · Fin · Fis · Ctb</td><td>Custo de entrada errado no SD1</td><td><span class="bd bd-r">Custo Médio distorcido</span></td></tr>
+        <tr><td><strong style="color:var(--cyan)">SIGAEST</strong></td><td><code>SB2 / SD3</code></td><td>Fat · Com · PCP</td><td>Virada de saldos não processada</td><td><span class="bd bd-r">Saldo divergente permanente</span></td></tr>
+        <tr><td><strong style="color:var(--amber)">SIGAFAT</strong></td><td><code>SD2 / SF2</code></td><td>Est · Fin · Fis · Ctb</td><td>TES com CST vazio ou incorreto</td><td><span class="bd bd-r">SPED EFD rejeitado</span></td></tr>
+        <tr><td><strong style="color:#93c5fd">SIGAFIN</strong></td><td><code>SE1 / SE2</code></td><td>Fat · Com · Ctb</td><td>Baixa duplicada de título</td><td><span class="bd bd-a">Fluxo de caixa incorreto</span></td></tr>
+        <tr><td><strong style="color:#c4b5fd">SIGACTB</strong></td><td><code>CT1 / CT2</code></td><td>Todos</td><td>Lançamento sem Centro de Custo</td><td><span class="bd bd-a">DRE distorcido · ECD incorreta</span></td></tr>
+        <tr><td><strong style="color:#fca5a5">SIGAFIS</strong></td><td><code>SF3 / SF4</code></td><td>Fat · Com · Ctb</td><td>F4_SITTRIB / F4_SITPIS vazios</td><td><span class="bd bd-r">PVA rejeita → autuação fiscal</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+</section>
+
+<footer>
+  © 2025 Daniel Luiz Alves — Desenvolvedor e Arquiteto de Soluções ERP Protheus
+  &nbsp;·&nbsp; <a href="../index.html">Portfólio</a>
+  &nbsp;·&nbsp; <a href="https://www.linkedin.com/in/daniel-luiz-a300b415b" target="_blank">LinkedIn</a>
+  &nbsp;·&nbsp; <a href="https://github.com/Daniel-1984/" target="_blank">GitHub</a>
+</footer>
+
+</body>
+</html>
