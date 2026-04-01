@@ -1,0 +1,1173 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>API Segura Lab — Guia Visual</title>
+<style>
+  :root {
+    --bg:       #0d1117;
+    --surface:  #161b22;
+    --border:   #30363d;
+    --accent:   #58a6ff;
+    --green:    #3fb950;
+    --red:      #f85149;
+    --yellow:   #d29922;
+    --purple:   #bc8cff;
+    --orange:   #ffa657;
+    --text:     #e6edf3;
+    --muted:    #8b949e;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    line-height: 1.7;
+    font-size: 15px;
+  }
+
+  /* HEADER */
+  header {
+    background: linear-gradient(135deg, #1a2332 0%, #0d1117 60%);
+    border-bottom: 1px solid var(--border);
+    padding: 40px 20px;
+    text-align: center;
+  }
+  header h1 { font-size: 2.2rem; color: var(--accent); margin-bottom: 8px; }
+  header p  { color: var(--muted); font-size: 1.05rem; }
+  .badge {
+    display: inline-block;
+    background: #1f2937;
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 4px 14px;
+    font-size: 0.8rem;
+    color: var(--muted);
+    margin: 4px;
+  }
+
+  /* LAYOUT */
+  .container { max-width: 960px; margin: 0 auto; padding: 40px 20px; }
+
+  /* SEÇÕES */
+  section { margin-bottom: 60px; }
+  section h2 {
+    font-size: 1.5rem;
+    color: var(--accent);
+    border-left: 4px solid var(--accent);
+    padding-left: 14px;
+    margin-bottom: 24px;
+  }
+  section h3 {
+    font-size: 1.1rem;
+    color: var(--text);
+    margin: 20px 0 10px;
+  }
+  p { color: #cdd6e0; margin-bottom: 12px; }
+
+  /* CARDS */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px 24px;
+    margin-bottom: 16px;
+  }
+  .card-title {
+    font-weight: 600;
+    font-size: 1rem;
+    margin-bottom: 8px;
+  }
+
+  /* GRID */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+  @media(max-width: 640px) {
+    .grid-2 { grid-template-columns: 1fr; }
+    .grid-4 { grid-template-columns: 1fr 1fr; }
+  }
+
+  /* ANALOGIA */
+  .analogy {
+    background: #1c2330;
+    border-left: 4px solid var(--purple);
+    border-radius: 0 8px 8px 0;
+    padding: 16px 20px;
+    margin: 16px 0;
+  }
+  .analogy .label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--purple);
+    margin-bottom: 6px;
+  }
+
+  /* CÓDIGO */
+  pre {
+    background: #010409;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px 20px;
+    overflow-x: auto;
+    font-family: 'Cascadia Code', 'Consolas', monospace;
+    font-size: 0.82rem;
+    line-height: 1.6;
+    margin: 12px 0;
+  }
+  .kw  { color: #ff7b72; }
+  .fn  { color: #d2a8ff; }
+  .str { color: #a5d6ff; }
+  .cm  { color: #8b949e; }
+  .num { color: #79c0ff; }
+  .var { color: #ffa657; }
+
+  /* FLUXO DE REQUISIÇÃO */
+  .flow {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0;
+    margin: 24px 0;
+  }
+  .flow-step {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 16px;
+    text-align: center;
+    font-size: 0.82rem;
+    min-width: 110px;
+    flex: 1;
+  }
+  .flow-step .icon { font-size: 1.5rem; display: block; margin-bottom: 4px; }
+  .flow-step .label { color: var(--muted); font-size: 0.72rem; }
+  .flow-arrow {
+    color: var(--muted);
+    font-size: 1.2rem;
+    padding: 0 4px;
+    flex-shrink: 0;
+  }
+  .flow-step.ok     { border-color: var(--green);  }
+  .flow-step.fail   { border-color: var(--red);    }
+  .flow-step.warn   { border-color: var(--yellow); }
+  .flow-step.active { border-color: var(--accent); }
+
+  /* STATUS BADGES */
+  .status {
+    display: inline-block;
+    border-radius: 6px;
+    padding: 3px 10px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    font-family: monospace;
+  }
+  .s200 { background: #1a4731; color: var(--green); }
+  .s201 { background: #1a4731; color: #56d364; }
+  .s401 { background: #3d1f1f; color: var(--red); }
+  .s403 { background: #3d2e1f; color: var(--orange); }
+  .s422 { background: #3d2e1f; color: var(--yellow); }
+  .s429 { background: #2e1f3d; color: var(--purple); }
+
+  /* TABELA */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.88rem;
+    margin: 16px 0;
+  }
+  th {
+    background: #21262d;
+    color: var(--muted);
+    text-align: left;
+    padding: 10px 14px;
+    font-weight: 600;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  td {
+    padding: 10px 14px;
+    border-top: 1px solid var(--border);
+    color: #cdd6e0;
+  }
+  tr:hover td { background: #1c2330; }
+
+  /* JWT VISUAL */
+  .jwt-parts { display: flex; gap: 0; flex-wrap: wrap; margin: 16px 0; }
+  .jwt-part  {
+    padding: 8px 14px;
+    font-family: monospace;
+    font-size: 0.78rem;
+    word-break: break-all;
+    flex: 1;
+    min-width: 120px;
+  }
+  .jwt-header  { background: #1f3040; color: #79c0ff; border-radius: 6px 0 0 6px; }
+  .jwt-payload { background: #1f3d1f; color: #56d364; }
+  .jwt-sig     { background: #3d1f3d; color: #bc8cff; border-radius: 0 6px 6px 0; }
+  .jwt-dot     { color: var(--muted); font-size: 1.5rem; display: flex; align-items: center; }
+
+  /* COMPARATIVO */
+  .compare {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin: 16px 0;
+  }
+  .compare-col { background: var(--surface); border-radius: 8px; padding: 16px; }
+  .compare-col h4 { margin-bottom: 10px; font-size: 0.9rem; }
+  .compare-col ul { list-style: none; }
+  .compare-col ul li { padding: 4px 0; font-size: 0.85rem; color: var(--muted); }
+  .compare-col ul li::before { margin-right: 8px; }
+  .v1 h4 { color: var(--yellow); }
+  .v1 ul li::before { content: "⚠"; }
+  .v2 h4 { color: var(--green); }
+  .v2 ul li::before { content: "✓"; color: var(--green); }
+
+  /* PROTHEUS */
+  .protheus-card {
+    background: var(--surface);
+    border: 1px solid #30363d;
+    border-top: 3px solid var(--orange);
+    border-radius: 0 0 10px 10px;
+    padding: 20px;
+    margin-bottom: 12px;
+  }
+
+  /* NAVEGAÇÃO */
+  nav {
+    position: sticky;
+    top: 0;
+    background: rgba(13,17,23,0.95);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 20px;
+    z-index: 100;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+  nav a {
+    display: inline-block;
+    color: var(--muted);
+    text-decoration: none;
+    padding: 14px 16px;
+    font-size: 0.85rem;
+    transition: color 0.2s;
+  }
+  nav a:hover { color: var(--accent); }
+
+  /* FOOTER */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 30px 20px;
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.82rem;
+  }
+
+  /* HIGHLIGHT BOX */
+  .highlight {
+    background: #1c2942;
+    border: 1px solid #2d4a7a;
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin: 16px 0;
+  }
+  .highlight strong { color: var(--accent); }
+
+  .tag {
+    background: #21262d;
+    border-radius: 4px;
+    padding: 2px 8px;
+    font-family: monospace;
+    font-size: 0.8rem;
+    color: var(--orange);
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>API Segura Lab</h1>
+  <p>Engenharia reversa visual — do código Python ao conceito de segurança</p>
+  <br>
+  <span class="badge">FastAPI</span>
+  <span class="badge">JWT</span>
+  <span class="badge">Rate Limit</span>
+  <span class="badge">Validação</span>
+  <span class="badge">Logs</span>
+  <span class="badge">Protheus / TOTVS</span>
+</header>
+
+<nav>
+  <a href="#setup">Setup PowerShell</a>
+  <a href="#o-que-e-api">O que é API</a>
+  <a href="#camadas">Camadas de Segurança</a>
+  <a href="#autenticacao">Autenticação</a>
+  <a href="#jwt">JWT</a>
+  <a href="#validacao">Validação</a>
+  <a href="#rate-limit">Rate Limit</a>
+  <a href="#logs">Logs</a>
+  <a href="#status-http">Status HTTP</a>
+  <a href="#fluxo">Fluxo Completo</a>
+  <a href="#protheus">Protheus</a>
+  <a href="#testes">Testes v2</a>
+  <a href="#ferramentas">Ferramentas</a>
+</nav>
+
+<div class="container">
+
+  <!-- ======================================= -->
+  <!-- SETUP POWERSHELL                        -->
+  <!-- ======================================= -->
+  <section id="setup">
+    <h2>Setup completo no PowerShell</h2>
+
+    <p>Do zero até a API rodando — passo a passo. Execute cada bloco em ordem.</p>
+
+    <h3>Passo 1 — Abrir o PowerShell</h3>
+    <div class="analogy">
+      <div class="label">Como abrir</div>
+      Aperta <strong>Win + R</strong> → digita <strong>powershell</strong> → Enter
+    </div>
+
+    <h3>Passo 2 — Navegar até Documentos e criar a pasta</h3>
+    <pre>
+cd $HOME\Documents
+mkdir api-segura-lab
+cd api-segura-lab</pre>
+
+    <h3>Passo 3 — Criar a estrutura de arquivos</h3>
+    <pre>
+mkdir logs         <span class="cm"># pasta de auditoria</span>
+ni app.py          <span class="cm"># API v1</span>
+ni app_v2.py       <span class="cm"># API v2 com JWT</span>
+ni requirements.txt</pre>
+
+    <h3>Passo 4 — Abrir no VS Code</h3>
+    <pre>
+code .             <span class="cm"># abre a pasta inteira no editor</span></pre>
+
+    <h3>Passo 5 — Criar ambiente virtual isolado</h3>
+    <div class="analogy">
+      <div class="label">Por que ambiente virtual?</div>
+      É como uma <strong>caixa separada</strong> para cada projeto. As dependências do Lab não interferem com outros projetos Python na sua máquina.
+    </div>
+    <pre>
+python -m venv .venv          <span class="cm"># cria o ambiente</span>
+.venv\Scripts\Activate.ps1    <span class="cm"># ativa o ambiente</span></pre>
+
+    <div class="card" style="border-color:var(--red)">
+      <div class="card-title" style="color:var(--red)">Erro de permissão? Rode isso antes:</div>
+      <pre>Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser</pre>
+      <p style="font-size:0.85rem; margin-top:8px">Depois ative novamente: <code>.venv\Scripts\Activate.ps1</code></p>
+    </div>
+
+    <h3>Passo 6 — Instalar dependências</h3>
+    <pre>
+pip install fastapi uvicorn PyJWT
+pip freeze > requirements.txt     <span class="cm"># salva as versões instaladas</span></pre>
+
+    <h3>Passo 7 — Subir a API v1</h3>
+    <pre>
+uvicorn app:app --reload</pre>
+    <p>API disponível em: <strong>http://127.0.0.1:8000</strong></p>
+    <p>Documentação: <strong>http://127.0.0.1:8000/docs</strong></p>
+
+    <h3>Passo 8 — Subir a API v2 (em outro terminal)</h3>
+    <pre>
+uvicorn app_v2:app --reload --port 8001</pre>
+    <p>API v2 disponível em: <strong>http://127.0.0.1:8001</strong></p>
+    <p>Documentação v2: <strong>http://127.0.0.1:8001/docs</strong></p>
+
+    <h3>Estrutura final do projeto</h3>
+    <pre>
+api-segura-lab/
+ ├─ app.py            <span class="cm">← API v1 (API Key)</span>
+ ├─ app_v2.py         <span class="cm">← API v2 (JWT + SC5/SC6)</span>
+ ├─ requirements.txt  <span class="cm">← dependências</span>
+ ├─ lab.html          <span class="cm">← este guia visual</span>
+ ├─ .venv/            <span class="cm">← ambiente Python isolado</span>
+ └─ logs/
+     ├─ security.log      <span class="cm">← log da v1</span>
+     └─ security_v2.log   <span class="cm">← log da v2</span></pre>
+  </section>
+
+
+  <!-- ======================================= -->
+  <!-- O QUE É UMA API                         -->
+  <!-- ======================================= -->
+  <section id="o-que-e-api">
+    <h2>O que é uma API?</h2>
+
+    <div class="analogy">
+      <div class="label">Analogia do dia a dia</div>
+      Pensa num <strong>restaurante</strong>. Você (o cliente) não vai até a cozinha buscar sua comida.
+      Você fala com o <strong>garçom</strong>. O garçom leva seu pedido para a cozinha, a cozinha prepara,
+      e o garçom traz de volta. A API é esse garçom — ela recebe pedidos, processa, e devolve a resposta.
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title">Sem API (acesso direto)</div>
+        <p>Você vai diretamente ao banco de dados. Qualquer pessoa pode ler, alterar ou apagar tudo.
+        Sem controle, sem segurança, sem registro.</p>
+      </div>
+      <div class="card">
+        <div class="card-title" style="color:var(--green)">Com API segura</div>
+        <p>Você se autentica, a API verifica quem você é, valida o que você pediu,
+        registra tudo e só então acessa os dados. Muito mais seguro.</p>
+      </div>
+    </div>
+
+    <h3>Como funciona tecnicamente</h3>
+    <p>Uma requisição HTTP tem quatro partes principais:</p>
+    <pre>
+<span class="cm"># Exemplo de chamada real (PowerShell)</span>
+<span class="var">$headers</span> = @{ <span class="str">"x-api-key"</span> = <span class="str">"MINHA-CHAVE-SEGURA-123"</span> }
+<span class="var">$body</span>    = @{ pedido = <span class="str">"PED-10001"</span>; cliente = <span class="str">"TESTE"</span>; valor = <span class="num">150.75</span> }
+
+Invoke-RestMethod
+  -Uri         <span class="str">"http://127.0.0.1:8000/pedido"</span>   <span class="cm"># ENDPOINT — onde</span>
+  -Method      <span class="str">Post</span>                              <span class="cm"># VERBO — o que fazer</span>
+  -Headers     <span class="var">$headers</span>                          <span class="cm"># CABEÇALHOS — credenciais</span>
+  -Body        <span class="var">$body</span>                             <span class="cm"># CORPO — os dados</span>
+  -ContentType <span class="str">"application/json"</span></pre>
+  </section>
+
+
+  <!-- ======================================= -->
+  <!-- CAMADAS DE SEGURANÇA                    -->
+  <!-- ======================================= -->
+  <section id="camadas">
+    <h2>As 4 Camadas de Segurança do Lab</h2>
+
+    <p>Cada requisição passa por 4 portões antes de chegar nos dados:</p>
+
+    <div class="flow">
+      <div class="flow-step active">
+        <span class="icon">🌐</span>
+        Requisição<br>chega
+        <div class="label">HTTP Request</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step warn">
+        <span class="icon">⏱</span>
+        Rate Limit<br>verifica
+        <div class="label">429 se exceder</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step fail">
+        <span class="icon">🔑</span>
+        Autenticação<br>verifica
+        <div class="label">401 se inválido</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step warn">
+        <span class="icon">📋</span>
+        Validação<br>dos dados
+        <div class="label">422 se inválido</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step ok">
+        <span class="icon">✅</span>
+        Regra de<br>negócio
+        <div class="label">200 / 201</div>
+      </div>
+    </div>
+
+    <div class="highlight">
+      <strong>Regra de ouro:</strong> cada camada é independente. Se uma falha, o pedido para ali mesmo.
+      O banco de dados só é tocado quando todas as camadas passam.
+    </div>
+  </section>
+
+
+  <!-- ======================================= -->
+  <!-- AUTENTICAÇÃO                            -->
+  <!-- ======================================= -->
+  <section id="autenticacao">
+    <h2>Autenticação — Quem é você?</h2>
+
+    <div class="analogy">
+      <div class="label">Analogia</div>
+      É o <strong>porteiro do prédio</strong> com lista de convidados. Sem nome na lista, não entra.
+      Na v1 usamos uma chave fixa (como um cartão de acesso único para todos).
+      Na v2 usamos JWT — cada pessoa tem seu próprio crachá com data de validade.
+    </div>
+
+    <div class="compare">
+      <div class="compare-col v1">
+        <h4>v1 — Chave fixa (API Key)</h4>
+        <ul>
+          <li>Uma chave para todos</li>
+          <li>Nunca expira</li>
+          <li>Se vazar, comprometeu tudo</li>
+          <li>Não sabe quem usou</li>
+        </ul>
+      </div>
+      <div class="compare-col v2">
+        <h4>v2 — JWT por usuário</h4>
+        <ul>
+          <li>Token individual por usuário</li>
+          <li>Expira em 30 minutos</li>
+          <li>Se vazar, só aquele usuário</li>
+          <li>Log com nome do usuário</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3>O fluxo de login na v2</h3>
+    <pre>
+<span class="cm"># 1. Usuário faz login</span>
+POST /auth/login
+{
+  <span class="str">"usuario"</span>: <span class="str">"operador"</span>,
+  <span class="str">"senha"</span>:   <span class="str">"op123"</span>
+}
+
+<span class="cm"># 2. API valida e devolve token</span>
+{
+  <span class="str">"token"</span>:     <span class="str">"eyJhbGciOiJIUzI1NiIsInR5cCI6..."</span>,
+  <span class="str">"tipo"</span>:      <span class="str">"Bearer"</span>,
+  <span class="str">"expira_em"</span>: <span class="str">"30 minutos"</span>,
+  <span class="str">"perfil"</span>:    <span class="str">"OPERADOR"</span>
+}
+
+<span class="cm"># 3. Usa o token nas próximas chamadas</span>
+GET /pedido/000001
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6...</pre>
+  </section>
+
+
+  <!-- ======================================= -->
+  <!-- JWT                                     -->
+  <!-- ======================================= -->
+  <section id="jwt">
+    <h2>JWT — O crachá inteligente</h2>
+
+    <p>JWT significa <strong>JSON Web Token</strong>. É um texto codificado em <strong>3 partes separadas por ponto</strong>.
+    Parece embaralhado, mas tem estrutura.</p>
+
+    <div class="jwt-parts">
+      <div class="jwt-part jwt-header">eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9</div>
+      <div class="jwt-dot">.</div>
+      <div class="jwt-part jwt-payload">eyJzdWIiOiJvcGVyYWRvciIsInBlcmZpbCI6Ik9QRVJBRE9SIiwiZXhwIjoxNzQzNTQwMDAwfQ</div>
+      <div class="jwt-dot">.</div>
+      <div class="jwt-part jwt-sig">SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c</div>
+    </div>
+
+    <div class="grid-2" style="margin-top:12px">
+      <div class="card" style="border-color:#1f3040">
+        <div class="card-title" style="color:#79c0ff">Parte 1 — Header (azul)</div>
+        <p style="font-size:0.85rem">Tipo do token e algoritmo de assinatura.</p>
+        <pre style="font-size:0.75rem">{ <span class="str">"alg"</span>: <span class="str">"HS256"</span>, <span class="str">"typ"</span>: <span class="str">"JWT"</span> }</pre>
+      </div>
+      <div class="card" style="border-color:#1f3d1f">
+        <div class="card-title" style="color:var(--green)">Parte 2 — Payload (verde)</div>
+        <p style="font-size:0.85rem">Os dados do usuário. Quem é e quando expira.</p>
+        <pre style="font-size:0.75rem">{
+  <span class="str">"sub"</span>:    <span class="str">"operador"</span>,
+  <span class="str">"perfil"</span>: <span class="str">"OPERADOR"</span>,
+  <span class="str">"exp"</span>:    <span class="num">1743540000</span>  <span class="cm">← timestamp</span>
+}</pre>
+      </div>
+    </div>
+
+    <div class="card" style="border-color:#3d1f3d; margin-top:0">
+      <div class="card-title" style="color:var(--purple)">Parte 3 — Assinatura (roxo)</div>
+      <p style="font-size:0.85rem">A API assina o token com uma chave secreta. Se alguém alterar qualquer dado do token,
+      a assinatura fica inválida e a API rejeita. <strong>Por isso não dá para falsificar um JWT.</strong></p>
+    </div>
+
+    <div class="analogy">
+      <div class="label">Analogia</div>
+      O JWT é como um <strong>crachá de evento com holograma</strong>. Você pode ler o que está escrito
+      (nome, cargo, data de validade), mas não consegue falsificar o holograma porque só a organização tem o carimbo original.
+    </div>
+
+    <h3>Como o código gera e valida o token</h3>
+    <pre>
+<span class="cm"># GERAR token — feito no login</span>
+<span class="kw">def</span> <span class="fn">gerar_token</span>(usuario: str, perfil: str):
+    payload = {
+        <span class="str">"sub"</span>:    usuario,             <span class="cm"># quem é</span>
+        <span class="str">"perfil"</span>: perfil,              <span class="cm"># o que pode fazer</span>
+        <span class="str">"exp"</span>:    agora + <span class="num">30min</span>,       <span class="cm"># quando expira</span>
+        <span class="str">"iat"</span>:    agora,               <span class="cm"># quando foi criado</span>
+    }
+    <span class="kw">return</span> jwt.encode(payload, SECRET_KEY, algorithm=<span class="str">"HS256"</span>)
+
+<span class="cm"># VALIDAR token — em cada requisição protegida</span>
+<span class="kw">def</span> <span class="fn">validar_token</span>(credentials):
+    <span class="kw">try</span>:
+        payload = jwt.decode(token, SECRET_KEY)   <span class="cm"># verifica assinatura + validade</span>
+        <span class="kw">return</span> payload                           <span class="cm"># retorna {sub, perfil, exp}</span>
+    <span class="kw">except</span> jwt.ExpiredSignatureError:
+        <span class="kw">raise</span> HTTPException(<span class="num">401</span>, <span class="str">"Token expirado"</span>)
+    <span class="kw">except</span> jwt.InvalidTokenError:
+        <span class="kw">raise</span> HTTPException(<span class="num">401</span>, <span class="str">"Token inválido"</span>)</pre>
+  </section>
+
+
+  <!-- ======================================= -->
+  <!-- VALIDAÇÃO                               -->
+  <!-- ======================================= -->
+  <section id="validacao">
+    <h2>Validação — O que você está mandando?</h2>
+
+    <div class="analogy">
+      <div class="label">Analogia</div>
+      É o <strong>formulário de cadastro com campos obrigatórios</strong>. Tentou deixar CPF em branco?
+      Colocou letra no campo de número? O sistema rejeita antes de tentar processar.
+      Isso evita dados sujos no banco e ataques de injeção.
+    </div>
+
+    <h3>Modelo PedidoSC5 — v2 com campos Protheus</h3>
+    <pre>
+<span class="kw">class</span> <span class="fn">PedidoSC5</span>(BaseModel):
+    c5_num:     str   = Field(..., min_length=<span class="num">6</span>, max_length=<span class="num">6</span>)   <span class="cm"># exatamente 6 chars</span>
+    c5_client:  str   = Field(..., max_length=<span class="num">14</span>)              <span class="cm"># código SA1</span>
+    c5_lojacli: str   = Field(..., max_length=<span class="num">2</span>)               <span class="cm"># 2 dígitos</span>
+    c5_emissao: str   = Field(...)                               <span class="cm"># YYYYMMDD</span>
+    c5_valor:   float = Field(..., gt=<span class="num">0</span>, le=<span class="num">9999999.99</span>)        <span class="cm"># > 0</span>
+
+    model_config = { <span class="str">"extra"</span>: <span class="str">"forbid"</span> }  <span class="cm"># rejeita campos extras</span>
+
+    <span class="cm"># Validador customizado — só aceita alfanumérico</span>
+    @field_validator(<span class="str">"c5_num"</span>)
+    <span class="kw">def</span> <span class="fn">valida_num</span>(cls, v):
+        <span class="kw">if not</span> v.isalnum():
+            <span class="kw">raise</span> ValueError(<span class="str">"c5_num: apenas letras e números"</span>)
+        <span class="kw">return</span> v.upper()</pre>
+
+    <table>
+      <tr>
+        <th>Campo</th>
+        <th>Regra</th>
+        <th>Por quê protege</th>
+      </tr>
+      <tr>
+        <td><span class="tag">min_length / max_length</span></td>
+        <td>Tamanho mínimo e máximo</td>
+        <td>Evita campo vazio ou texto enorme (buffer overflow, spam)</td>
+      </tr>
+      <tr>
+        <td><span class="tag">gt=0 / le=999999</span></td>
+        <td>Número maior que zero, limite máximo</td>
+        <td>Evita valor negativo ou absurdo (manipulação de pedido)</td>
+      </tr>
+      <tr>
+        <td><span class="tag">isalnum()</span></td>
+        <td>Só letras e números</td>
+        <td>Evita <code>'; DROP TABLE--</code> (SQL injection)</td>
+      </tr>
+      <tr>
+        <td><span class="tag">extra: forbid</span></td>
+        <td>Rejeita campos não declarados</td>
+        <td>Evita enviar <code>perfil=ADMIN</code> escondido no JSON</td>
+      </tr>
+    </table>
+  </section>
+
+
+  <!-- ======================================= -->
+  <!-- RATE LIMIT                              -->
+  <!-- ======================================= -->
+  <section id="rate-limit">
+    <h2>Rate Limit — Fila de banco</h2>
+
+    <div class="analogy">
+      <div class="label">Analogia</div>
+      É a <strong>senha de atendimento no banco</strong>. Você pode retirar no máximo X senhas por hora.
+      Se um robô tentar retirar 1000 senhas em 1 segundo, o sistema bloqueia automaticamente.
+      Isso protege contra ataques de força bruta e sobrecarga.
+    </div>
+
+    <h3>Diferença entre v1 e v2</h3>
+    <div class="card">
+      <p><strong>v1 — problema:</strong> mesmo sem token, as requisições inválidas consumiam o rate limit do IP.
+      Um atacante podia esgotar a janela de um IP legítimo só tentando sem chave.</p>
+      <p style="margin-top:8px"><strong>v2 — solução:</strong> rate limit separado por tipo de acesso:</p>
+      <pre>
+RATE_LIMITS = {
+    <span class="str">"autenticado"</span>: { <span class="str">"requests"</span>: <span class="num">10</span>, <span class="str">"window"</span>: <span class="num">60</span> },  <span class="cm"># 10 req/min</span>
+    <span class="str">"anonimo"</span>:     { <span class="str">"requests"</span>: <span class="num">3</span>,  <span class="str">"window"</span>: <span class="num">60</span> },  <span class="cm"># 3 req/min (mais restrito)</span>
+}</pre>
+    </div>
+
+    <h3>Como funciona o controle em memória</h3>
+    <pre>
+<span class="cm"># Guarda horário de cada requisição por IP</span>
+request_store = {
+    <span class="str">"127.0.0.1:autenticado"</span>: [<span class="num">10:00:01</span>, <span class="num">10:00:02</span>, <span class="num">10:00:05</span>],
+    <span class="str">"127.0.0.1:anonimo"</span>:     [<span class="num">10:00:00</span>],
+}
+
+<span class="cm"># A cada requisição:</span>
+<span class="cm"># 1. Remove timestamps mais velhos que 60s</span>
+<span class="cm"># 2. Se sobrou >= limite → rejeita com 429</span>
+<span class="cm"># 3. Senão → adiciona timestamp atual e continua</span></pre>
+
+    <div class="highlight">
+      <strong>Produção real:</strong> usa Redis ao invés de memória, para funcionar em múltiplos servidores.
+      Em lab local, memória é suficiente para aprender o conceito.
+    </div>
+  </section>
+
+
+  <!-- ======================================= -->
+  <!-- LOGS                                    -->
+  <!-- ======================================= -->
+  <section id="logs">
+    <h2>Logs — A câmera de segurança</h2>
+
+    <div class="analogy">
+      <div class="label">Analogia</div>
+      É a <strong>câmera do prédio</strong>. Ela não impede o crime, mas registra tudo.
+      Se algo der errado, você consegue reconstruir o que aconteceu: quem tentou entrar,
+      quando, quantas vezes, com quê.
+    </div>
+
+    <h3>Exemplo real do arquivo security_v2.log</h3>
+    <pre>
+<span class="cm">TIMESTAMP                  | IP           | USER     | EVENTO       | DETALHE</span>
+2026-04-01T10:00:01.123 | IP=127.0.0.1 | USER=-        | REQUEST    | POST /auth/login
+2026-04-01T10:00:01.145 | IP=127.0.0.1 | USER=operador | LOGIN_OK   | Perfil=OPERADOR
+2026-04-01T10:00:02.001 | IP=127.0.0.1 | USER=-        | REQUEST    | POST /pedido
+2026-04-01T10:00:02.020 | IP=127.0.0.1 | USER=operador | PEDIDO_OK  | SC5=000001 CLI=000001 R$1500.0
+2026-04-01T10:01:00.001 | IP=10.0.0.5  | USER=-        | REQUEST    | POST /auth/login
+2026-04-01T10:01:00.010 | IP=10.0.0.5  | USER=hacker   | LOGIN_FAIL | Usuário 'hacker' inválido
+2026-04-01T10:01:00.200 | IP=10.0.0.5  | USER=-        | RATE_LIMIT | [anonimo] Limite 3/60s excedido</pre>
+
+    <h3>Por que cada campo importa</h3>
+    <table>
+      <tr><th>Campo</th><th>Serve para</th></tr>
+      <tr><td>TIMESTAMP</td><td>Saber exatamente quando aconteceu (auditoria, correlação)</td></tr>
+      <tr><td>IP</td><td>Identificar a origem da requisição (bloquear IP malicioso)</td></tr>
+      <tr><td>USER</td><td>Rastrear por usuário após autenticação (accountability)</td></tr>
+      <tr><td>EVENTO</td><td>Filtrar rapidamente por tipo (LOGIN_FAIL, RATE_LIMIT)</td></tr>
+      <tr><td>DETALHE</td><td>Contexto específico para investigação</td></tr>
+    </table>
+  </section>
+
+
+  <!-- ======================================= -->
+  <!-- STATUS HTTP                             -->
+  <!-- ======================================= -->
+  <section id="status-http">
+    <h2>Códigos HTTP — O que cada número significa</h2>
+
+    <p>Quando a API responde, ela sempre manda um número. Esse número diz o que aconteceu:</p>
+
+    <table>
+      <tr>
+        <th>Código</th>
+        <th>Nome</th>
+        <th>O que significa</th>
+        <th>Quando acontece aqui</th>
+      </tr>
+      <tr>
+        <td><span class="status s200">200 OK</span></td>
+        <td>Sucesso</td>
+        <td>Funcionou perfeitamente</td>
+        <td>GET /pedido retornou dados</td>
+      </tr>
+      <tr>
+        <td><span class="status s201">201 Created</span></td>
+        <td>Criado</td>
+        <td>Recurso criado com sucesso</td>
+        <td>POST /pedido criou SC5</td>
+      </tr>
+      <tr>
+        <td><span class="status s401">401 Unauthorized</span></td>
+        <td>Não autorizado</td>
+        <td>Não identificou quem você é</td>
+        <td>Token ausente, expirado ou inválido</td>
+      </tr>
+      <tr>
+        <td><span class="status s403">403 Forbidden</span></td>
+        <td>Proibido</td>
+        <td>Te identifiquei, mas você não pode</td>
+        <td>OPERADOR tentou pedido > R$ 50.000</td>
+      </tr>
+      <tr>
+        <td><span class="status s422">422 Unprocessable</span></td>
+        <td>Dado inválido</td>
+        <td>O dado enviado não passou na validação</td>
+        <td>Caractere inválido, campo vazio, número negativo</td>
+      </tr>
+      <tr>
+        <td><span class="status s429">429 Too Many</span></td>
+        <td>Muitas requisições</td>
+        <td>Passou do limite de chamadas</td>
+        <td>Rate limit excedido</td>
+      </tr>
+    </table>
+
+    <div class="analogy">
+      <div class="label">Diferença entre 401 e 403</div>
+      <strong>401</strong> = "Não sei quem você é. Se identifique."<br>
+      <strong>403</strong> = "Sei quem você é. Mas você não tem permissão para isso."
+    </div>
+  </section>
+
+
+  <!-- ======================================= -->
+  <!-- FLUXO COMPLETO v2                       -->
+  <!-- ======================================= -->
+  <section id="fluxo">
+    <h2>Fluxo Completo da API v2</h2>
+
+    <h3>Criar um pedido com sucesso</h3>
+    <div class="flow">
+      <div class="flow-step active">
+        <span class="icon">👤</span>
+        POST /login<br>operador
+        <div class="label">Passo 1</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step ok">
+        <span class="icon">🎫</span>
+        Token JWT<br>recebido
+        <div class="label">Passo 2</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step active">
+        <span class="icon">📦</span>
+        POST /pedido<br>+ Bearer token
+        <div class="label">Passo 3</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step warn">
+        <span class="icon">⏱</span>
+        Rate limit<br>OK (1/10)
+        <div class="label">Passo 4</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step ok">
+        <span class="icon">🔓</span>
+        JWT válido<br>OPERADOR
+        <div class="label">Passo 5</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step ok">
+        <span class="icon">✅</span>
+        201 Created<br>SC5 incluído
+        <div class="label">Passo 6</div>
+      </div>
+    </div>
+
+    <h3>Tentativa com perfil insuficiente (403)</h3>
+    <div class="flow">
+      <div class="flow-step ok">
+        <span class="icon">🎫</span>
+        Token válido<br>OPERADOR
+        <div class="label">OK</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step ok">
+        <span class="icon">📋</span>
+        Dados<br>válidos
+        <div class="label">OK</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step fail">
+        <span class="icon">🚫</span>
+        Valor > 50k<br>OPERADOR
+        <div class="label">Regra negócio</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step fail">
+        <span class="icon">❌</span>
+        403 Forbidden<br>sem acesso
+        <div class="label">Bloqueado</div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ======================================= -->
+  <!-- PROTHEUS / TOTVS                        -->
+  <!-- ======================================= -->
+  <section id="protheus">
+    <h2>Conexão com Protheus / TOTVS</h2>
+
+    <p>Tudo que fizemos aqui tem equivalência direta no mundo Protheus:</p>
+
+    <div class="protheus-card">
+      <h3 style="color:var(--orange); margin-bottom:12px">SC5 — Cabeçalho do Pedido de Venda</h3>
+      <div class="grid-2">
+        <div>
+          <p style="font-size:0.85rem; color:var(--muted)">Campos do nosso modelo:</p>
+          <pre style="font-size:0.75rem">
+c5_num     → número do pedido
+c5_client  → código do cliente (SA1)
+c5_lojacli → loja do cliente
+c5_emissao → data de emissão
+c5_valor   → valor total</pre>
+        </div>
+        <div>
+          <p style="font-size:0.85rem; color:var(--muted)">No Protheus real:</p>
+          <pre style="font-size:0.75rem">
+SC5->C5_NUM    = "000001"
+SC5->C5_CLIENT = "000001"
+SC5->C5_LOJACLI= "01"
+SC5->C5_EMISSAO= "20260401"
+SC5->C5_VALOR  = 1500.00</pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="protheus-card">
+      <h3 style="color:var(--orange); margin-bottom:12px">SC6 — Itens do Pedido</h3>
+      <pre style="font-size:0.78rem">
+<span class="cm"># Nossa API retorna simulação de itens SC6</span>
+{
+  <span class="str">"sc6_itens"</span>: [
+    { <span class="str">"c6_item"</span>: <span class="str">"01"</span>, <span class="str">"c6_produto"</span>: <span class="str">"000001"</span>, <span class="str">"c6_qtdven"</span>: <span class="num">10</span>, <span class="str">"c6_prcven"</span>: <span class="num">150.00</span> },
+    { <span class="str">"c6_item"</span>: <span class="str">"02"</span>, <span class="str">"c6_produto"</span>: <span class="str">"000002"</span>, <span class="str">"c6_qtdven"</span>: <span class="num">5</span>,  <span class="str">"c6_prcven"</span>: <span class="num">0.00</span>  }
+  ]
+}</pre>
+    </div>
+
+    <h3>Mentalidade de segurança no Protheus</h3>
+    <table>
+      <tr>
+        <th>Antes do lab</th>
+        <th>Depois do lab</th>
+      </tr>
+      <tr>
+        <td>Recebe JSON e grava no SC5</td>
+        <td>Quem está chamando? Tem permissão para isso?</td>
+      </tr>
+      <tr>
+        <td>Confia no valor recebido</td>
+        <td>O C5_VALOR faz sentido? O cliente existe no SA1?</td>
+      </tr>
+      <tr>
+        <td>Sem registro de erro</td>
+        <td>Log de tentativa inválida para auditoria</td>
+      </tr>
+      <tr>
+        <td>Qualquer sistema pode incluir</td>
+        <td>Token por sistema integrador, perfil por operação</td>
+      </tr>
+    </table>
+  </section>
+
+
+  <!-- ======================================= -->
+  <!-- TESTES v2                               -->
+  <!-- ======================================= -->
+  <section id="testes">
+    <h2>Testes da v2 — PowerShell</h2>
+
+    <p>Primeiro suba a nova versão:</p>
+    <pre>uvicorn app_v2:app --reload --port 8001</pre>
+
+    <h3>1. Login e obter token</h3>
+    <pre>
+<span class="var">$body</span> = @{ usuario = <span class="str">"operador"</span>; senha = <span class="str">"op123"</span> } | ConvertTo-Json
+<span class="var">$resp</span> = Invoke-RestMethod -Uri <span class="str">"http://127.0.0.1:8001/auth/login"</span> -Method Post -Body <span class="var">$body</span> -ContentType <span class="str">"application/json"</span>
+<span class="var">$token</span> = <span class="var">$resp</span>.token
+Write-Host <span class="str">"Token:"</span> <span class="var">$token</span></pre>
+
+    <h3>2. Criar pedido SC5 com JWT</h3>
+    <pre>
+<span class="var">$headers</span> = @{ <span class="str">"Authorization"</span> = <span class="str">"Bearer $token"</span> }
+<span class="var">$body</span> = @{
+  c5_num     = <span class="str">"PED001"</span>
+  c5_client  = <span class="str">"000001"</span>
+  c5_lojacli = <span class="str">"01"</span>
+  c5_emissao = <span class="str">"20260401"</span>
+  c5_valor   = <span class="num">1500.00</span>
+} | ConvertTo-Json
+
+Invoke-RestMethod -Uri <span class="str">"http://127.0.0.1:8001/pedido"</span> -Method Post -Headers <span class="var">$headers</span> -Body <span class="var">$body</span> -ContentType <span class="str">"application/json"</span></pre>
+
+    <h3>3. Testar restrição de perfil (403)</h3>
+    <pre>
+<span class="cm"># Operador tentando pedido acima de 50.000 — deve retornar 403</span>
+<span class="var">$body</span> = @{
+  c5_num     = <span class="str">"PED002"</span>
+  c5_client  = <span class="str">"000001"</span>
+  c5_lojacli = <span class="str">"01"</span>
+  c5_emissao = <span class="str">"20260401"</span>
+  c5_valor   = <span class="num">99999.00</span>  <span class="cm"># acima do limite do OPERADOR</span>
+} | ConvertTo-Json
+
+<span class="kw">try</span> {
+  Invoke-RestMethod -Uri <span class="str">"http://127.0.0.1:8001/pedido"</span> -Method Post -Headers <span class="var">$headers</span> -Body <span class="var">$body</span> -ContentType <span class="str">"application/json"</span>
+} <span class="kw">catch</span> {
+  <span class="var">$_</span>.Exception.Message
+}</pre>
+
+    <h3>4. Consultar pedido</h3>
+    <pre>
+Invoke-RestMethod -Uri <span class="str">"http://127.0.0.1:8001/pedido/PED001"</span> -Headers <span class="var">$headers</span></pre>
+
+    <h3>5. Ver log completo</h3>
+    <pre>Get-Content logs\security_v2.log</pre>
+
+    <div class="highlight">
+      <strong>Docs interativos v2:</strong> <code>http://127.0.0.1:8001/docs</code> — você pode testar direto no navegador com o token JWT colado no cadeado.
+    </div>
+  </section>
+
+
+  <!-- ======================================= -->
+  <!-- FERRAMENTAS DO LAB                      -->
+  <!-- ======================================= -->
+  <section id="ferramentas">
+    <h2>Ferramentas usadas no Lab</h2>
+
+    <p>Cada ferramenta tem um papel específico. Entender o que cada uma faz é parte do aprendizado.</p>
+
+    <table>
+      <tr>
+        <th>Ferramenta</th>
+        <th>O que é</th>
+        <th>Para que serve aqui</th>
+      </tr>
+      <tr>
+        <td><strong>Python</strong></td>
+        <td>Linguagem de programação</td>
+        <td>Base de todo o projeto</td>
+      </tr>
+      <tr>
+        <td><strong>FastAPI</strong></td>
+        <td>Framework web para Python</td>
+        <td>Cria os endpoints (rotas) da API automaticamente</td>
+      </tr>
+      <tr>
+        <td><strong>Uvicorn</strong></td>
+        <td>Servidor ASGI</td>
+        <td>Roda a API localmente. Sem ele, o Python não "escuta" requisições</td>
+      </tr>
+      <tr>
+        <td><strong>Pydantic</strong></td>
+        <td>Biblioteca de validação de dados</td>
+        <td>Define e valida os modelos de entrada (PedidoSC5, LoginEntrada)</td>
+      </tr>
+      <tr>
+        <td><strong>PyJWT</strong></td>
+        <td>Biblioteca para JSON Web Tokens</td>
+        <td>Gera e valida tokens JWT no login e nas rotas protegidas</td>
+      </tr>
+      <tr>
+        <td><strong>venv</strong></td>
+        <td>Módulo nativo do Python</td>
+        <td>Cria ambiente virtual isolado — dependências do lab não afetam o sistema</td>
+      </tr>
+      <tr>
+        <td><strong>PowerShell</strong></td>
+        <td>Terminal do Windows</td>
+        <td>Cria pastas, ativa ambiente, instala pacotes, faz chamadas HTTP</td>
+      </tr>
+      <tr>
+        <td><strong>Invoke-RestMethod</strong></td>
+        <td>Cmdlet do PowerShell</td>
+        <td>Faz chamadas HTTP para a API (equivalente ao curl no Linux)</td>
+      </tr>
+      <tr>
+        <td><strong>VS Code</strong></td>
+        <td>Editor de código</td>
+        <td>Edita os arquivos .py do projeto</td>
+      </tr>
+    </table>
+
+    <h3>Comandos PowerShell mais usados no Lab</h3>
+    <table>
+      <tr>
+        <th>Comando</th>
+        <th>O que faz</th>
+      </tr>
+      <tr>
+        <td><span class="tag">cd $HOME\Documents</span></td>
+        <td>Navega para a pasta Documentos</td>
+      </tr>
+      <tr>
+        <td><span class="tag">mkdir nome-da-pasta</span></td>
+        <td>Cria uma pasta</td>
+      </tr>
+      <tr>
+        <td><span class="tag">ni arquivo.py</span></td>
+        <td>Cria um arquivo vazio (New-Item)</td>
+      </tr>
+      <tr>
+        <td><span class="tag">code .</span></td>
+        <td>Abre a pasta atual no VS Code</td>
+      </tr>
+      <tr>
+        <td><span class="tag">python -m venv .venv</span></td>
+        <td>Cria ambiente virtual Python isolado</td>
+      </tr>
+      <tr>
+        <td><span class="tag">.venv\Scripts\Activate.ps1</span></td>
+        <td>Ativa o ambiente virtual (aparece (.venv) no terminal)</td>
+      </tr>
+      <tr>
+        <td><span class="tag">pip install pacote</span></td>
+        <td>Instala uma biblioteca Python</td>
+      </tr>
+      <tr>
+        <td><span class="tag">pip freeze > requirements.txt</span></td>
+        <td>Salva todas as dependências instaladas com versão</td>
+      </tr>
+      <tr>
+        <td><span class="tag">pip install -r requirements.txt</span></td>
+        <td>Instala tudo que está no requirements.txt de uma vez</td>
+      </tr>
+      <tr>
+        <td><span class="tag">uvicorn app:app --reload</span></td>
+        <td>Sobe a API v1 na porta 8000 com reload automático</td>
+      </tr>
+      <tr>
+        <td><span class="tag">uvicorn app_v2:app --reload --port 8001</span></td>
+        <td>Sobe a API v2 na porta 8001</td>
+      </tr>
+      <tr>
+        <td><span class="tag">Get-Content logs\security.log</span></td>
+        <td>Lê o arquivo de log no terminal</td>
+      </tr>
+      <tr>
+        <td><span class="tag">Ctrl + C</span></td>
+        <td>Para o servidor uvicorn</td>
+      </tr>
+    </table>
+
+    <h3>Portas usadas</h3>
+    <div class="grid-2">
+      <div class="card" style="border-color:var(--accent)">
+        <div class="card-title" style="color:var(--accent)">Porta 8000 — API v1</div>
+        <p style="font-size:0.85rem">http://127.0.0.1:8000<br>http://127.0.0.1:8000/docs</p>
+        <p style="font-size:0.82rem; color:var(--muted); margin-top:8px">Autenticação por API Key fixa</p>
+      </div>
+      <div class="card" style="border-color:var(--green)">
+        <div class="card-title" style="color:var(--green)">Porta 8001 — API v2</div>
+        <p style="font-size:0.85rem">http://127.0.0.1:8001<br>http://127.0.0.1:8001/docs</p>
+        <p style="font-size:0.82rem; color:var(--muted); margin-top:8px">Autenticação JWT + perfis + SC5/SC6</p>
+      </div>
+    </div>
+
+    <div class="analogy">
+      <div class="label">Por que 127.0.0.1?</div>
+      É o endereço do <strong>seu próprio computador</strong> (localhost). A API está rodando só na sua máquina.
+      Ninguém de fora consegue acessar — é 100% local e seguro para laboratório.
+    </div>
+  </section>
+
+</div>
+
+<footer>
+  <p>API Segura Lab — Laboratório educacional local</p>
+  <p style="margin-top:6px; color:#484f58">v1: API Key + Rate Limit + Validação + Log &nbsp;|&nbsp; v2: JWT + Perfil + SC5/SC6 + Rate Limit separado</p>
+</footer>
+
+</body>
+</html>
