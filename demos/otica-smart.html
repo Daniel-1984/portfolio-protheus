@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ótica Smart — Documentação</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:     #060B18;
+    --surface:#0D1625;
+    --card:   #111827;
+    --line:   rgba(255,255,255,.07);
+    --blue:   #1A56DB;
+    --cyan:   #06B6D4;
+    --green:  #10B981;
+    --red:    #EF4444;
+    --yellow: #F59E0B;
+    --violet: #8B5CF6;
+    --white:  #F1F5F9;
+    --muted:  rgba(255,255,255,.45);
+    --mono:   'DM Sans', monospace;
+  }
+
+  body { background: var(--bg); color: var(--white); font-family: 'DM Sans', sans-serif; line-height: 1.6; min-height: 100vh; }
+
+  /* NAV */
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(6,11,24,.9); backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--line);
+    padding: 0 48px; height: 60px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .nav-brand { font-family: 'Syne', sans-serif; font-weight: 700; font-size: .95rem; color: var(--white); text-decoration: none; display: flex; align-items: center; gap: 10px; }
+  .nav-brand-dot { width: 8px; height: 8px; background: var(--cyan); border-radius: 50%; animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+  .nav-back { font-size: .82rem; color: var(--muted); text-decoration: none; display: flex; align-items: center; gap: 6px; transition: color .2s; }
+  .nav-back:hover { color: var(--cyan); }
+
+  /* HERO */
+  .hero {
+    background: linear-gradient(135deg, #060B18 0%, #0a1628 50%, #060B18 100%);
+    border-bottom: 1px solid var(--line);
+    padding: 80px 48px 64px;
+    position: relative; overflow: hidden;
+  }
+  .hero::before {
+    content: ''; position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(6,182,212,.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(6,182,212,.05) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+  .hero-inner { max-width: 860px; margin: 0 auto; position: relative; z-index: 1; }
+  .hero-badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(6,182,212,.1); border: 1px solid rgba(6,182,212,.25); border-radius: 20px; padding: 5px 14px; font-size: .72rem; font-weight: 600; color: var(--cyan); text-transform: uppercase; letter-spacing: .1em; margin-bottom: 24px; }
+  .hero h1 { font-family: 'Syne', sans-serif; font-size: clamp(2rem, 4vw, 3rem); font-weight: 800; line-height: 1.15; margin-bottom: 16px; }
+  .hero h1 span { background: linear-gradient(90deg, var(--blue), var(--cyan)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  .hero-sub { font-size: 1.05rem; color: var(--muted); max-width: 640px; margin-bottom: 28px; }
+  .hero-live { display: inline-flex; align-items: center; gap: 8px; background: rgba(16,185,129,.12); border: 1px solid rgba(16,185,129,.3); color: #6ee7b7; padding: 8px 18px; border-radius: 8px; font-size: .85rem; font-weight: 600; text-decoration: none; transition: background .2s; margin-bottom: 28px; }
+  .hero-live:hover { background: rgba(16,185,129,.2); }
+  .hero-live-dot { width: 7px; height: 7px; background: #10B981; border-radius: 50%; animation: pulse 2s infinite; }
+  .hero-tags { display: flex; flex-wrap: wrap; gap: 10px; }
+  .hero-tag { background: rgba(26,86,219,.15); border: 1px solid rgba(26,86,219,.3); color: #93c5fd; font-size: .72rem; font-weight: 600; padding: 5px 12px; border-radius: 20px; font-family: var(--mono); }
+  .hero-tag.green { background: rgba(16,185,129,.12); border-color: rgba(16,185,129,.3); color: #6ee7b7; }
+  .hero-tag.cyan  { background: rgba(6,182,212,.12); border-color: rgba(6,182,212,.3); color: var(--cyan); }
+  .hero-tag.violet{ background: rgba(139,92,246,.12); border-color: rgba(139,92,246,.3); color: #c4b5fd; }
+
+  /* LAYOUT */
+  .page { max-width: 1100px; margin: 0 auto; padding: 64px 48px; display: grid; grid-template-columns: 260px 1fr; gap: 48px; align-items: start; }
+  @media(max-width:900px){ .page { grid-template-columns: 1fr; padding: 40px 24px; } }
+
+  /* SIDEBAR */
+  .sidebar { position: sticky; top: 80px; }
+  .sidebar-title { font-size: .68rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .12em; margin-bottom: 12px; }
+  .sidebar nav { position: static; background: none; backdrop-filter: none; border: none; padding: 0; height: auto; display: block; }
+  .sidebar-link { display: block; font-size: .82rem; color: var(--muted); text-decoration: none; padding: 7px 12px; border-radius: 6px; border-left: 2px solid transparent; transition: all .2s; margin-bottom: 2px; }
+  .sidebar-link:hover, .sidebar-link.active { color: var(--cyan); border-left-color: var(--cyan); background: rgba(6,182,212,.06); }
+  .sidebar-live { display: flex; align-items: center; gap: 7px; font-size: .78rem; color: #6ee7b7; text-decoration: none; padding: 9px 12px; border-radius: 6px; border: 1px solid rgba(16,185,129,.25); background: rgba(16,185,129,.07); margin-top: 20px; transition: background .2s; }
+  .sidebar-live:hover { background: rgba(16,185,129,.14); }
+  .sidebar-live-dot { width: 6px; height: 6px; background: #10B981; border-radius: 50%; animation: pulse 2s infinite; flex-shrink: 0; }
+
+  /* CONTENT */
+  .content section { margin-bottom: 64px; scroll-margin-top: 80px; }
+  .section-label { font-size: .68rem; font-weight: 700; color: var(--cyan); text-transform: uppercase; letter-spacing: .12em; margin-bottom: 10px; }
+  .section-title { font-family: 'Syne', sans-serif; font-size: 1.5rem; font-weight: 700; margin-bottom: 16px; }
+  .section-body { color: rgba(255,255,255,.7); font-size: .95rem; line-height: 1.75; }
+  .section-body p { margin-bottom: 12px; }
+
+  /* ARCH DIAGRAM */
+  .arch { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 32px; margin-top: 24px; }
+  .arch-flow { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 8px; }
+  .arch-node { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 10px 16px; font-size: .78rem; font-family: var(--mono); text-align: center; min-width: 100px; }
+  .arch-node.primary { border-color: rgba(6,182,212,.4); color: var(--cyan); }
+  .arch-node.green   { border-color: rgba(16,185,129,.4); color: #6ee7b7; }
+  .arch-node.blue    { border-color: rgba(26,86,219,.4); color: #93c5fd; }
+  .arch-node.violet  { border-color: rgba(139,92,246,.4); color: #c4b5fd; }
+  .arch-arrow { color: var(--muted); font-size: 1.2rem; }
+
+  /* METRICS */
+  .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px; margin-top: 24px; }
+  .metric-card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 20px; text-align: center; }
+  .metric-value { font-family: 'Syne', sans-serif; font-size: 2rem; font-weight: 800; background: linear-gradient(90deg, var(--blue), var(--cyan)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  .metric-label { font-size: .78rem; color: var(--muted); margin-top: 4px; }
+
+  /* MODULES GRID */
+  .modules-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-top: 24px; }
+  .module-card { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 20px; transition: border-color .2s; }
+  .module-card:hover { border-color: rgba(6,182,212,.3); }
+  .module-icon { font-size: 1.5rem; margin-bottom: 10px; }
+  .module-name { font-family: 'Syne', sans-serif; font-size: .9rem; font-weight: 700; margin-bottom: 6px; }
+  .module-desc { font-size: .78rem; color: var(--muted); line-height: 1.55; }
+
+  /* ENDPOINTS */
+  .endpoint { background: var(--card); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; margin-bottom: 16px; }
+  .endpoint-header { display: flex; align-items: center; gap: 12px; padding: 14px 20px; border-bottom: 1px solid var(--line); }
+  .method { font-family: var(--mono); font-size: .7rem; font-weight: 700; padding: 4px 10px; border-radius: 6px; text-transform: uppercase; letter-spacing: .05em; white-space: nowrap; }
+  .method.get    { background: rgba(16,185,129,.15);  color: #6ee7b7; border: 1px solid rgba(16,185,129,.3); }
+  .method.post   { background: rgba(26,86,219,.15);   color: #93c5fd; border: 1px solid rgba(26,86,219,.3); }
+  .method.put    { background: rgba(245,158,11,.15);  color: #fcd34d; border: 1px solid rgba(245,158,11,.3); }
+  .method.delete { background: rgba(239,68,68,.15);   color: #fca5a5; border: 1px solid rgba(239,68,68,.3); }
+  .endpoint-path { font-family: var(--mono); font-size: .88rem; color: var(--white); }
+  .endpoint-desc { margin-left: auto; font-size: .76rem; color: var(--muted); text-align: right; }
+
+  /* DB TABLE */
+  .db-table { background: var(--card); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; margin-bottom: 16px; }
+  .db-table-header { padding: 14px 20px; border-bottom: 1px solid var(--line); display: flex; align-items: center; gap: 10px; }
+  .db-table-name { font-family: var(--mono); font-size: .9rem; color: var(--cyan); font-weight: 600; }
+  .db-table-desc { font-size: .76rem; color: var(--muted); margin-left: auto; }
+  .fields-table { width: 100%; border-collapse: collapse; font-size: .83rem; }
+  .fields-table th { text-align: left; padding: 10px 20px; font-size: .68rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; border-bottom: 1px solid var(--line); }
+  .fields-table td { padding: 10px 20px; border-bottom: 1px solid rgba(255,255,255,.04); color: rgba(255,255,255,.8); vertical-align: top; }
+  .fields-table tr:last-child td { border-bottom: none; }
+  .field-name { font-family: var(--mono); font-size: .8rem; color: var(--cyan); }
+  .field-type { font-family: var(--mono); font-size: .76rem; color: #f78c6c; }
+  .field-note { font-size: .74rem; color: var(--muted); }
+
+  /* CODE */
+  .code-block { background: #0a0d14; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; margin-top: 16px; }
+  .code-header { display: flex; align-items: center; justify-content: space-between; padding: 8px 16px; border-bottom: 1px solid var(--line); }
+  .code-lang { font-size: .68rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; }
+  .code-copy { font-size: .7rem; color: var(--cyan); cursor: pointer; background: none; border: none; font-family: inherit; transition: opacity .2s; }
+  .code-copy:hover { opacity: .7; }
+  pre { padding: 20px; overflow-x: auto; font-size: .82rem; line-height: 1.7; font-family: 'Courier New', monospace; }
+  .kw  { color: #c792ea; }
+  .str { color: #c3e88d; }
+  .num { color: #f78c6c; }
+  .key { color: #82aaff; }
+  .cmt { color: #546e7a; }
+
+  /* PIPELINE STEPS */
+  .pipeline { display: flex; flex-direction: column; gap: 4px; margin-top: 24px; }
+  .pipeline-step { display: flex; align-items: flex-start; gap: 16px; padding: 16px 20px; background: var(--card); border: 1px solid var(--line); border-radius: 10px; transition: border-color .2s; }
+  .pipeline-step:hover { border-color: rgba(6,182,212,.3); }
+  .step-num { width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg, var(--blue), var(--cyan)); display: flex; align-items: center; justify-content: center; font-size: .75rem; font-weight: 700; flex-shrink: 0; }
+  .step-content { flex: 1; }
+  .step-title { font-weight: 600; font-size: .9rem; margin-bottom: 4px; }
+  .step-desc { font-size: .8rem; color: var(--muted); }
+  .step-cmd { font-family: var(--mono); font-size: .75rem; color: var(--cyan); margin-top: 6px; background: rgba(6,182,212,.06); padding: 4px 10px; border-radius: 4px; display: inline-block; }
+
+  /* ROLES */
+  .roles-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 24px; }
+  @media(max-width:600px){ .roles-grid { grid-template-columns: 1fr; } }
+  .role-card { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 20px; }
+  .role-badge { display: inline-block; font-size: .7rem; font-weight: 700; padding: 3px 10px; border-radius: 20px; text-transform: uppercase; letter-spacing: .08em; margin-bottom: 12px; }
+  .role-badge.admin { background: rgba(139,92,246,.15); border: 1px solid rgba(139,92,246,.3); color: #c4b5fd; }
+  .role-badge.vendedor { background: rgba(6,182,212,.12); border: 1px solid rgba(6,182,212,.3); color: var(--cyan); }
+  .role-perm { font-size: .82rem; color: rgba(255,255,255,.7); display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+  .role-perm::before { content: '✓'; color: var(--green); font-size: .8rem; }
+  .role-perm.denied { color: var(--muted); }
+  .role-perm.denied::before { content: '✕'; color: var(--red); }
+
+  /* FOOTER */
+  footer { border-top: 1px solid var(--line); padding: 32px 48px; display: flex; align-items: center; justify-content: space-between; }
+  .footer-brand { font-family: 'Syne', sans-serif; font-weight: 700; font-size: .9rem; }
+  .footer-link { color: var(--cyan); text-decoration: none; font-size: .82rem; }
+  .footer-link:hover { text-decoration: underline; }
+  @media(max-width:600px){ footer { flex-direction: column; gap: 12px; text-align: center; } nav { padding: 0 20px; } .hero { padding: 48px 20px; } }
+
+  /* ACTIVE LINK TRACKING */
+  .sidebar-link { cursor: pointer; }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="../index.html" class="nav-brand">
+    <div class="nav-brand-dot"></div>
+    Daniel Luiz Alves
+  </a>
+  <a href="../index.html" class="nav-back">← Voltar ao portfólio</a>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-badge">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="3"/><path d="M20.188 10.934c.2.646.312 1.329.312 2.066 0 4.418-3.582 8-8 8S4.5 17.418 4.5 13c0-4.418 3.582-8 8-8 .737 0 1.42.112 2.066.312"/></svg>
+      Full-Stack · PWA · FastAPI · React
+    </div>
+    <h1>Ótica <span>Smart</span></h1>
+    <p class="hero-sub">
+      Sistema completo de gestão para óticas — clientes, estoque, vendas, ordens de serviço, receitas ópticas, caixa e agendamentos em uma plataforma web com suporte PWA, rodando em produção no Railway.
+    </p>
+    <a href="https://otica-smart-production.up.railway.app/" target="_blank" class="hero-live">
+      <span class="hero-live-dot"></span>
+      Ver sistema ao vivo — otica-smart-production.up.railway.app
+    </a>
+    <div class="hero-tags">
+      <span class="hero-tag cyan">Python 3.x</span>
+      <span class="hero-tag cyan">FastAPI</span>
+      <span class="hero-tag">SQLite</span>
+      <span class="hero-tag">JWT Auth</span>
+      <span class="hero-tag violet">React 18</span>
+      <span class="hero-tag violet">Vite 5</span>
+      <span class="hero-tag">Tailwind CSS</span>
+      <span class="hero-tag green">Railway</span>
+      <span class="hero-tag green">PWA</span>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE -->
+<div class="page">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-title">Nesta página</div>
+    <nav>
+      <a href="#overview"      class="sidebar-link active">Visão geral</a>
+      <a href="#arquitetura"   class="sidebar-link">Arquitetura</a>
+      <a href="#modulos"       class="sidebar-link">Módulos</a>
+      <a href="#endpoints"     class="sidebar-link">API — Endpoints</a>
+      <a href="#banco"         class="sidebar-link">Banco de Dados</a>
+      <a href="#autenticacao"  class="sidebar-link">Autenticação</a>
+      <a href="#instalacao"    class="sidebar-link">Instalação Local</a>
+      <a href="#deploy"        class="sidebar-link">Deploy Railway</a>
+    </nav>
+    <a href="https://otica-smart-production.up.railway.app/" target="_blank" class="sidebar-live">
+      <span class="sidebar-live-dot"></span>
+      Sistema em produção
+    </a>
+  </aside>
+
+  <!-- CONTENT -->
+  <main class="content">
+
+    <!-- OVERVIEW -->
+    <section id="overview">
+      <div class="section-label">Sobre o projeto</div>
+      <h2 class="section-title">Visão Geral</h2>
+      <div class="section-body">
+        <p>
+          O <strong>Ótica Smart</strong> é uma aplicação web full-stack criada para gerenciar todos os processos de uma ótica — do cadastro de clientes ao controle de receitas ópticas, ordens de serviço, caixa e agendamentos.
+        </p>
+        <p>
+          O backend é uma API REST construída com <strong>FastAPI</strong> (Python), usando <strong>SQLite</strong> como banco de dados e autenticação via <strong>JWT</strong>. O frontend é uma SPA em <strong>React 18</strong> com <strong>Tailwind CSS</strong>, distribuída como <strong>Progressive Web App</strong> (PWA), podendo ser instalada como aplicativo em celulares e computadores.
+        </p>
+        <p>
+          Em produção, o sistema roda na plataforma <strong>Railway</strong>, com o frontend compilado servido diretamente pelo FastAPI como arquivos estáticos.
+        </p>
+      </div>
+
+      <div class="metrics-grid">
+        <div class="metric-card">
+          <div class="metric-value">10</div>
+          <div class="metric-label">Módulos funcionais</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value">9</div>
+          <div class="metric-label">Tabelas no banco</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value">40+</div>
+          <div class="metric-label">Endpoints REST</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value">PWA</div>
+          <div class="metric-label">Instalável no celular</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ARQUITETURA -->
+    <section id="arquitetura">
+      <div class="section-label">Design</div>
+      <h2 class="section-title">Arquitetura</h2>
+      <div class="section-body">
+        <p>Aplicação full-stack com frontend React servido pelo FastAPI como arquivos estáticos — um único processo em produção, sem necessidade de servidor separado para o frontend.</p>
+      </div>
+      <div class="arch">
+        <div class="arch-flow">
+          <div class="arch-node violet">React 18 (SPA)</div>
+          <div class="arch-arrow">→</div>
+          <div class="arch-node primary">Vite build</div>
+          <div class="arch-arrow">→</div>
+          <div class="arch-node blue">backend/static/</div>
+        </div>
+        <div style="display:flex;justify-content:center;margin:14px 0;color:rgba(255,255,255,.15)">↓</div>
+        <div class="arch-flow">
+          <div class="arch-node primary">FastAPI</div>
+          <div class="arch-arrow">→</div>
+          <div class="arch-node green">SQLite (otica.db)</div>
+          <div class="arch-arrow">→</div>
+          <div class="arch-node blue">JWT Auth</div>
+        </div>
+        <div style="display:flex;justify-content:center;margin:14px 0;color:rgba(255,255,255,.15)">↓</div>
+        <div class="arch-flow">
+          <div class="arch-node green" style="min-width:220px">Railway — otica-smart-production.up.railway.app</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- MODULOS -->
+    <section id="modulos">
+      <div class="section-label">Funcionalidades</div>
+      <h2 class="section-title">Módulos do Sistema</h2>
+      <div class="section-body">
+        <p>Cada módulo tem sua própria página React e conjunto de endpoints REST dedicados.</p>
+      </div>
+      <div class="modules-grid">
+        <div class="module-card">
+          <div class="module-icon">📊</div>
+          <div class="module-name">Dashboard</div>
+          <div class="module-desc">KPIs em tempo real: total de clientes, produtos, vendas e faturamento. Produto mais vendido, alertas de estoque baixo e exportação em PDF.</div>
+        </div>
+        <div class="module-card">
+          <div class="module-icon">👥</div>
+          <div class="module-name">Clientes</div>
+          <div class="module-desc">CRUD completo de clientes com rastreamento da última compra e link direto para WhatsApp.</div>
+        </div>
+        <div class="module-card">
+          <div class="module-icon">📦</div>
+          <div class="module-name">Estoque / Produtos</div>
+          <div class="module-desc">Controle de quantidade e preço com alerta automático para produtos com 5 ou menos unidades em estoque.</div>
+        </div>
+        <div class="module-card">
+          <div class="module-icon">💰</div>
+          <div class="module-name">Vendas</div>
+          <div class="module-desc">Registro de vendas com débito automático do estoque. Cancelamento com estorno. Histórico com dados de cliente e produto.</div>
+        </div>
+        <div class="module-card">
+          <div class="module-icon">🔧</div>
+          <div class="module-name">Ordens de Serviço</div>
+          <div class="module-desc">Abertura, acompanhamento e encerramento de OS com controle de status, valor estimado e timestamps de atualização.</div>
+        </div>
+        <div class="module-card">
+          <div class="module-icon">👁️</div>
+          <div class="module-name">Receitas Ópticas</div>
+          <div class="module-desc">Cadastro completo: esfera, cilindro e eixo para cada olho, adição (bifocal/progressivo), DNP e observações. Histórico por cliente.</div>
+        </div>
+        <div class="module-card">
+          <div class="module-icon">💵</div>
+          <div class="module-name">Caixa</div>
+          <div class="module-desc">Registro de entradas e saídas por categoria. Filtro por data e saldo calculado automaticamente (entradas, saídas, líquido).</div>
+        </div>
+        <div class="module-card">
+          <div class="module-icon">🚚</div>
+          <div class="module-name">Fornecedores</div>
+          <div class="module-desc">Cadastro de fornecedores com nome, telefone, e-mail e CNPJ. CRUD completo.</div>
+        </div>
+        <div class="module-card">
+          <div class="module-icon">📅</div>
+          <div class="module-name">Agendamentos</div>
+          <div class="module-desc">Agenda com filtro por data, status (agendado/concluído/cancelado) e vinculação com clientes cadastrados.</div>
+        </div>
+        <div class="module-card">
+          <div class="module-icon">📈</div>
+          <div class="module-name">Relatórios</div>
+          <div class="module-desc">Faturamento mensal (12 meses), vendas por período, ranking dos 10 produtos mais vendidos e clientes inativos.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ENDPOINTS -->
+    <section id="endpoints">
+      <div class="section-label">REST API</div>
+      <h2 class="section-title">Endpoints</h2>
+      <div class="section-body">
+        <p>Base URL: <code style="color:var(--cyan);font-family:monospace">/api</code> &nbsp;·&nbsp; Autenticação: <code style="color:var(--cyan);font-family:monospace">Authorization: Bearer &lt;token&gt;</code></p>
+        <p style="margin-top:8px">Documentação interativa Swagger disponível em <code style="color:var(--cyan);font-family:monospace">/docs</code> na instância local.</p>
+      </div>
+
+      <!-- Auth -->
+      <div style="margin-top:28px;margin-bottom:10px;font-size:.8rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em">Autenticação</div>
+      <div class="endpoint">
+        <div class="endpoint-header">
+          <span class="method post">POST</span>
+          <span class="endpoint-path">/auth/login</span>
+          <span class="endpoint-desc">Retorna JWT token</span>
+        </div>
+      </div>
+
+      <!-- Clientes -->
+      <div style="margin-top:20px;margin-bottom:10px;font-size:.8rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em">Clientes</div>
+      <div class="endpoint"><div class="endpoint-header"><span class="method get">GET</span><span class="endpoint-path">/clientes</span><span class="endpoint-desc">Lista todos</span></div></div>
+      <div class="endpoint"><div class="endpoint-header"><span class="method post">POST</span><span class="endpoint-path">/clientes</span><span class="endpoint-desc">Criar cliente</span></div></div>
+      <div class="endpoint"><div class="endpoint-header"><span class="method get">GET</span><span class="endpoint-path">/clientes/{id}</span><span class="endpoint-desc">Detalhes</span></div></div>
+      <div class="endpoint"><div class="endpoint-header"><span class="method put">PUT</span><span class="endpoint-path">/clientes/{id}</span><span class="endpoint-desc">Atualizar</span></div></div>
+      <div class="endpoint"><div class="endpoint-header"><span class="method delete">DEL</span><span class="endpoint-path">/clientes/{id}</span><span class="endpoint-desc">Remover</span></div></div>
+
+      <!-- Produtos -->
+      <div style="margin-top:20px;margin-bottom:10px;font-size:.8rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em">Produtos</div>
+      <div class="endpoint"><div class="endpoint-header"><span class="method get">GET</span><span class="endpoint-path">/produtos</span><span class="endpoint-desc">Lista todos</span></div></div>
+      <div class="endpoint"><div class="endpoint-header"><span class="method post">POST</span><span class="endpoint-path">/produtos</span><span class="endpoint-desc">Criar produto</span></div></div>
+      <div class="endpoint"><div class="endpoint-header"><span class="method put">PUT</span><span class="endpoint-path">/produtos/{id}</span><span class="endpoint-desc">Atualizar</span></div></div>
+      <div class="endpoint"><div class="endpoint-header"><span class="method delete">DEL</span><span class="endpoint-path">/produtos/{id}</span><span class="endpoint-desc">Remover</span></div></div>
+      <div class="endpoint"><div class="endpoint-header"><span class="method get">GET</span><span class="endpoint-path">/produtos/baixo-estoque</span><span class="endpoint-desc">Estoque ≤ 5 unidades</span></div></div>
+
+      <!-- Vendas -->
+      <div style="margin-top:20px;margin-bottom:10px;font-size:.8rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em">Vendas</div>
+      <div class="endpoint"><div class="endpoint-header"><span class="method get">GET</span><span class="endpoint-path">/vendas</span><span class="endpoint-desc">Histórico completo</span></div></div>
+      <div class="endpoint"><div class="endpoint-header"><span class="method post">POST</span><span class="endpoint-path">/vendas</span><span class="endpoint-desc">Registrar venda (debita estoque)</span></div></div>
+      <div class="endpoint"><div class="endpoint-header"><span class="method delete">DEL</span><span class="endpoint-path">/vendas/{id}</span><span class="endpoint-desc">Cancelar (estorna estoque)</span></div></div>
+
+      <!-- Dashboard -->
+      <div style="margin-top:20px;margin-bottom:10px;font-size:.8rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em">Dashboard / Ordens / Receitas / Caixa</div>
+      <div class="endpoint"><div class="endpoint-header"><span class="method get">GET</span><span class="endpoint-path">/dashboard</span><span class="endpoint-desc">KPIs gerais</span></div></div>
+      <div class="endpoint"><div class="endpoint-header"><span class="method get">GET</span><span class="endpoint-path">/ordens?status={status}</span><span class="endpoint-desc">Ordens de serviço (filtrável)</span></div></div>
+      <div class="endpoint"><div class="endpoint-header"><span class="method post">POST</span><span class="endpoint-path">/ordens</span><span class="endpoint-desc">Criar OS</span></div></div>
+      <div class="endpoint"><div class="endpoint-header"><span class="method put">PUT</span><span class="endpoint-path">/ordens/{id}</span><span class="endpoint-desc">Atualizar OS</span></div></div>
+      <div class="endpoint"><div class="endpoint-header"><span class="method get">GET</span><span class="endpoint-path">/receitas/cliente/{id}</span><span class="endpoint-desc">Receitas por cliente</span></div></div>
+      <div class="endpoint"><div class="endpoint-header"><span class="method post">POST</span><span class="endpoint-path">/receitas</span><span class="endpoint-desc">Criar receita óptica</span></div></div>
+      <div class="endpoint"><div class="endpoint-header"><span class="method get">GET</span><span class="endpoint-path">/caixa/saldo</span><span class="endpoint-desc">Saldo atual (entradas / saídas / líquido)</span></div></div>
+      <div class="endpoint"><div class="endpoint-header"><span class="method post">POST</span><span class="endpoint-path">/caixa</span><span class="endpoint-desc">Registrar movimento</span></div></div>
+
+      <!-- Relatórios -->
+      <div style="margin-top:20px;margin-bottom:10px;font-size:.8rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em">Relatórios</div>
+      <div class="endpoint"><div class="endpoint-header"><span class="method get">GET</span><span class="endpoint-path">/relatorios/faturamento-mensal</span><span class="endpoint-desc">Últimos 12 meses</span></div></div>
+      <div class="endpoint"><div class="endpoint-header"><span class="method get">GET</span><span class="endpoint-path">/relatorios/vendas-periodo?de={data}&amp;ate={data}</span><span class="endpoint-desc">Por intervalo de datas</span></div></div>
+      <div class="endpoint"><div class="endpoint-header"><span class="method get">GET</span><span class="endpoint-path">/relatorios/produtos-mais-vendidos</span><span class="endpoint-desc">Top 10 produtos</span></div></div>
+      <div class="endpoint"><div class="endpoint-header"><span class="method get">GET</span><span class="endpoint-path">/relatorios/clientes-inativos?dias={n}</span><span class="endpoint-desc">Sem compra há N dias</span></div></div>
+    </section>
+
+    <!-- BANCO DE DADOS -->
+    <section id="banco">
+      <div class="section-label">Persistência</div>
+      <h2 class="section-title">Banco de Dados</h2>
+      <div class="section-body">
+        <p>SQLite com criação automática de schema e dados iniciais na primeira execução. Foreign keys habilitadas via <code style="color:var(--cyan);font-family:monospace">PRAGMA foreign_keys = ON</code>.</p>
+      </div>
+
+      <div class="db-table" style="margin-top:24px">
+        <div class="db-table-header">
+          <span class="db-table-name">clientes</span>
+          <span class="db-table-desc">Cadastro de clientes</span>
+        </div>
+        <table class="fields-table">
+          <tr><th>Campo</th><th>Tipo</th><th>Descrição</th></tr>
+          <tr><td><span class="field-name">id</span></td><td><span class="field-type">INTEGER PK</span></td><td>Identificador</td></tr>
+          <tr><td><span class="field-name">nome</span></td><td><span class="field-type">TEXT NOT NULL</span></td><td>Nome completo</td></tr>
+          <tr><td><span class="field-name">telefone</span></td><td><span class="field-type">TEXT</span></td><td>Telefone / WhatsApp</td></tr>
+          <tr><td><span class="field-name">ultima_compra</span></td><td><span class="field-type">TEXT</span></td><td>Data da última compra</td></tr>
+          <tr><td><span class="field-name">created_at</span></td><td><span class="field-type">TEXT</span></td><td>Data de cadastro (auto)</td></tr>
+        </table>
+      </div>
+
+      <div class="db-table">
+        <div class="db-table-header">
+          <span class="db-table-name">receitas</span>
+          <span class="db-table-desc">Receitas ópticas</span>
+        </div>
+        <table class="fields-table">
+          <tr><th>Campo</th><th>Tipo</th><th>Descrição</th></tr>
+          <tr><td><span class="field-name">od_esf / od_cil / od_eixo</span></td><td><span class="field-type">REAL / INTEGER</span></td><td>Olho direito: esfera, cilindro, eixo</td></tr>
+          <tr><td><span class="field-name">oe_esf / oe_cil / oe_eixo</span></td><td><span class="field-type">REAL / INTEGER</span></td><td>Olho esquerdo: esfera, cilindro, eixo</td></tr>
+          <tr><td><span class="field-name">adicao</span></td><td><span class="field-type">REAL</span></td><td>Adição para bifocal/progressivo</td></tr>
+          <tr><td><span class="field-name">dnp</span></td><td><span class="field-type">TEXT</span></td><td>Distância naso-pupilar</td></tr>
+          <tr><td><span class="field-name">observacao</span></td><td><span class="field-type">TEXT</span></td><td>Observações adicionais</td></tr>
+        </table>
+      </div>
+
+      <div class="db-table">
+        <div class="db-table-header">
+          <span class="db-table-name">caixa</span>
+          <span class="db-table-desc">Fluxo de caixa</span>
+        </div>
+        <table class="fields-table">
+          <tr><th>Campo</th><th>Tipo</th><th>Descrição</th></tr>
+          <tr><td><span class="field-name">tipo</span></td><td><span class="field-type">TEXT NOT NULL</span></td><td><code style="color:var(--green)">entrada</code> ou <code style="color:var(--red)">saida</code></td></tr>
+          <tr><td><span class="field-name">descricao</span></td><td><span class="field-type">TEXT NOT NULL</span></td><td>Descrição do lançamento</td></tr>
+          <tr><td><span class="field-name">valor</span></td><td><span class="field-type">REAL NOT NULL</span></td><td>Valor em reais</td></tr>
+          <tr><td><span class="field-name">categoria</span></td><td><span class="field-type">TEXT</span></td><td>Categoria do lançamento</td></tr>
+        </table>
+      </div>
+
+      <div style="margin-top:12px;font-size:.82rem;color:var(--muted)">Outras tabelas: <code style="color:var(--cyan);font-family:monospace">produtos</code>, <code style="color:var(--cyan);font-family:monospace">vendas</code>, <code style="color:var(--cyan);font-family:monospace">ordens_servico</code>, <code style="color:var(--cyan);font-family:monospace">fornecedores</code>, <code style="color:var(--cyan);font-family:monospace">agendamentos</code>, <code style="color:var(--cyan);font-family:monospace">usuarios</code>.</div>
+    </section>
+
+    <!-- AUTENTICACAO -->
+    <section id="autenticacao">
+      <div class="section-label">Segurança</div>
+      <h2 class="section-title">Autenticação e Perfis</h2>
+      <div class="section-body">
+        <p>JWT com validade de <strong>8 horas</strong>, gerado no login e enviado no header <code style="color:var(--cyan);font-family:monospace">Authorization: Bearer &lt;token&gt;</code> em todas as requisições protegidas. Senhas armazenadas com hash bcrypt.</p>
+      </div>
+      <div class="roles-grid">
+        <div class="role-card">
+          <div class="role-badge admin">admin</div>
+          <div class="role-perm">Gestão de usuários</div>
+          <div class="role-perm">Todos os módulos operacionais</div>
+          <div class="role-perm">Relatórios e dashboard</div>
+          <div class="role-perm">Configurações do sistema</div>
+        </div>
+        <div class="role-card">
+          <div class="role-badge vendedor">vendedor</div>
+          <div class="role-perm">Clientes, produtos, vendas</div>
+          <div class="role-perm">Ordens de serviço e receitas</div>
+          <div class="role-perm">Caixa e agendamentos</div>
+          <div class="role-perm denied">Gestão de usuários</div>
+        </div>
+      </div>
+      <div style="margin-top:16px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px 20px;font-size:.83rem;color:var(--muted)">
+        Credenciais padrão criadas no primeiro boot: &nbsp;<code style="color:var(--cyan);font-family:monospace">admin</code> / <code style="color:var(--cyan);font-family:monospace">admin123</code> &nbsp;·&nbsp; Altere em produção.
+      </div>
+    </section>
+
+    <!-- INSTALACAO -->
+    <section id="instalacao">
+      <div class="section-label">Desenvolvimento</div>
+      <h2 class="section-title">Instalação Local</h2>
+
+      <div class="pipeline">
+        <div class="pipeline-step">
+          <div class="step-num">1</div>
+          <div class="step-content">
+            <div class="step-title">Clonar o repositório</div>
+            <div class="step-cmd">git clone &lt;repo-url&gt; &amp;&amp; cd otica-smart</div>
+          </div>
+        </div>
+        <div class="pipeline-step">
+          <div class="step-num">2</div>
+          <div class="step-content">
+            <div class="step-title">Backend — criar e ativar ambiente virtual</div>
+            <div class="step-cmd">cd backend &amp;&amp; python -m venv .venv &amp;&amp; .venv\Scripts\activate</div>
+          </div>
+        </div>
+        <div class="pipeline-step">
+          <div class="step-num">3</div>
+          <div class="step-content">
+            <div class="step-title">Instalar dependências Python e iniciar servidor</div>
+            <div class="step-desc">O banco <code style="color:var(--cyan);font-family:monospace">otica.db</code> e as tabelas são criados automaticamente na primeira execução.</div>
+            <div class="step-cmd">pip install -r requirements.txt &amp;&amp; uvicorn app.main:app --reload --port 8000</div>
+          </div>
+        </div>
+        <div class="pipeline-step">
+          <div class="step-num">4</div>
+          <div class="step-content">
+            <div class="step-title">Frontend — instalar dependências e iniciar</div>
+            <div class="step-desc">Proxy automático do Vite redireciona <code style="color:var(--cyan);font-family:monospace">/api</code> para <code style="color:var(--cyan);font-family:monospace">localhost:8000</code>.</div>
+            <div class="step-cmd">cd ../frontend &amp;&amp; npm install &amp;&amp; npm run dev</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top:20px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px 20px;font-size:.83rem;color:var(--muted)">
+        Frontend: <code style="color:var(--cyan);font-family:monospace">http://localhost:5173</code> &nbsp;·&nbsp;
+        API: <code style="color:var(--cyan);font-family:monospace">http://localhost:8000</code> &nbsp;·&nbsp;
+        Swagger: <code style="color:var(--cyan);font-family:monospace">http://localhost:8000/docs</code>
+      </div>
+    </section>
+
+    <!-- DEPLOY -->
+    <section id="deploy">
+      <div class="section-label">Produção</div>
+      <h2 class="section-title">Deploy no Railway</h2>
+      <div class="section-body">
+        <p>O projeto usa um único serviço no Railway — FastAPI serve tanto a API quanto os arquivos estáticos do React compilado.</p>
+      </div>
+
+      <div class="pipeline">
+        <div class="pipeline-step">
+          <div class="step-num">1</div>
+          <div class="step-content">
+            <div class="step-title">Compilar o frontend e copiar para o backend</div>
+            <div class="step-cmd">bash deploy.sh</div>
+          </div>
+        </div>
+        <div class="pipeline-step">
+          <div class="step-num">2</div>
+          <div class="step-content">
+            <div class="step-title">Criar repositório no GitHub e fazer push</div>
+            <div class="step-cmd">git push origin main</div>
+          </div>
+        </div>
+        <div class="pipeline-step">
+          <div class="step-num">3</div>
+          <div class="step-content">
+            <div class="step-title">Conectar ao Railway e configurar variável de ambiente</div>
+            <div class="step-desc">Defina <code style="color:var(--cyan);font-family:monospace">SECRET_KEY</code> com uma chave segura. O Railway detecta o <code style="color:var(--cyan);font-family:monospace">Procfile</code> automaticamente.</div>
+          </div>
+        </div>
+        <div class="pipeline-step">
+          <div class="step-num">4</div>
+          <div class="step-content">
+            <div class="step-title">Sistema em produção</div>
+            <div class="step-desc">Deploy automático a cada push. Acesse:</div>
+            <a href="https://otica-smart-production.up.railway.app/" target="_blank" class="step-cmd" style="text-decoration:none">https://otica-smart-production.up.railway.app/ →</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="code-block" style="margin-top:24px">
+        <div class="code-header">
+          <span class="code-lang">Procfile</span>
+        </div>
+        <pre><span class="key">web</span>: <span class="str">uvicorn app.main:app --host 0.0.0.0 --port $PORT</span></pre>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<footer>
+  <div class="footer-brand">Daniel Luiz Alves</div>
+  <a href="https://otica-smart-production.up.railway.app/" target="_blank" class="footer-link">otica-smart-production.up.railway.app →</a>
+  <a href="../index.html" class="footer-link">← Voltar ao portfólio</a>
+</footer>
+
+<script>
+  // Active sidebar link on scroll
+  const links = document.querySelectorAll('.sidebar-link');
+  const sections = document.querySelectorAll('.content section');
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        links.forEach(l => l.classList.remove('active'));
+        const active = document.querySelector(`.sidebar-link[href="#${e.target.id}"]`);
+        if (active) active.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-20% 0px -70% 0px' });
+  sections.forEach(s => observer.observe(s));
+</script>
+</body>
+</html>
